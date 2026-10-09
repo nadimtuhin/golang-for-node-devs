@@ -12,31 +12,47 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
 
-  <style>
+    <style>
     :root {
       --bg: #f8fafc;
       --panel: #ffffff;
       --sidebar-nav: #f8fafc;
       --detail-bg: #ffffff;
       --border: #e2e8f0;
+      --border-subtle: #f1f5f9;
       --border-dark: #cbd5e1;
       --text: #0f172a;
+      --text-body: #334155;
       --text-muted: #64748b;
       --go-cyan: #007d9c;
+      --go-cyan-hover: #006680;
       --go-cyan-light: #e0f2fe;
       --node-green: #15803d;
       --node-green-bg: #dcfce7;
       --accent-yellow: #d97706;
       --accent-yellow-bg: #fef3c7;
-      --console-bg: #fafafa;
-      --console-text: #065f46;
+      --console-bg: #0f172a;
+      --console-text: #e2e8f0;
       --error: #b91c1c;
       --error-bg: #fee2e2;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Smooth modern scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
@@ -44,59 +60,101 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* HEADER */
     header {
       background: #ffffff;
       border-bottom: 1px solid var(--border);
-      padding: 0.65rem 1.25rem;
+      padding: 0.5rem 1.25rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      z-index: 50;
+      gap: 1rem;
     }
     .brand {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #0f172a;
+      flex-shrink: 0;
+      text-decoration: none;
     }
     .badge {
-      background: var(--node-green-bg);
-      color: var(--node-green);
-      border: 1px solid #86efac;
-      padding: 0.15rem 0.55rem;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      padding: 0.18rem 0.55rem;
       border-radius: 9999px;
       font-size: 0.72rem;
       font-weight: 700;
+      letter-spacing: 0.3px;
     }
 
-    .top-links {
+    .header-nav-scroll {
       display: flex;
-      gap: 0.5rem;
+      align-items: center;
+      gap: 0.35rem;
+      overflow-x: auto;
+      padding: 0.2rem 0;
+      scrollbar-width: none;
     }
+    .header-nav-scroll::-webkit-scrollbar { display: none; }
+
     .tab-toggle {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--text-muted);
       font-weight: 600;
       font-size: 0.8rem;
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease-in-out;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
     }
-    .tab-toggle:hover { color: var(--text); }
+    .tab-toggle:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
     .tab-toggle.active {
       background: var(--go-cyan);
       color: #ffffff;
       border-color: var(--go-cyan);
+      box-shadow: 0 1px 3px rgba(0, 125, 156, 0.25);
     }
 
-    /* 3-Column Layout */
+    .github-link-btn {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: #334155;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .github-link-btn:hover {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+
+    /* 3-COLUMN STUDIO LAYOUT */
     .studio-container {
       display: flex;
       flex: 1;
@@ -104,9 +162,9 @@
       overflow: hidden;
     }
 
-    /* COLUMN 1: SIDEBAR (295px) */
+    /* COLUMN 1: SIDEBAR (310px) */
     .chapters-sidebar {
-      width: 300px;
+      width: 320px;
       background: var(--sidebar-nav);
       border-right: 1px solid var(--border);
       overflow-y: auto;
@@ -115,159 +173,268 @@
       flex-shrink: 0;
     }
 
-    .sidebar-header {
-      padding: 0.75rem 1rem 0.5rem 1rem;
-      font-size: 0.72rem;
+    .sidebar-header-box {
+      padding: 0.75rem 1rem 0.6rem 1rem;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .sidebar-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.6px;
       color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      background: #f1f5f9;
     }
+    .sidebar-badge-count {
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+    }
+    .sidebar-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .sidebar-search-box input {
+      width: 100%;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 0.38rem 1.8rem 0.38rem 0.65rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      outline: none;
+      transition: all 0.15s;
+    }
+    .sidebar-search-box input:focus {
+      background: #ffffff;
+      border-color: var(--go-cyan);
+      box-shadow: 0 0 0 2px rgba(0, 125, 156, 0.15);
+    }
+    .clear-search-btn {
+      position: absolute;
+      right: 0.4rem;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.2rem;
+    }
+    .clear-search-btn:hover { color: #334155; }
 
     .sidebar-part-label {
-      font-size: 0.68rem;
+      padding: 0.65rem 1rem 0.35rem 1rem;
+      font-size: 0.7rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.5px;
       color: #94a3b8;
-      padding: 0.75rem 1rem 0.25rem 1rem;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 0.25rem;
     }
 
     .chapter-nav-item {
+      padding: 0.55rem 1rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.42rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #475569;
-      text-decoration: none;
-      border-left: 3px solid transparent;
+      gap: 0.65rem;
       cursor: pointer;
-      transition: all 0.15s;
+      font-size: 0.84rem;
+      color: var(--text-body);
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+      user-select: none;
     }
     .chapter-nav-item:hover {
-      background: rgba(0, 125, 156, 0.05);
-      color: var(--go-cyan);
+      background: #f1f5f9;
+      color: var(--text);
     }
     .chapter-nav-item.active {
-      background: #ffffff;
+      background: #f0f9ff;
       color: var(--go-cyan);
       border-left-color: var(--go-cyan);
       font-weight: 700;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    }
-    .chapter-num {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.72rem;
-      color: #94a3b8;
-      width: 22px;
-      flex-shrink: 0;
-    }
-    .chapter-nav-item.active .chapter-num {
-      color: var(--go-cyan);
     }
 
-    /* COLUMN 2: LESSON DETAIL PANEL (330px) */
+    .chapter-num {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #475569;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      min-width: 32px;
+      text-align: center;
+    }
+    .chapter-nav-item.active .chapter-num {
+      background: var(--go-cyan);
+      color: #ffffff;
+    }
+
+    /* COLUMN 2: LESSON DETAIL PANEL (360px) */
     .lesson-detail-panel {
-      width: 330px;
+      width: 380px;
       background: var(--detail-bg);
       border-right: 1px solid var(--border);
+      padding: 1.25rem 1.4rem;
       overflow-y: auto;
-      padding: 1.25rem;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.95rem;
-      flex-shrink: 0;
+      gap: 1rem;
     }
 
     .detail-badge-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 0.25rem;
     }
     .part-tag {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.5px;
       color: var(--go-cyan);
       background: var(--go-cyan-light);
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-sm);
     }
     .lesson-title {
-      font-size: 1.05rem;
+      font-size: 1.22rem;
       font-weight: 800;
       color: #0f172a;
       line-height: 1.35;
+      margin-bottom: 0.25rem;
     }
     .lesson-desc {
-      font-size: 0.85rem;
-      color: #475569;
+      font-size: 0.88rem;
+      color: var(--text-body);
       line-height: 1.55;
     }
 
+    .card-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      background: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
     .node-box {
-      background: var(--node-green-bg);
-      border-left: 3.5px solid var(--node-green);
-      padding: 0.65rem 0.85rem;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.82rem;
-      color: #14532d;
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .node-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
     }
     .node-tag {
+      font-size: 0.72rem;
       font-weight: 800;
-      color: var(--node-green);
-      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.2rem;
+      letter-spacing: 0.5px;
+      color: #166534;
+      background: #dcfce7;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
+    .copy-snippet-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+    .copy-snippet-btn:hover { background: #e2e8f0; color: #0f172a; }
+
     .node-code {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.76rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      line-height: 1.45;
+      white-space: pre-wrap;
       word-break: break-all;
     }
 
     .go-why-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.75rem;
-      font-size: 0.82rem;
-      color: #334155;
+      background: #f0fdf4;
+      border-color: #bbf7d0;
     }
     .go-why-title {
-      font-weight: 700;
-      color: var(--go-cyan);
-      font-size: 0.75rem;
+      font-size: 0.76rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.25rem;
-    }
-
-    .load-to-editor-btn {
-      background: var(--go-cyan-light);
-      border: 1px solid #7dd3fc;
-      color: var(--go-cyan);
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
+      letter-spacing: 0.5px;
+      color: #15803d;
+      margin-bottom: 0.35rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      transition: all 0.15s;
+      gap: 0.35rem;
     }
-    .load-to-editor-btn:hover {
+    .go-why-desc {
+      font-size: 0.85rem;
+      color: #166534;
+      line-height: 1.5;
+    }
+
+    .lesson-nav-footer {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .nav-lesson-btn {
+      flex: 1;
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-body);
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .nav-lesson-btn:hover { background: #f1f5f9; color: var(--text); }
+    .nav-lesson-btn.primary {
       background: var(--go-cyan);
       color: #ffffff;
+      border-color: var(--go-cyan);
     }
+    .nav-lesson-btn.primary:hover { background: var(--go-cyan-hover); }
 
     /* COLUMN 3: PLAYGROUND */
     .playground-column {
@@ -275,245 +442,363 @@
       display: flex;
       flex-direction: column;
       background: #ffffff;
-      height: 100%;
-      min-width: 0;
+      overflow: hidden;
     }
 
     .editor-toolbar {
+      padding: 0.45rem 1rem;
       background: #f8fafc;
-      padding: 0.6rem 1.1rem;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
-    .editor-title {
-      font-size: 0.82rem;
-      color: #475569;
-      font-family: 'Fira Code', monospace;
-      font-weight: 600;
+    .editor-tab-group {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+    .macos-dots {
+      display: flex;
+      gap: 0.3rem;
+      margin-right: 0.4rem;
+    }
+    .macos-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
 
-    .btn-run {
-      background: #0284c7;
-      color: #ffffff;
-      border: none;
-      padding: 0.45rem 1.15rem;
-      font-size: 0.84rem;
+    .editor-tab {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-bottom: 2px solid var(--go-cyan);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px 4px 0 0;
+      font-size: 0.8rem;
       font-weight: 700;
-      border-radius: 7px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .tool-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-body);
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      box-shadow: 0 1px 2px rgba(2, 132, 199, 0.2);
-      transition: background 0.15s;
+      gap: 0.3rem;
+      transition: all 0.15s;
     }
-    .btn-run:hover { background: #0369a1; }
-    .btn-run:disabled { opacity: 0.5; cursor: not-allowed; }
+    .tool-btn:hover { background: #f1f5f9; color: var(--text); }
+
+    .btn-run {
+      background: linear-gradient(135deg, #007d9c 0%, #0284c7 100%);
+      color: #ffffff;
+      border: 1px solid #007d9c;
+      padding: 0.35rem 0.95rem;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 1px 3px rgba(0, 125, 156, 0.3);
+      transition: all 0.15s;
+    }
+    .btn-run:hover {
+      box-shadow: 0 3px 8px rgba(0, 125, 156, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-run:active { transform: translateY(0); }
 
     .editor-container {
       flex: 1;
       position: relative;
-      height: 58%;
-      min-height: 200px;
+      overflow: hidden;
+      background: #ffffff;
     }
-
     .CodeMirror {
       height: 100%;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      background: #ffffff;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.88rem;
+      line-height: 1.55;
     }
     .CodeMirror-gutters {
       background: #f8fafc;
       border-right: 1px solid var(--border);
     }
-    .CodeMirror-linenumber { color: #94a3b8; }
-    .cm-s-eclipse span.cm-keyword { color: #7c3aed; font-weight: 700; }
-    .cm-s-eclipse span.cm-string { color: #0284c7; }
-    .cm-s-eclipse span.cm-comment { color: #64748b; font-style: italic; }
-    .cm-s-eclipse span.cm-variable { color: #0f172a; }
-    .cm-s-eclipse span.cm-def { color: #0d9488; font-weight: 600; }
-    .cm-s-eclipse span.cm-number { color: #ea580c; }
-    .cm-s-eclipse span.cm-builtin { color: #0284c7; font-weight: 600; }
 
+    /* CONSOLE PANEL */
     .console-panel {
-      height: 42%;
-      background: #f8fafc;
-      border-top: 1px solid var(--border);
+      height: 200px;
+      background: var(--console-bg);
+      border-top: 1px solid #1e293b;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
     }
     .console-header {
-      padding: 0.45rem 1.1rem;
-      background: #f1f5f9;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #475569;
-      font-weight: 700;
+      padding: 0.4rem 1rem;
+      background: #1e293b;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
-    }
-    .status-pill {
-      font-size: 0.68rem;
-      padding: 0.15rem 0.55rem;
-      border-radius: 9999px;
-      background: #e2e8f0;
-      color: #475569;
+      color: #94a3b8;
+      font-size: 0.76rem;
       font-weight: 700;
+      letter-spacing: 0.3px;
     }
-    .status-pill.running { background: #fef3c7; color: #92400e; }
-    .status-pill.success { background: #dcfce7; color: #15803d; }
-    .status-pill.error { background: #fee2e2; color: #991b1b; }
+    .console-status-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .status-dot.compiling {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+    .status-dot.error { background: #ef4444; }
+    
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: #334155;
+      color: #cbd5e1;
+    }
+    .status-pill.ready { background: #064e3b; color: #6ee7b7; }
+    .status-pill.running { background: #78350f; color: #fde68a; }
+    .status-pill.error { background: #7f1d1d; color: #fca5a5; }
 
     .console-body {
       flex: 1;
-      padding: 0.85rem 1.1rem;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.84rem;
+      padding: 0.75rem 1rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      color: var(--console-text);
       overflow-y: auto;
       white-space: pre-wrap;
-      color: var(--console-text);
-      background: #fafafa;
+      word-break: break-all;
+      line-height: 1.5;
     }
-    .console-body.is-error {
-      color: #991b1b;
-      background: #fff5f5;
-    }
+    .console-body.is-error { color: #f87171; }
 
+    /* VIEW CONTAINERS (FOR FULL-PAGE VIEWS) */
     .view-container {
       display: none;
       flex: 1;
+      height: calc(100vh - 54px);
       overflow-y: auto;
-      padding: 2rem;
       background: #ffffff;
     }
     .view-container.active { display: block; }
+    
+    .view-inner-content {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2.25rem 1.5rem 5rem 1.5rem;
+    }
 
-    .diff-table {
-      width: 100%;
-      max-width: 950px;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      font-size: 0.85rem;
-      background: #ffffff;
+    .view-hero-banner {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
     }
-    .diff-table th {
-      background: #f1f5f9;
-      padding: 0.65rem 0.8rem;
-      text-align: left;
-      border: 1px solid var(--border);
-      color: #334155;
-      font-weight: 700;
-    }
-    .diff-table td {
-      padding: 0.65rem 0.8rem;
-      border: 1px solid var(--border);
-      vertical-align: top;
-      color: #334155;
-    }
-    .diff-table code {
-      font-family: 'Fira Code', monospace;
+    .view-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--go-cyan-light);
       color: var(--go-cyan);
-      background: #f1f5f9;
-      padding: 0.15rem 0.35rem;
-      border-radius: 4px;
-      font-size: 0.82rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.5rem;
+    }
+    .view-hero-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.4rem;
+    }
+    .view-hero-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
     }
 
+    /* CARDS & DEEPDIVES */
     .deepdive-box {
-      background: #f8fafc;
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
       margin-bottom: 1.5rem;
-      max-width: 950px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+    }
+    .deepdive-box:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
     }
     .deepdive-title {
       font-weight: 800;
       font-size: 1.05rem;
       color: #0f172a;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.6rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-  
-    /* Fun Graphics, Diagrams & Badges */
+
+    .rosetta-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 1rem 0;
+      background: #ffffff;
+      font-size: 0.88rem;
+    }
+    .rosetta-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .rosetta-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-body);
+      vertical-align: top;
+    }
+    .rosetta-table tr:last-child td { border-bottom: none; }
+    .rosetta-table tr:hover td { background: #f8fafc; }
+
+    /* ACTION BUTTONS */
+    .action-btn {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s;
+    }
+    .action-btn:hover {
+      background: #bae6fd;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+
+    /* DIAGRAMS & GRAPHICS */
     .diagram-card {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-sm);
     }
     .diagram-title {
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.1rem;
+      font-weight: 800;
       color: #0f172a;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.35rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
     .diagram-subtitle {
       font-size: 0.88rem;
-      color: #64748b;
-      margin-bottom: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
     }
     .diagram-svg-container {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       padding: 1.25rem;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow-x: auto;
-      margin-bottom: 1rem;
     }
-    
+
+    /* QA ACCORDIONS */
     .qa-card {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      margin-bottom: 1.25rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
       overflow: hidden;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s;
     }
     .qa-card:hover {
-      border-color: #94a3b8;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
     }
     .qa-header {
-      padding: 1.1rem 1.4rem;
+      padding: 1rem 1.25rem;
       background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #0f172a;
-      border-bottom: 1px solid transparent;
       user-select: none;
     }
     .qa-header:hover { background: #f8fafc; }
     .qa-badge {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
+      font-size: 0.72rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -521,20 +806,19 @@
     .qa-badge.high { background: #fee2e2; color: #b91c1c; }
     .qa-badge.medium { background: #fef3c7; color: #b45309; }
     .qa-badge.concept { background: #e0f2fe; color: #0284c7; }
-    
     .qa-body {
-      padding: 1.4rem;
-      background: #fafafa;
-      border-top: 1px solid #f1f5f9;
-      color: #334155;
-      font-size: 0.92rem;
+      padding: 1.25rem;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-body);
+      font-size: 0.9rem;
       line-height: 1.65;
     }
     .qa-mental-model {
       background: #f0fdf4;
       border-left: 4px solid #16a34a;
       padding: 0.75rem 1rem;
-      border-radius: 0 6px 6px 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       margin-bottom: 1rem;
       font-size: 0.88rem;
       color: #166534;
@@ -543,28 +827,29 @@
       background: #eff6ff;
       border-left: 4px solid #2563eb;
       padding: 0.75rem 1rem;
-      border-radius: 0 6px 6px 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       margin-top: 1rem;
       font-size: 0.88rem;
       color: #1e40af;
     }
 
+    /* PITFALL CARDS */
     .pitfall-card {
       background: #ffffff;
       border: 1px solid #fed7aa;
-      border-radius: 10px;
-      padding: 1.4rem;
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 1px 4px rgba(251, 146, 60, 0.08);
+      box-shadow: 0 1px 3px rgba(251, 146, 60, 0.08);
     }
     .pitfall-title {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 800;
       color: #c2410c;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
     .code-diff-grid {
       display: grid;
@@ -575,7 +860,7 @@
     .code-box-wrong {
       background: #fef2f2;
       border: 1px solid #fecaca;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       padding: 0.75rem;
       font-family: 'JetBrains Mono', 'Fira Code', monospace;
       font-size: 0.82rem;
@@ -585,7 +870,7 @@
     .code-box-correct {
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       padding: 0.75rem;
       font-family: 'JetBrains Mono', 'Fira Code', monospace;
       font-size: 0.82rem;
@@ -593,54 +878,60 @@
       overflow-x: auto;
     }
     .label-wrong {
-      font-weight: 700;
+      font-weight: 800;
       color: #dc2626;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       margin-bottom: 0.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
     }
     .label-correct {
-      font-weight: 700;
+      font-weight: 800;
       color: #16a34a;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       margin-bottom: 0.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
     }
-
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
+    <header>
+    <a href="#" class="brand" onclick="switchMainView('studio')">
       <span>🟢 ➔ 🐹</span>
-      <span>Go Backend Masterclass</span>
-      <span class="badge">Production Ready • 56+ Lessons & Microservices</span>
-    </div>
+      <span>Go Backend Studio</span>
+      <span class="badge">56 Lessons & Demos</span>
+    </a>
     
-            <div class="top-links">
-      <button class="tab-toggle active" id="btnPlayground" onclick="switchMainView('studio')">Interactive Studio</button>
-      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Microservice Architecture</button>
-      <button class="tab-toggle" id="btnDocker" onclick="switchMainView('docker')">🐳 Production Docker</button>
-      <button class="tab-toggle" id="btnLeetcode" onclick="switchMainView('leetcode')">🧩 LeetCode in Go</button>
-      <button class="tab-toggle" id="btnModExplain" onclick="switchMainView('modExplain')">go.mod vs package.json</button>
-      <button class="tab-toggle" id="btnPhilosophy" onclick="switchMainView('philosophy')">🧠 Philosophy & Zen</button>
-      <button class="tab-toggle" id="btnInterviews" onclick="switchMainView('interviews')">🎯 Interview Q&A</button>
-      <button class="tab-toggle" id="btnPitfalls" onclick="switchMainView('pitfalls')">⚠️ Pitfalls & Footguns</button>
-      <button class="tab-toggle" id="btnTroubleshooting" onclick="switchMainView('troubleshooting')">🛠️ Troubleshooting</button>
-      <button class="tab-toggle" id="btnCheatsheet" onclick="switchMainView('cheatsheet')">Rosetta Cheatsheet</button>
-    </div>
+    <nav class="header-nav-scroll">
+      <button class="tab-toggle active" id="btnPlayground" onclick="switchMainView('studio')">⚡ Studio</button>
+      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Microservice</button>
+      <button class="tab-toggle" id="btnDocker" onclick="switchMainView('docker')">🐳 Docker</button>
+      <button class="tab-toggle" id="btnLeetcode" onclick="switchMainView('leetcode')">🧩 LeetCode</button>
+      <button class="tab-toggle" id="btnModExplain" onclick="switchMainView('modExplain')">📦 go.mod vs npm</button>
+      <button class="tab-toggle" id="btnPhilosophy" onclick="switchMainView('philosophy')">🧠 Philosophy</button>
+      <button class="tab-toggle" id="btnInterviews" onclick="switchMainView('interviews')">🎯 Interviews</button>
+      <button class="tab-toggle" id="btnPitfalls" onclick="switchMainView('pitfalls')">⚠️ Pitfalls</button>
+      <button class="tab-toggle" id="btnTroubleshooting" onclick="switchMainView('troubleshooting')">🛠️ Diagnostics</button>
+      <button class="tab-toggle" id="btnCheatsheet" onclick="switchMainView('cheatsheet')">📖 Rosetta</button>
+    </nav>
+
+    <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
+      <span>GitHub ★</span>
+    </a>
   </header>
 
   <div id="viewStudio" class="studio-container">
     
     <!-- COLUMN 1: SIDEBAR -->
     <nav class="chapters-sidebar" id="chaptersList">
-      <div class="sidebar-header">Chapters Directory (56 Lessons Total)</div>
+      <div class="sidebar-header-box">
+        <div class="sidebar-title-row">
+          <span class="sidebar-title">Lessons Directory</span>
+          <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
+        </div>
+        <div class="sidebar-search-box">
+          <input type="text" id="lessonSearchInput" placeholder="Filter lessons (e.g. map, docker, mutex)..." oninput="filterLessons(this.value)">
+          <button id="clearSearchBtn" class="clear-search-btn" onclick="clearLessonSearch()" style="display:none;">✕</button>
+        </div>
+      </div>
 
       <div class="sidebar-part-label">Featured: Fullstack Microservice (Fiber + Mongo)</div>
       <div class="chapter-nav-item active" onclick="selectChapter('fiber_api')">
@@ -917,11 +1208,23 @@
     <!-- COLUMN 3: PLAYGROUND -->
     <main class="playground-column">
       <div class="editor-toolbar">
-        <span class="editor-title" id="editorCurrentFile">📄 main.go — Fiber Express Pattern</span>
-        <button id="runBtn" class="btn-run" onclick="executeGoCode()">
-          <span>▶</span>
-          <span>Run Go Code</span>
-        </button>
+        <div class="editor-tab-group">
+          <div class="macos-dots">
+            <span class="macos-dot dot-red"></span>
+            <span class="macos-dot dot-yellow"></span>
+            <span class="macos-dot dot-green"></span>
+          </div>
+          <div class="editor-tab" id="editorCurrentFile">📄 main.go</div>
+        </div>
+        <div class="editor-actions">
+          <button class="tool-btn" onclick="copyEditorCode()">📋 Copy</button>
+          <button class="tool-btn" onclick="resetEditorCode()">↺ Reset</button>
+          <button id="runBtn" class="btn-run" onclick="executeGoCode()">
+            <span>▶</span>
+            <span>Run Code</span>
+            <span style="font-size:0.7rem; opacity:0.85; font-weight:normal;">(⌘+⏎)</span>
+          </button>
+        </div>
       </div>
 
       <div class="editor-container">
@@ -930,10 +1233,16 @@
 
       <div class="console-panel">
         <div class="console-header">
-          <span>Terminal Output</span>
-          <span id="statusTag" class="status-pill">Ready</span>
+          <span>Terminal Output (play.golang.org)</span>
+          <div class="console-status-group">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusLatency" style="font-size:0.7rem; color:#64748b; font-family:monospace;"></span>
+            <span id="statusTag" class="status-pill ready">Ready</span>
+            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="clearConsole()">✕ Clear</button>
+            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="copyConsoleOutput()">📋 Copy</button>
+          </div>
         </div>
-        <div id="consoleArea" class="console-body">// Hit "Run Go Code" to execute this chapter!</div>
+        <div id="consoleArea" class="console-body">// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!</div>
       </div>
     </main>
 
@@ -941,6 +1250,7 @@
 
   <!-- VIEW: TOMDOESTECH GITHUB REPO EXPLORER -->
   <div id="viewRepoExplorer" class="view-container">
+    <div class="view-inner-content">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
       <div>
         <h2 style="font-size: 1.5rem; color: #0f172a;">📂 Real-World Microservice: Express vs Go Fiber Architecture</h2>
@@ -1338,6 +1648,7 @@ require (
 
   <!-- VIEW: GO.MOD vs PACKAGE.JSON -->
   <div id="viewModExplain" class="view-container">
+    <div class="view-inner-content">
     <h2 style="font-size: 1.5rem; margin-bottom: 0.4rem; color: #0f172a;">📦 Dependency Management: Go Modules vs npm</h2>
     <p style="color: #64748b; margin-bottom: 1.5rem;">How <code>go.mod</code> and <code>go.sum</code> replace <code>package.json</code>, <code>package-lock.json</code>, and the <code>node_modules</code> folder.</p>
 
@@ -1368,6 +1679,7 @@ require (
 
   <!-- VIEW: CHEATSHEET -->
   <div id="viewCheatsheet" class="view-container">
+    <div class="view-inner-content">
     <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #0f172a;">⚡ Node.js ➔ Go Backend Rosetta Stone</h2>
     <p style="color: #64748b; margin-bottom: 1.5rem;">Direct code mappings for arrays, types, databases, queues, and concurrency.</p>
 
@@ -1407,6 +1719,7 @@ require (
   
   <!-- VIEW 5: GO PHILOSOPHY & ZEN OF GO -->
   <div id="viewPhilosophy" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🧠 The Go Philosophy & The Zen of Go
@@ -1549,6 +1862,7 @@ require (
   
   <!-- VIEW 6: INTERVIEW QUESTIONS & ARCHITECTURE DIAGRAMS -->
   <div id="viewInterviews" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🎯 Go vs Node.js Backend Interview Mastery
@@ -1760,6 +2074,7 @@ func main() {
 
   <!-- VIEW 7: KNOWN PITFALLS & FOOTGUNS -->
   <div id="viewPitfalls" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #c2410c; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         ⚠️ Known Pitfalls & Footguns (For Node.js Devs)
@@ -1977,6 +2292,7 @@ bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
 
   <!-- VIEW 8: TROUBLESHOOTING & DEBUGGING WORKFLOWS -->
   <div id="viewTroubleshooting" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #0284c7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🛠️ Go Troubleshooting & Diagnostic Workflows
@@ -2092,6 +2408,7 @@ bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
   
   <!-- VIEW: PROPER GO DOCKER IMAGES FOR PRODUCTION -->
   <div id="viewDocker" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #0284c7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🐳 Production Docker for Go (The Node.js Contrast)
@@ -2234,6 +2551,7 @@ vendor/</pre>
 
   <!-- VIEW: LEETCODE EASY IN GO -->
   <div id="viewLeetcode" class="view-container">
+    <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
       <h2 style="font-size: 1.6rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🧩 LeetCode Easy Problem Solutions in Go (JS vs Go)
@@ -2341,7 +2659,106 @@ vendor/</pre>
 
   <!-- CodeMirror Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js">
+    function updateStatus(text, type) {
+      const statusTag = document.getElementById('statusTag');
+      const statusDot = document.getElementById('statusDot');
+      if (statusTag) {
+        statusTag.innerText = text;
+        statusTag.className = 'status-pill ' + (type || 'ready');
+      }
+      if (statusDot) {
+        statusDot.className = 'status-dot ' + (type === 'error' ? 'error' : (type === 'running' ? 'compiling' : ''));
+      }
+    }
+
+    async function executeGoCode() {
+      const code = editor.getValue();
+      const consoleArea = document.getElementById('consoleArea');
+      const runBtn = document.getElementById('runBtn');
+      const statusDot = document.getElementById('statusDot');
+      const statusTag = document.getElementById('statusTag');
+      const statusLatency = document.getElementById('statusLatency');
+
+      if (runBtn) runBtn.disabled = true;
+      if (statusDot) statusDot.className = 'status-dot compiling';
+      if (statusTag) {
+        statusTag.className = 'status-pill running';
+        statusTag.innerText = 'Compiling...';
+      }
+      if (statusLatency) statusLatency.innerText = '';
+
+      consoleArea.className = 'console-body';
+      consoleArea.textContent = '⏳ Compiling and running code on Go Playground...';
+
+      const startTime = performance.now();
+
+      try {
+        const params = new URLSearchParams();
+        params.append('version', '2');
+        params.append('body', code);
+
+        const response = await fetch('https://play.golang.org/compile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+
+        if (!response.ok) {
+          throw new Error(`Compiler returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.Errors) {
+          consoleArea.className = 'console-body is-error';
+          consoleArea.textContent = '❌ Compile Error:\n\n' + data.Errors;
+          if (statusDot) statusDot.className = 'status-dot error';
+          if (statusTag) {
+            statusTag.className = 'status-pill error';
+            statusTag.innerText = 'Error';
+          }
+        } else {
+          let outputText = '';
+          if (data.Events && data.Events.length > 0) {
+            outputText = data.Events.map(e => e.Message).join('');
+          } else {
+            outputText = '✓ Program completed with code 0 (no stdout output).';
+          }
+          consoleArea.className = 'console-body';
+          consoleArea.textContent = outputText;
+          if (statusDot) statusDot.className = 'status-dot';
+          if (statusTag) {
+            statusTag.className = 'status-pill ready';
+            statusTag.innerText = `Exit 0 • ${elapsed}ms`;
+          }
+        }
+      } catch (err) {
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+        consoleArea.className = 'console-body is-error';
+        consoleArea.textContent = '⚠️ Compilation Request Failed:\n' + err.message + '\n\nTip: Check network connectivity or CORS proxy.';
+        if (statusDot) statusDot.className = 'status-dot error';
+        if (statusTag) {
+          statusTag.className = 'status-pill error';
+          statusTag.innerText = 'Failed';
+        }
+      } finally {
+        if (runBtn) runBtn.disabled = false;
+      }
+    }
+
+    // Initialize initial lesson on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      selectChapter('basic_vars');
+    });
+
+  </script>
 
   <script>
     const chaptersData = {
@@ -4761,6 +5178,104 @@ func main() {
       viewportMargin: Infinity
     });
 
+    
+    // Search & Filter Lessons
+    function filterLessons(query) {
+      const q = query.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+      let visibleCount = 0;
+      const items = document.querySelectorAll('.chapter-nav-item');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const matches = text.includes(q);
+        item.style.display = matches ? 'flex' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      // Show/hide category headers if all children are hidden
+      document.querySelectorAll('.sidebar-part-label').forEach(label => {
+        let sibling = label.nextElementSibling;
+        let anyVisible = false;
+        while (sibling && sibling.classList.contains('chapter-nav-item')) {
+          if (sibling.style.display !== 'none') anyVisible = true;
+          sibling = sibling.nextElementSibling;
+        }
+        label.style.display = anyVisible ? 'block' : 'none';
+      });
+
+      const badge = document.getElementById('sidebarCountBadge');
+      if (badge) badge.innerText = q ? `${visibleCount} Found` : '56 Lessons';
+    }
+
+    function clearLessonSearch() {
+      const input = document.getElementById('lessonSearchInput');
+      if (input) {
+        input.value = '';
+        filterLessons('');
+        input.focus();
+      }
+    }
+
+    // Previous / Next Lesson Navigation
+    function navigateLesson(direction) {
+      const keys = Object.keys(chaptersData);
+      const currentIndex = keys.indexOf(activeKey);
+      if (currentIndex === -1) return;
+
+      const nextIndex = currentIndex + direction;
+      if (nextIndex >= 0 && nextIndex < keys.length) {
+        selectChapter(keys[nextIndex]);
+      }
+    }
+
+    function copyNodeSnippet() {
+      const code = document.getElementById('detailNodeCode').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Copied Node.js snippet!');
+      });
+    }
+
+    function copyEditorCode() {
+      const code = editor.getValue();
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Copied Go code!');
+      });
+    }
+
+    function resetEditorCode() {
+      if (chaptersData[activeKey]) {
+        editor.setValue(chaptersData[activeKey].code);
+      }
+    }
+
+    function clearConsole() {
+      document.getElementById('consoleArea').innerText = '';
+      updateStatus('Ready', 'ready');
+    }
+
+    function copyConsoleOutput() {
+      const out = document.getElementById('consoleArea').innerText;
+      navigator.clipboard.writeText(out).then(() => {
+        alert('Copied console output!');
+      });
+    }
+
+    // Keyboard Shortcuts: Cmd+Enter / Ctrl+Enter to execute Go code
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        executeGoCode();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('lessonSearchInput');
+        if (searchInput) searchInput.focus();
+      }
+    });
+
+
     function selectChapter(key) {
       if (!chaptersData[key]) return;
       activeKey = key;
@@ -4843,4 +5358,103 @@ func main() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    
+    function updateStatus(text, type) {
+      const statusTag = document.getElementById('statusTag');
+      const statusDot = document.getElementById('statusDot');
+      if (statusTag) {
+        statusTag.innerText = text;
+        statusTag.className = 'status-pill ' + (type || 'ready');
+      }
+      if (statusDot) {
+        statusDot.className = 'status-dot ' + (type === 'error' ? 'error' : (type === 'running' ? 'compiling' : ''));
+      }
+    }
+
+    async function executeGoCode() {
+      const code = editor.getValue();
+      const consoleArea = document.getElementById('consoleArea');
+      const runBtn = document.getElementById('runBtn');
+      const statusDot = document.getElementById('statusDot');
+      const statusTag = document.getElementById('statusTag');
+      const statusLatency = document.getElementById('statusLatency');
+
+      if (runBtn) runBtn.disabled = true;
+      if (statusDot) statusDot.className = 'status-dot compiling';
+      if (statusTag) {
+        statusTag.className = 'status-pill running';
+        statusTag.innerText = 'Compiling...';
+      }
+      if (statusLatency) statusLatency.innerText = '';
+
+      consoleArea.className = 'console-body';
+      consoleArea.textContent = '⏳ Compiling and executing on Go Playground...';
+
+      const startTime = performance.now();
+
+      try {
+        const params = new URLSearchParams();
+        params.append('version', '2');
+        params.append('body', code);
+
+        const response = await fetch('https://play.golang.org/compile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+
+        if (!response.ok) {
+          throw new Error(`Compiler returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.Errors) {
+          consoleArea.className = 'console-body is-error';
+          consoleArea.textContent = '❌ Compile Error:\n\n' + data.Errors;
+          if (statusDot) statusDot.className = 'status-dot error';
+          if (statusTag) {
+            statusTag.className = 'status-pill error';
+            statusTag.innerText = 'Error';
+          }
+        } else {
+          let outputText = '';
+          if (data.Events && data.Events.length > 0) {
+            outputText = data.Events.map(e => e.Message).join('');
+          } else {
+            outputText = '✓ Program completed with code 0 (no stdout output).';
+          }
+          consoleArea.className = 'console-body';
+          consoleArea.textContent = outputText;
+          if (statusDot) statusDot.className = 'status-dot';
+          if (statusTag) {
+            statusTag.className = 'status-pill ready';
+            statusTag.innerText = `Exit 0 • ${elapsed}ms`;
+          }
+        }
+      } catch (err) {
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+        consoleArea.className = 'console-body is-error';
+        consoleArea.textContent = '⚠️ Request Failed:\n' + err.message;
+        if (statusDot) statusDot.className = 'status-dot error';
+        if (statusTag) {
+          statusTag.className = 'status-pill error';
+          statusTag.innerText = 'Failed';
+        }
+      } finally {
+        if (runBtn) runBtn.disabled = false;
+      }
+    }
+
+    // Initialize initial lesson on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      selectChapter('basic_vars');
+    });
+  </script>
+</body>
+</html>
