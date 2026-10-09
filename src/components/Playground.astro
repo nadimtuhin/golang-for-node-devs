@@ -7,7 +7,14 @@ const { chapterKey = 'basic_vars' } = Astro.props;
 import { chaptersData } from '../data/chapters';
 const chapter = chaptersData[chapterKey] || chaptersData['basic_vars'];
 ---
-<main class="playground-column" id="main-content" role="main" aria-label="Interactive Go Code Playground">
+<div class="playground-column gitbook-sandbox" id="playgroundSection" role="region" aria-label="Interactive Go Code Playground">
+  <div class="gitbook-sandbox-header">
+    <div class="gitbook-sandbox-title">
+      <span>⚡ Interactive Go Playground</span>
+      <span class="gitbook-sandbox-hint">Live compiler via play.golang.org</span>
+    </div>
+  </div>
+
   <div class="editor-toolbar" role="toolbar" aria-label="Code Editor Toolbar">
     <div class="editor-tab-group">
       <div class="macos-dots" aria-hidden="true">
@@ -45,4 +52,4 @@ const chapter = chaptersData[chapterKey] || chaptersData['basic_vars'];
     </div>
     <div id="consoleArea" class="console-body" role="status" aria-live="polite" aria-atomic="true">// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!</div>
   </div>
-</main>
+</div>

@@ -11,11 +11,25 @@ import { chaptersData } from '../data/chapters';
 <Layout title="Interactive Studio — Go for Node.js Developers Masterclass">
   <Header />
 
-  <!-- Studio View (3 Columns) -->
-  <div id="viewStudio" class="studio-container">
+  <!-- GitBook Book Reader Layout -->
+  <div id="viewStudio" class="studio-container gitbook-container">
     <Sidebar />
-    <LessonDetail />
-    <Playground />
+    <main id="main-content" class="gitbook-main-scroll" role="main" aria-label="Chapter Reading and Interactive Playground">
+      <div class="gitbook-article-wrap">
+        <LessonDetail />
+        <Playground />
+        <div class="lesson-nav-footer gitbook-pager" role="navigation" aria-label="Chapter Step Navigation">
+          <button id="btnPrevLesson" class="gitbook-pager-card prev" onclick="navigateLesson(-1)" aria-label="Navigate to previous lesson">
+            <span class="pager-direction">← Previous</span>
+            <span class="pager-label">Previous Chapter</span>
+          </button>
+          <button id="btnNextLesson" class="gitbook-pager-card next" onclick="navigateLesson(1)" aria-label="Navigate to next lesson">
+            <span class="pager-direction">Next →</span>
+            <span class="pager-label">Next Chapter</span>
+          </button>
+        </div>
+      </div>
+    </main>
   </div>
 
   <!-- Client-side Interactive Engine -->
