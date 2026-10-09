@@ -20,6 +20,13 @@ import '../styles/global.css';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>" />
+    <meta name="theme-color" content="#007d9c" />
+
+    <!-- OpenGraph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://golang-for-node-devs.vercel.app/og-image.png" />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,12 +36,13 @@ import '../styles/global.css';
     <!-- CodeMirror 5 (Eclipse Light Theme) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
-  </head>
-  <body>
-    <slot />
-
-    <!-- CodeMirror Scripts -->
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js"></script>
+  </head>
+  <body>
+    <!-- Skip to main content landmark for keyboard / screen-reader accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <slot />
   </body>
 </html>

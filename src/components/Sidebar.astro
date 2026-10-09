@@ -7,249 +7,249 @@
           <span class="sidebar-title">Lessons Directory</span>
           <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
         </div>
-        <div class="sidebar-search-box">
-          <input type="text" id="lessonSearchInput" placeholder="Filter lessons (e.g. map, docker, mutex)..." oninput="filterLessons(this.value)">
-          <button id="clearSearchBtn" class="clear-search-btn" onclick="clearLessonSearch()" style="display:none;">✕</button>
+        <div class="sidebar-search-box" role="search">
+          <input type="search" id="lessonSearchInput" aria-label="Search lessons by title or keyword" placeholder="Filter lessons (e.g. map, docker, mutex)..." oninput="filterLessons(this.value)">
+          <button id="clearSearchBtn" aria-label="Clear lesson search query" class="clear-search-btn" onclick="clearLessonSearch()" style="display:none;">✕</button>
         </div>
       </div>
 
       <div class="sidebar-part-label">Featured: Fullstack Microservice (Fiber + Mongo)</div>
-      <div class="chapter-nav-item active" onclick="selectChapter('fiber_api')">
+      <div class="chapter-nav-item active" role="button" tabindex="0" aria-label="Select lesson fiber_api" data-id="fiber_api" onclick="selectChapter('fiber_api')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('fiber_api');}">
         <span class="chapter-num">⭐</span>
         <span>Express vs Fiber (Video Project)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('mongo_singleton')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson mongo_singleton" data-id="mongo_singleton" onclick="selectChapter('mongo_singleton')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('mongo_singleton');}">
         <span class="chapter-num">⭐</span>
         <span>MongoDB Client & sync.Once</span>
       </div>
 
       <div class="sidebar-part-label">Part 0: Go Language Fundamentals</div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_vars')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_vars" data-id="basic_vars" onclick="selectChapter('basic_vars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_vars');}">
         <span class="chapter-num">B1</span>
         <span>Variables, := & Zero Values</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_funcs')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_funcs" data-id="basic_funcs" onclick="selectChapter('basic_funcs')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_funcs');}">
         <span class="chapter-num">B2</span>
         <span>Functions & Multiple Returns</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_structs')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_structs" data-id="basic_structs" onclick="selectChapter('basic_structs')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_structs');}">
         <span class="chapter-num">B3</span>
         <span>Structs & Receiver Methods</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_interfaces')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_interfaces" data-id="basic_interfaces" onclick="selectChapter('basic_interfaces')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_interfaces');}">
         <span class="chapter-num">B4</span>
         <span>Interfaces & Duck Typing</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_flow')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_flow" data-id="basic_flow" onclick="selectChapter('basic_flow')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_flow');}">
         <span class="chapter-num">B5</span>
         <span>Loops, If & Switch Expressions</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_packages')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_packages" data-id="basic_packages" onclick="selectChapter('basic_packages')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_packages');}">
         <span class="chapter-num">B6</span>
         <span>Packages & Capital Exports</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_pointers')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_pointers" data-id="basic_pointers" onclick="selectChapter('basic_pointers')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_pointers');}">
         <span class="chapter-num">B7</span>
         <span>Pointers & Pass-By-Value</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_type_assertions')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_type_assertions" data-id="basic_type_assertions" onclick="selectChapter('basic_type_assertions')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_type_assertions');}">
         <span class="chapter-num">B8</span>
         <span>Type Assertions & Type Switches</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_enums')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_enums" data-id="basic_enums" onclick="selectChapter('basic_enums')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_enums');}">
         <span class="chapter-num">B9</span>
         <span>Enums with iota Pattern</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_embedding')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_embedding" data-id="basic_embedding" onclick="selectChapter('basic_embedding')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_embedding');}">
         <span class="chapter-num">B10</span>
         <span>Struct Embedding (Composition)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_defer_panic')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_defer_panic" data-id="basic_defer_panic" onclick="selectChapter('basic_defer_panic')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_defer_panic');}">
         <span class="chapter-num">B11</span>
         <span>Defer, Panic & Recover</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('basic_generics')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_generics" data-id="basic_generics" onclick="selectChapter('basic_generics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_generics');}">
         <span class="chapter-num">B12</span>
         <span>Generics in Go (Type Params)</span>
       </div>
 
       <div class="sidebar-part-label">Part 1: Web APIs & Networking</div>
-      <div class="chapter-nav-item" onclick="selectChapter('http_api')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson http_api" data-id="http_api" onclick="selectChapter('http_api')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('http_api');}">
         <span class="chapter-num">01</span>
         <span>Express API vs net/http</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('middleware')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson middleware" data-id="middleware" onclick="selectChapter('middleware')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('middleware');}">
         <span class="chapter-num">02</span>
         <span>Express Middleware</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('http_client')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson http_client" data-id="http_client" onclick="selectChapter('http_client')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('http_client');}">
         <span class="chapter-num">03</span>
         <span>axios / fetch Client</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('json')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson json" data-id="json" onclick="selectChapter('json')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('json');}">
         <span class="chapter-num">04</span>
         <span>JSON & Struct Tags</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('fs_io')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson fs_io" data-id="fs_io" onclick="selectChapter('fs_io')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('fs_io');}">
         <span class="chapter-num">05</span>
         <span>fs Streams vs io.Reader</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('env_vars')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson env_vars" data-id="env_vars" onclick="selectChapter('env_vars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('env_vars');}">
         <span class="chapter-num">06</span>
         <span>process.env & Config</span>
       </div>
 
       <div class="sidebar-part-label">Part 2: Data Structures & Algorithms</div>
-      <div class="chapter-nav-item" onclick="selectChapter('slice_map')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson slice_map" data-id="slice_map" onclick="selectChapter('slice_map')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('slice_map');}">
         <span class="chapter-num">07</span>
         <span>Array.map() in Go</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('slice_filter')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson slice_filter" data-id="slice_filter" onclick="selectChapter('slice_filter')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('slice_filter');}">
         <span class="chapter-num">08</span>
         <span>Array.filter() in Go</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('slice_reduce')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson slice_reduce" data-id="slice_reduce" onclick="selectChapter('slice_reduce')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('slice_reduce');}">
         <span class="chapter-num">09</span>
         <span>Array.reduce() in Go</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('slice_sort')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson slice_sort" data-id="slice_sort" onclick="selectChapter('slice_sort')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('slice_sort');}">
         <span class="chapter-num">10</span>
         <span>Array.sort() (slices.Sort)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('slice_ops')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson slice_ops" data-id="slice_ops" onclick="selectChapter('slice_ops')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('slice_ops');}">
         <span class="chapter-num">11</span>
         <span>push/pop/splice vs append</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('data_types')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson data_types" data-id="data_types" onclick="selectChapter('data_types')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('data_types');}">
         <span class="chapter-num">12</span>
         <span>Primitive Types (int64, runes)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('maps_sets')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson maps_sets" data-id="maps_sets" onclick="selectChapter('maps_sets')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('maps_sets');}">
         <span class="chapter-num">13</span>
         <span>Objects & Set vs map[K]V</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('pointers')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson pointers" data-id="pointers" onclick="selectChapter('pointers')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('pointers');}">
         <span class="chapter-num">14</span>
         <span>Pointers (*T & &T) Demystified</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_slice_internals')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_slice_internals" data-id="ds_slice_internals" onclick="selectChapter('ds_slice_internals')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_slice_internals');}">
         <span class="chapter-num">DS1</span>
         <span>Slice Header: Len, Cap & Ptr</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_map_internals')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_map_internals" data-id="ds_map_internals" onclick="selectChapter('ds_map_internals')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_map_internals');}">
         <span class="chapter-num">DS2</span>
         <span>Map Buckets & Random Order</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_struct_memory')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_struct_memory" data-id="ds_struct_memory" onclick="selectChapter('ds_struct_memory')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_struct_memory');}">
         <span class="chapter-num">DS3</span>
         <span>Struct Alignment & Padding</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_stacks_queues')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_stacks_queues" data-id="ds_stacks_queues" onclick="selectChapter('ds_stacks_queues')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_stacks_queues');}">
         <span class="chapter-num">DS4</span>
         <span>FIFO Queue (No shift() O(N))</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_priority_queue')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_priority_queue" data-id="ds_priority_queue" onclick="selectChapter('ds_priority_queue')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_priority_queue');}">
         <span class="chapter-num">DS5</span>
         <span>Priority Queue (container/heap)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('ds_sync_pool')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson ds_sync_pool" data-id="ds_sync_pool" onclick="selectChapter('ds_sync_pool')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('ds_sync_pool');}">
         <span class="chapter-num">DS6</span>
         <span>Zero-Alloc Pool (sync.Pool)</span>
       </div>
 
       <div class="sidebar-part-label">Part 3: Databases & ORMs</div>
-      <div class="chapter-nav-item" onclick="selectChapter('db_pool')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson db_pool" data-id="db_pool" onclick="selectChapter('db_pool')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('db_pool');}">
         <span class="chapter-num">15</span>
         <span>pg.Pool vs database/sql</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('db_queries')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson db_queries" data-id="db_queries" onclick="selectChapter('db_queries')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('db_queries');}">
         <span class="chapter-num">16</span>
         <span>Query Types: Exec, Row, Rows</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('db_tx')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson db_tx" data-id="db_tx" onclick="selectChapter('db_tx')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('db_tx');}">
         <span class="chapter-num">17</span>
         <span>ACID Transactions (db.BeginTx)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('orm_patterns')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson orm_patterns" data-id="orm_patterns" onclick="selectChapter('orm_patterns')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('orm_patterns');}">
         <span class="chapter-num">18</span>
         <span>Prisma/TypeORM vs GORM & sqlc</span>
       </div>
 
       <div class="sidebar-part-label">Part 4: Queues & BullMQ</div>
-      <div class="chapter-nav-item" onclick="selectChapter('bullmq_basic')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson bullmq_basic" data-id="bullmq_basic" onclick="selectChapter('bullmq_basic')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('bullmq_basic');}">
         <span class="chapter-num">19</span>
         <span>BullMQ vs Go Channel Queue</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('bullmq_retries')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson bullmq_retries" data-id="bullmq_retries" onclick="selectChapter('bullmq_retries')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('bullmq_retries');}">
         <span class="chapter-num">20</span>
         <span>BullMQ Retries & Dead-Letter</span>
       </div>
 
       <div class="sidebar-part-label">Part 5: Concurrency, Async & Errors</div>
-      <div class="chapter-nav-item" onclick="selectChapter('promise_all')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson promise_all" data-id="promise_all" onclick="selectChapter('promise_all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('promise_all');}">
         <span class="chapter-num">21</span>
         <span>Promise.all vs WaitGroup</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('promise_race')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson promise_race" data-id="promise_race" onclick="selectChapter('promise_race')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('promise_race');}">
         <span class="chapter-num">22</span>
         <span>Promise.race vs select</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('abort_controller')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson abort_controller" data-id="abort_controller" onclick="selectChapter('abort_controller')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('abort_controller');}">
         <span class="chapter-num">23</span>
         <span>AbortController vs context</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('error_wrapping')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson error_wrapping" data-id="error_wrapping" onclick="selectChapter('error_wrapping')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('error_wrapping');}">
         <span class="chapter-num">24</span>
         <span>Error Wrapping & errors.Is</span>
       </div>
 
       <div class="sidebar-part-label">Part 6: Go Philosophy & The Zen of Go</div>
-      <div class="chapter-nav-item" onclick="selectChapter('philo_clear_over_clever')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson philo_clear_over_clever" data-id="philo_clear_over_clever" onclick="selectChapter('philo_clear_over_clever')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('philo_clear_over_clever');}">
         <span class="chapter-num">P1</span>
         <span>"Clear is Better Than Clever"</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('philo_little_copying')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson philo_little_copying" data-id="philo_little_copying" onclick="selectChapter('philo_little_copying')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('philo_little_copying');}">
         <span class="chapter-num">P2</span>
         <span>"A Little Copying > Dependency"</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('philo_errors_values')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson philo_errors_values" data-id="philo_errors_values" onclick="selectChapter('philo_errors_values')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('philo_errors_values');}">
         <span class="chapter-num">P3</span>
         <span>"Errors are Values" (No Exceptions)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('philo_share_memory')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson philo_share_memory" data-id="philo_share_memory" onclick="selectChapter('philo_share_memory')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('philo_share_memory');}">
         <span class="chapter-num">P4</span>
         <span>"Share Memory by Communicating"</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('philo_zero_value')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson philo_zero_value" data-id="philo_zero_value" onclick="selectChapter('philo_zero_value')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('philo_zero_value');}">
         <span class="chapter-num">P5</span>
         <span>"Make the Zero Value Useful"</span>
       </div>
       <div class="sidebar-part-label">Part 7: LeetCode Easy in Go (JS vs Go)</div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_two_sum')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_two_sum" data-id="lc_two_sum" onclick="selectChapter('lc_two_sum')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_two_sum');}">
         <span class="chapter-num">LC1</span>
         <span>Two Sum (#1)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_parentheses')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_valid_parentheses" data-id="lc_valid_parentheses" onclick="selectChapter('lc_valid_parentheses')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_valid_parentheses');}">
         <span class="chapter-num">LC20</span>
         <span>Valid Parentheses (#20)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_merge_lists')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_merge_lists" data-id="lc_merge_lists" onclick="selectChapter('lc_merge_lists')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_merge_lists');}">
         <span class="chapter-num">LC21</span>
         <span>Merge Two Sorted Lists (#21)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_buy_sell_stock')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_buy_sell_stock" data-id="lc_buy_sell_stock" onclick="selectChapter('lc_buy_sell_stock')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_buy_sell_stock');}">
         <span class="chapter-num">LC121</span>
         <span>Best Time to Buy/Sell (#121)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_palindrome')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_valid_palindrome" data-id="lc_valid_palindrome" onclick="selectChapter('lc_valid_palindrome')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_valid_palindrome');}">
         <span class="chapter-num">LC125</span>
         <span>Valid Palindrome (#125)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_reverse_linked_list')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_reverse_linked_list" data-id="lc_reverse_linked_list" onclick="selectChapter('lc_reverse_linked_list')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_reverse_linked_list');}">
         <span class="chapter-num">LC206</span>
         <span>Reverse Linked List (#206)</span>
       </div>
-      <div class="chapter-nav-item" onclick="selectChapter('lc_max_subarray')">
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_max_subarray" data-id="lc_max_subarray" onclick="selectChapter('lc_max_subarray')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_max_subarray');}">
         <span class="chapter-num">LC53</span>
         <span>Maximum Subarray (Kadane)</span>
       </div>

@@ -67,10 +67,10 @@
 
     <!-- Interview Question 1 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q1: How does Go's Concurrency model differ fundamentally from Node.js?</span>
         <span class="qa-badge high">Most Frequent</span>
-      </div>
+      </button>
       <div class="qa-body">
         <div class="qa-mental-model">
           <strong>Node.js mental model:</strong> Single-threaded JavaScript execution engine with an asynchronous event loop. Good for I/O bound tasks; fatal for CPU-heavy tasks without Worker Threads.
@@ -88,10 +88,10 @@
 
     <!-- Interview Question 2 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q2: What is the "Nil Interface" trap in Go and why does it trip up JavaScript devs?</span>
         <span class="qa-badge high">Classic Gotcha</span>
-      </div>
+      </button>
       <div class="qa-body">
         <div class="qa-mental-model">
           <strong>Node.js mental model:</strong> In JS, if <code>val === null</code>, then <code>Boolean(val)</code> is always <code>false</code>. In Go, an interface can hold a nil pointer and yet <code>interface != nil</code> evaluates to <strong>true</strong>!
@@ -120,10 +120,10 @@ func main() {
 
     <!-- Interview Question 3 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q3: What is the difference between an Array and a Slice? How does Capacity growth work?</span>
         <span class="qa-badge medium">Fundamental</span>
-      </div>
+      </button>
       <div class="qa-body">
         <div class="qa-mental-model">
           <strong>Node.js mental model:</strong> JS only has <code>Array</code>, which is an auto-resizing dynamic object on the V8 heap.
@@ -148,10 +148,10 @@ func main() {
 
     <!-- Interview Question 4 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q4: How does Go's Garbage Collector differ from Node.js (V8)?</span>
         <span class="qa-badge concept">Systems Architecture</span>
-      </div>
+      </button>
       <div class="qa-body">
         <p><strong>V8 (Node.js):</strong> Uses a Generational Garbage Collector (Scavenger for young generation + Mark-Sweep-Compact for old generation). Optimized for dynamic scripting languages where millions of short-lived objects are born in functions. Can experience stop-the-world pauses under heavy memory churn.</p>
         <p><strong>Go Runtime:</strong> Uses a <strong>Concurrent Tri-Color Mark-and-Sweep Garbage Collector</strong> without generational collection or object moving/compaction.</p>
@@ -165,10 +165,10 @@ func main() {
 
     <!-- Interview Question 5 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q5: What is Escape Analysis and why is it crucial for Go performance?</span>
         <span class="qa-badge medium">Performance</span>
-      </div>
+      </button>
       <div class="qa-body">
         <p><strong>Escape Analysis</strong> is the Go compiler's static analysis step that determines whether a variable can be safely allocated on the fast <strong>Stack</strong> or must "escape" to the <strong>Heap</strong>.</p>
         <ul>
@@ -189,10 +189,10 @@ func main() {
 
     <!-- Interview Question 6 -->
     <div class="qa-card">
-      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+      <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== \'none\'; b.style.display = open ? \'none\' : \'block\'; this.setAttribute(\'aria-expanded\', !open);">
         <span>Q6: How do you identify and prevent Goroutine Leaks in production?</span>
         <span class="qa-badge high">Production Reliability</span>
-      </div>
+      </button>
       <div class="qa-body">
         <p>A Goroutine leak occurs when a Goroutine is spawned but remains blocked forever (waiting on a channel that is never written to, or reading from a socket without a timeout). Because Goroutines are never garbage-collected while alive, memory grows monotonically until the pod OOM crashes.</p>
         <p><strong>Prevention Strategies:</strong></p>

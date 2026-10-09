@@ -2,27 +2,27 @@
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
-<header>
-  <a href="/" class="brand">
-    <span>🟢 ➔ 🐹</span>
+<header role="banner">
+  <a href="/" class="brand" aria-label="Go Backend Studio Home">
+    <span aria-hidden="true">🟢 ➔ 🐹</span>
     <span>Go Backend Studio</span>
-    <span class="badge">56 Lessons & Demos</span>
+    <span class="badge" aria-label="56 Lessons and Demos Available">56 Lessons & Demos</span>
   </a>
   
-  <nav class="header-nav-scroll">
-    <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`}>⚡ Studio</a>
-    <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`}>📂 Microservice</a>
-    <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`}>🐳 Docker</a>
-    <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`}>🧩 LeetCode</a>
-    <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`}>📦 go.mod vs npm</a>
-    <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`}>🧠 Philosophy</a>
-    <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`}>🎯 Interviews</a>
-    <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`}>⚠️ Pitfalls</a>
-    <a href="/troubleshooting" class={`tab-toggle ${pathname === '/troubleshooting' ? 'active' : ''}`}>🛠️ Diagnostics</a>
-    <a href="/cheatsheet" class={`tab-toggle ${pathname === '/cheatsheet' ? 'active' : ''}`}>📖 Rosetta</a>
+  <nav class="header-nav-scroll" role="navigation" aria-label="Site Navigation">
+    <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`} aria-current={pathname === '/' ? 'page' : undefined}>⚡ Studio</a>
+    <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`} aria-current={pathname === '/microservice' ? 'page' : undefined}>📂 Microservice</a>
+    <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`} aria-current={pathname === '/docker' ? 'page' : undefined}>🐳 Docker</a>
+    <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`} aria-current={pathname === '/leetcode' ? 'page' : undefined}>🧩 LeetCode</a>
+    <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`} aria-current={pathname === '/go-mod-vs-npm' ? 'page' : undefined}>📦 go.mod vs npm</a>
+    <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`} aria-current={pathname === '/philosophy' ? 'page' : undefined}>🧠 Philosophy</a>
+    <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`} aria-current={pathname === '/interviews' ? 'page' : undefined}>🎯 Interviews</a>
+    <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`} aria-current={pathname === '/pitfalls' ? 'page' : undefined}>⚠️ Pitfalls</a>
+    <a href="/troubleshooting" class={`tab-toggle ${pathname === '/troubleshooting' ? 'active' : ''}`} aria-current={pathname === '/troubleshooting' ? 'page' : undefined}>🛠️ Diagnostics</a>
+    <a href="/cheatsheet" class={`tab-toggle ${pathname === '/cheatsheet' ? 'active' : ''}`} aria-current={pathname === '/cheatsheet' ? 'page' : undefined}>📖 Rosetta</a>
   </nav>
 
-  <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
+  <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" rel="noopener noreferrer" class="github-link-btn" aria-label="View Golang for Node Developers repository on GitHub (opens in a new tab)">
     <span>GitHub ★</span>
   </a>
 </header>

@@ -1,31 +1,34 @@
 ---
 // Lesson Detail Component
 ---
-<aside class="lesson-detail-panel" id="detailPanel">
-      <div class="detail-badge-row">
-        <span class="part-tag" id="detailPartTag">Featured: Video Project</span>
-        <span style="font-size: 0.75rem; color: #94a3b8; font-family: 'Fira Code', monospace;" id="detailId">⭐ Video</span>
-      </div>
+<aside class="lesson-detail-panel" id="detailPanel" role="complementary" aria-labelledby="detailTitle">
+  <div class="detail-badge-row">
+    <span class="part-tag" id="detailPartTag">Part 0: Language Basics</span>
+    <span style="font-size: 0.75rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace;" id="detailId">#B1</span>
+  </div>
 
-      <h2 class="lesson-title" id="detailTitle">Express vs Fiber (Video Project)</h2>
-      <p class="lesson-desc" id="detailDesc">
-        Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.
-      </p>
+  <h1 class="lesson-title" id="detailTitle">Variables, := & Zero Values</h1>
+  <p class="lesson-desc" id="detailDesc">
+    In JS, variables can start undefined and change types at runtime. In Go, every variable has a static type and a default 'Zero Value' (0, "", false, or nil). The := operator automatically infers types.
+  </p>
 
-      <div class="node-box">
-        <div class="node-tag">Express.js (Node.js) Production Service</div>
-        <div class="node-code" id="detailNodeCode">app.post('/api/products', createProduct); app.get('/api/products', getProducts);</div>
-      </div>
+  <div class="card-box node-box" role="region" aria-label="Node.js Code Comparison">
+    <div class="node-header-row">
+      <span class="node-tag">🟢 Node.js Equivalent</span>
+      <button id="copyNodeBtn" class="copy-snippet-btn" onclick="copyNodeSnippet()" aria-label="Copy Node.js snippet to clipboard">📋 Copy</button>
+    </div>
+    <div class="node-code" id="detailNodeCode" tabindex="0" role="textbox" aria-readonly="true" aria-label="Node.js code example">let name = 'Gopher'; let count = 0; let active = false;</div>
+  </div>
 
-      <div class="go-why-box">
-        <div class="go-why-title">Why Fiber for Node Developers?</div>
-        <div id="detailGoWhy">
-          Fiber is built on Fasthttp, the fastest HTTP engine in Go. It keeps Express-style routing while executing at 10x-20x the throughput of Node with minimal memory!
-        </div>
-      </div>
+  <div class="card-box go-why-box" role="region" aria-label="Go Mental Model Rationale">
+    <div class="go-why-title"><span aria-hidden="true">💡</span> The Go Mental Model</div>
+    <p class="go-why-desc" id="detailGoWhy">
+      Zero values eliminate 'Cannot read properties of undefined' crashes. Variables in Go are never in an uninitialized state.
+    </p>
+  </div>
 
-      <button class="load-to-editor-btn" onclick="resetCurrentLessonCode()">
-        <span>↺</span>
-        <span>Reset Snippet in Playground</span>
-      </button>
-    </aside>
+  <div class="lesson-nav-footer" role="navigation" aria-label="Lesson Step Navigation">
+    <button id="btnPrevLesson" class="nav-lesson-btn" onclick="navigateLesson(-1)" aria-label="Navigate to previous lesson">← Previous</button>
+    <button id="btnNextLesson" class="nav-lesson-btn primary" onclick="navigateLesson(1)" aria-label="Navigate to next lesson">Next Lesson →</button>
+  </div>
+</aside>

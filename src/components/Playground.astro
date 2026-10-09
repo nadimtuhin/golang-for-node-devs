@@ -1,42 +1,42 @@
 ---
 // Playground Component
 ---
-<main class="playground-column">
-      <div class="editor-toolbar">
-        <div class="editor-tab-group">
-          <div class="macos-dots">
-            <span class="macos-dot dot-red"></span>
-            <span class="macos-dot dot-yellow"></span>
-            <span class="macos-dot dot-green"></span>
-          </div>
-          <div class="editor-tab" id="editorCurrentFile">📄 main.go</div>
-        </div>
-        <div class="editor-actions">
-          <button class="tool-btn" onclick="copyEditorCode()">📋 Copy</button>
-          <button class="tool-btn" onclick="resetEditorCode()">↺ Reset</button>
-          <button id="runBtn" class="btn-run" onclick="executeGoCode()">
-            <span>▶</span>
-            <span>Run Code</span>
-            <span style="font-size:0.7rem; opacity:0.85; font-weight:normal;">(⌘+⏎)</span>
-          </button>
-        </div>
+<main class="playground-column" id="main-content" role="main" aria-label="Interactive Go Code Playground">
+  <div class="editor-toolbar" role="toolbar" aria-label="Code Editor Toolbar">
+    <div class="editor-tab-group">
+      <div class="macos-dots" aria-hidden="true">
+        <span class="macos-dot dot-red"></span>
+        <span class="macos-dot dot-yellow"></span>
+        <span class="macos-dot dot-green"></span>
       </div>
+      <div class="editor-tab" id="editorCurrentFile" aria-label="Active file: main.go">📄 main.go</div>
+    </div>
+    <div class="editor-actions">
+      <button id="copyBtn" class="tool-btn" onclick="copyEditorCode()" aria-label="Copy Go code to clipboard">📋 Copy</button>
+      <button id="resetBtn" class="tool-btn" onclick="resetEditorCode()" aria-label="Reset Go code to chapter default">↺ Reset</button>
+      <button id="runBtn" class="btn-run" onclick="executeGoCode()" aria-label="Compile and run Go code (Keyboard shortcut: Command + Enter)">
+        <span aria-hidden="true">▶</span>
+        <span>Run Code</span>
+        <span style="font-size:0.7rem; opacity:0.85; font-weight:normal;" aria-hidden="true">(⌘+⏎)</span>
+      </button>
+    </div>
+  </div>
 
-      <div class="editor-container">
-        <textarea id="codeArea"></textarea>
-      </div>
+  <div class="editor-container" aria-label="CodeMirror Go Editor">
+    <textarea id="codeArea" aria-label="Go Source Code Editor"></textarea>
+  </div>
 
-      <div class="console-panel">
-        <div class="console-header">
-          <span>Terminal Output (play.golang.org)</span>
-          <div class="console-status-group">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusLatency" style="font-size:0.7rem; color:#64748b; font-family:monospace;"></span>
-            <span id="statusTag" class="status-pill ready">Ready</span>
-            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="clearConsole()">✕ Clear</button>
-            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="copyConsoleOutput()">📋 Copy</button>
-          </div>
-        </div>
-        <div id="consoleArea" class="console-body">// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!</div>
+  <div class="console-panel" role="region" aria-label="Terminal Execution Output">
+    <div class="console-header">
+      <span>Terminal Output (play.golang.org)</span>
+      <div class="console-status-group">
+        <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+        <span id="statusLatency" style="font-size:0.7rem; color:#64748b; font-family:monospace;" aria-label="Execution time"></span>
+        <span id="statusTag" class="status-pill ready" role="status" aria-label="Execution status">Ready</span>
+        <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="clearConsole()" aria-label="Clear terminal output">✕ Clear</button>
+        <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="copyConsoleOutput()" aria-label="Copy terminal output to clipboard">📋 Copy</button>
       </div>
-    </main>
+    </div>
+    <div id="consoleArea" class="console-body" role="status" aria-live="polite" aria-atomic="true">// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!</div>
+  </div>
+</main>
