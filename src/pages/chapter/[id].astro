@@ -25,7 +25,7 @@ const { chapterKey, chapter } = Astro.props;
 
   <!-- Studio View (3 Columns) -->
   <div id="viewStudio" class="studio-container">
-    <Sidebar />
+    <Sidebar chapterKey={chapterKey} />
     <LessonDetail chapterKey={chapterKey} />
     <Playground chapterKey={chapterKey} />
   </div>

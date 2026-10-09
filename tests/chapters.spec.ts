@@ -26,6 +26,26 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
     await expect(runnableStat).toHaveText('100%');
   });
 
+  test('should be vertically scrollable to reach all lessons and footer', async ({ page }) => {
+    const scrollContainer = page.locator('#main-content');
+    await expect(scrollContainer).toBeVisible();
+
+    const dimensions = await scrollContainer.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+    }));
+
+    expect(dimensions.scrollHeight).toBeGreaterThan(dimensions.clientHeight);
+
+    // Scroll down 400px
+    await scrollContainer.evaluate((el) => {
+      el.scrollTop = 400;
+    });
+
+    const currentScrollTop = await scrollContainer.evaluate((el) => el.scrollTop);
+    expect(currentScrollTop).toBeGreaterThanOrEqual(300);
+  });
+
   test('should render all 13 architecture guide cards with correct links', async ({ page }) => {
     const guidesSection = page.locator('section[aria-labelledby="guides-heading"]');
     await expect(guidesSection).toBeVisible();

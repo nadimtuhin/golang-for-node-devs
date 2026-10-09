@@ -1,5 +1,9 @@
 ---
 // Sidebar Component
+interface Props {
+  chapterKey?: string;
+}
+const { chapterKey = 'basic_vars' } = Astro.props;
 ---
 <nav class="chapters-sidebar" id="chaptersList">
       <div class="sidebar-header-box">
@@ -14,17 +18,17 @@
       </div>
 
       <div class="sidebar-part-label">Featured: Fullstack Microservice (Fiber + Mongo)</div>
-      <div class="chapter-nav-item active" role="button" tabindex="0" aria-label="Select lesson fiber_api" data-id="fiber_api" onclick="selectChapter('fiber_api')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('fiber_api');}">
+      <div class={`chapter-nav-item ${chapterKey === 'fiber_api' ? 'active' : ''}`} role="button" tabindex="0" aria-label="Select lesson fiber_api" data-id="fiber_api" onclick="selectChapter('fiber_api')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('fiber_api');}">
         <span class="chapter-num">⭐</span>
         <span>Express vs Fiber (Video Project)</span>
       </div>
-      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson mongo_singleton" data-id="mongo_singleton" onclick="selectChapter('mongo_singleton')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('mongo_singleton');}">
+      <div class={`chapter-nav-item ${chapterKey === 'mongo_singleton' ? 'active' : ''}`} role="button" tabindex="0" aria-label="Select lesson mongo_singleton" data-id="mongo_singleton" onclick="selectChapter('mongo_singleton')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('mongo_singleton');}">
         <span class="chapter-num">⭐</span>
         <span>MongoDB Client & sync.Once</span>
       </div>
 
       <div class="sidebar-part-label">Part 0: Go Language Fundamentals</div>
-      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson basic_vars" data-id="basic_vars" onclick="selectChapter('basic_vars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_vars');}">
+      <div class={`chapter-nav-item ${chapterKey === 'basic_vars' ? 'active' : ''}`} role="button" tabindex="0" aria-label="Select lesson basic_vars" data-id="basic_vars" onclick="selectChapter('basic_vars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('basic_vars');}">
         <span class="chapter-num">B1</span>
         <span>Variables, := & Zero Values</span>
       </div>
