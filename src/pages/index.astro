@@ -269,9 +269,28 @@ import { chaptersData } from '../data/chapters';
       }
     }
 
+    function toggleSidebar() {
+      const container = document.getElementById('viewStudio');
+      if (container) {
+        container.classList.toggle('sidebar-collapsed');
+        const isCollapsed = container.classList.contains('sidebar-collapsed');
+        try {
+          localStorage.setItem('go_book_sidebar_collapsed', isCollapsed ? '1' : '0');
+        } catch (e) {}
+      }
+    }
+
     // Initialize initial lesson on page load (support ?chapter=... URL param)
     function initStudio() {
       initEditor();
+      try {
+        const savedCollapse = localStorage.getItem('go_book_sidebar_collapsed');
+        const container = document.getElementById('viewStudio');
+        if (savedCollapse === '1' && container) {
+          container.classList.add('sidebar-collapsed');
+        }
+      } catch (e) {}
+
       const urlParams = new URLSearchParams(window.location.search);
       const requestedChapter = urlParams.get('chapter');
       if (requestedChapter && chaptersData[requestedChapter]) {
@@ -288,6 +307,7 @@ import { chaptersData } from '../data/chapters';
     }
 
     // Make selectChapter available on window for onclick attributes
+    window.toggleSidebar = toggleSidebar;
     window.selectChapter = selectChapter;
     window.filterLessons = filterLessons;
     window.clearLessonSearch = clearLessonSearch;

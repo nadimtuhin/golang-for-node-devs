@@ -24,10 +24,10 @@ const currentGuide = guideLinks.find(g => pathname === g.href);
 ---
 
 <header role="banner">
-  <a href="/" class="brand" aria-label="Go Backend Studio Home">
-    <span aria-hidden="true">🟢 ➔ 🐹</span>
-    <span>Go Backend Studio</span>
-    <span class="badge" aria-label="56 Lessons and Demos Available">56 Lessons & Demos</span>
+  <a href="/" class="brand" aria-label="Go for Node.js Developers Book Home">
+    <span aria-hidden="true">📖 ➔ 🐹</span>
+    <span>Go for Node.js Developers</span>
+    <span class="badge" aria-label="Interactive Book with 56 Chapters">The Book • 56 Chapters</span>
   </a>
   
   <nav class="header-nav-scroll" role="navigation" aria-label="Site Navigation">
@@ -48,14 +48,14 @@ const currentGuide = guideLinks.find(g => pathname === g.href);
         aria-haspopup="true" 
         aria-expanded="false"
         aria-controls="guidesDropdownMenu"
-        aria-label="Toggle architecture guides and deep dives menu"
+        aria-label="Toggle architecture guides and appendices menu"
       >
-        <span>📖 {currentGuide ? 'All Guides' : 'Guides'}</span>
+        <span>📑 {currentGuide ? 'All Appendices' : 'Appendices'}</span>
         <span class="dropdown-chevron" aria-hidden="true">▾</span>
       </button>
 
       <div id="guidesDropdownMenu" class="dropdown-menu" role="menu" aria-labelledby="guidesDropdownBtn">
-        <div class="dropdown-header">13 Architecture Deep Dives</div>
+        <div class="dropdown-header">13 Appendices & Architecture Guides</div>
         <div class="dropdown-grid">
           {guideLinks.map(guide => (
             <a 

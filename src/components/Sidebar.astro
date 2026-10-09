@@ -8,8 +8,11 @@ const { chapterKey = 'basic_vars' } = Astro.props;
 <nav class="chapters-sidebar" id="chaptersList">
       <div class="sidebar-header-box">
         <div class="sidebar-title-row">
-          <span class="sidebar-title">Lessons Directory</span>
-          <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <span class="sidebar-title">📖 Table of Contents</span>
+            <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
+          </div>
+          <button id="sidebarCollapseBtn" class="sidebar-collapse-btn" onclick="toggleSidebar()" aria-label="Collapse Table of Contents sidebar" title="Collapse sidebar">◀</button>
         </div>
         <div class="sidebar-search-box" role="search">
           <input type="search" id="lessonSearchInput" aria-label="Search lessons by title or keyword" placeholder="Filter lessons (e.g. map, docker, mutex)..." oninput="filterLessons(this.value)">
@@ -256,5 +259,12 @@ const { chapterKey = 'basic_vars' } = Astro.props;
       <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson lc_max_subarray" data-id="lc_max_subarray" onclick="selectChapter('lc_max_subarray')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('lc_max_subarray');}">
         <span class="chapter-num">LC53</span>
         <span>Maximum Subarray (Kadane)</span>
+      </div>
+
+      <div class="sidebar-appendices-footer">
+        <a href="/chapters" class="sidebar-appendices-link">
+          <span>📚 Book Index & Appendices (13)</span>
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
     </nav>

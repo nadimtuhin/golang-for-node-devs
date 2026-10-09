@@ -9,7 +9,10 @@ const chapter = chaptersData[chapterKey] || chaptersData['basic_vars'];
 ---
 <aside class="lesson-detail-panel" id="detailPanel" role="complementary" aria-labelledby="detailTitle">
   <div class="detail-badge-row">
-    <span class="part-tag" id="detailPartTag">{chapter.part}</span>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <button id="sidebarExpandBtn" class="sidebar-expand-btn" onclick="toggleSidebar()" aria-label="Toggle Table of Contents sidebar" title="Toggle Table of Contents">☰ TOC</button>
+      <span class="part-tag" id="detailPartTag">{chapter.part}</span>
+    </div>
     <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; font-family: var(--font-mono, monospace);" id="detailId">#{chapter.num}</span>
   </div>
 

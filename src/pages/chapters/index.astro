@@ -45,10 +45,10 @@ const architectureGuides = [
     <div class="curriculum-container">
       <!-- Hero Header -->
     <section class="curriculum-hero" aria-labelledby="curriculum-heading">
-      <div class="hero-badge">📚 Complete Curriculum Directory</div>
+      <div class="hero-badge">📖 The Interactive Book</div>
       <h1 id="curriculum-heading" class="curriculum-title">Go for Node.js Developers — All Chapters</h1>
       <p class="curriculum-subtitle">
-        56 interactive hands-on coding lessons with live Go Playground compilation, paired with 13 comprehensive production architecture guides.
+        A hands-on, chapter-by-chapter programming book for JavaScript and TypeScript developers learning Go. Features 56 interactive chapters runnable directly in your browser, paired with 13 comprehensive production architecture guides.
       </p>
 
       <div class="curriculum-stats-bar">
@@ -71,43 +71,20 @@ const architectureGuides = [
       </div>
     </section>
 
-    <!-- Architecture Guides Section -->
-    <section class="curriculum-section" aria-labelledby="guides-heading">
-      <div class="section-header">
-        <h2 id="guides-heading" class="section-title">
-          <span class="section-icon">📖</span> Production Architecture Guides & Deep Dives
-        </h2>
-        <span class="section-count">13 In-Depth Guides</span>
-      </div>
-
-      <div class="guides-card-grid">
-        {architectureGuides.map(guide => (
-          <a href={guide.href} class="guide-nav-card">
-            <div class="guide-card-icon">{guide.icon}</div>
-            <div class="guide-card-content">
-              <h3 class="guide-card-title">{guide.title}</h3>
-              <p class="guide-card-desc">{guide.desc}</p>
-            </div>
-            <span class="guide-card-arrow" aria-hidden="true">→</span>
-          </a>
-        ))}
-      </div>
-    </section>
-
     <!-- Interactive Chapters Grouped By Part -->
     <section class="curriculum-section" aria-labelledby="lessons-heading">
       <div class="section-header">
         <h2 id="lessons-heading" class="section-title">
-          <span class="section-icon">⚡</span> Interactive Studio Chapters (Runnable in Playground)
+          <span class="section-icon">📖</span> Book Table of Contents (56 Interactive Chapters)
         </h2>
-        <span class="section-count">56 Lessons</span>
+        <span class="section-count">56 Chapters</span>
       </div>
 
       {Object.entries(groupedChapters).map(([partName, lessons]) => (
         <div class="curriculum-part-group">
           <div class="part-header-bar">
             <h3 class="part-title">{partName}</h3>
-            <span class="part-count-badge">{lessons.length} Lessons</span>
+            <span class="part-count-badge">{lessons.length} Chapters</span>
           </div>
 
           <div class="lessons-grid">
@@ -124,6 +101,29 @@ const architectureGuides = [
           </div>
         </div>
       ))}
+    </section>
+
+    <!-- Architecture Guides & Appendices Section -->
+    <section class="curriculum-section" aria-labelledby="guides-heading">
+      <div class="section-header">
+        <h2 id="guides-heading" class="section-title">
+          <span class="section-icon">📑</span> Appendices & Production Architecture Guides
+        </h2>
+        <span class="section-count">13 Appendices</span>
+      </div>
+
+      <div class="guides-card-grid">
+        {architectureGuides.map(guide => (
+          <a href={guide.href} class="guide-nav-card">
+            <div class="guide-card-icon">{guide.icon}</div>
+            <div class="guide-card-content">
+              <h3 class="guide-card-title">{guide.title}</h3>
+              <p class="guide-card-desc">{guide.desc}</p>
+            </div>
+            <span class="guide-card-arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
     </section>
     </div>
   </main>
