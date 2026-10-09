@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ViewComponent from '../components/views/GoVsRustView.astro';
+---
+
+<Layout title="Go vs Rust: The Pragmatic Systems Engineering Guide — Go for Node.js Devs" description="An exhaustive, deeply technical comparison of Go and Rust for Node.js developers. Concurrency, memory models, GC vs borrow checker, performance benchmarks, decision tree, and hybrid architectures.">
+  <Header />
+  <main id="main-content" role="main" style="min-height: calc(100vh - 54px); overflow-y: auto;">
+    <ViewComponent />
+  </main>
+</Layout>

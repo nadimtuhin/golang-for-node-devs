@@ -1,0 +1,26 @@
+---
+import htmlContent from "./AiView.html?raw";
+---
+<Fragment set:html={htmlContent} />
+
+<script>
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const btn = target.closest('.copy-btn-trigger, .copy-code-btn') as HTMLElement;
+    if (!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if (!targetId) return;
+    const codeEl = document.getElementById(targetId);
+    if (!codeEl) return;
+
+    const textToCopy = codeEl.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).catch(() => {});
+    }
+    const origText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => {
+      btn.innerHTML = origText;
+    }, 2000);
+  });
+</script>

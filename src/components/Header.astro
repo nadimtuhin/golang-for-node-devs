@@ -11,10 +11,14 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
   
   <nav class="header-nav-scroll" role="navigation" aria-label="Site Navigation">
     <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`} aria-current={pathname === '/' ? 'page' : undefined}>⚡ Studio</a>
+    <a href="/ai" class={`tab-toggle ${pathname === '/ai' ? 'active' : ''}`} aria-current={pathname === '/ai' ? 'page' : undefined}>🤖 AI & LLMs</a>
+    <a href="/ai-agents" class={`tab-toggle ${pathname === '/ai-agents' ? 'active' : ''}`} aria-current={pathname === '/ai-agents' ? 'page' : undefined}>🦾 AI & Agents</a>
     <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`} aria-current={pathname === '/microservice' ? 'page' : undefined}>📂 Microservice</a>
+    <a href="/testing" class={`tab-toggle ${pathname === '/testing' ? 'active' : ''}`} aria-current={pathname === '/testing' ? 'page' : undefined}>🧪 Testing</a>
     <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`} aria-current={pathname === '/docker' ? 'page' : undefined}>🐳 Docker</a>
     <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`} aria-current={pathname === '/leetcode' ? 'page' : undefined}>🧩 LeetCode</a>
     <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`} aria-current={pathname === '/go-mod-vs-npm' ? 'page' : undefined}>📦 go.mod vs npm</a>
+    <a href="/go-vs-rust" class={`tab-toggle ${pathname === '/go-vs-rust' ? 'active' : ''}`} aria-current={pathname === '/go-vs-rust' ? 'page' : undefined}>🦀 Go vs Rust</a>
     <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`} aria-current={pathname === '/philosophy' ? 'page' : undefined}>🧠 Philosophy</a>
     <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`} aria-current={pathname === '/interviews' ? 'page' : undefined}>🎯 Interviews</a>
     <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`} aria-current={pathname === '/pitfalls' ? 'page' : undefined}>⚠️ Pitfalls</a>

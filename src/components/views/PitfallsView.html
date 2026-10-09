@@ -1,10 +1,10 @@
 <div id="viewPitfalls" class="view-container">
     <div class="view-inner-content">
     <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-      <h2 style="font-size: 1.6rem; color: #c2410c; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+      <h2 style="font-size: 1.6rem; color: #9a3412; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         ⚠️ Known Pitfalls & Footguns (For Node.js Devs)
       </h2>
-      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+      <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.5;">
         Common traps where JavaScript intuition leads to silent bugs, race conditions, memory leaks, or unrecoverable panics in Go.
       </p>
     </div>
@@ -28,8 +28,8 @@
           <rect x="285" y="60" width="100" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
           <text x="295" y="80" font-size="11" fill="#475569">Elements Store</text>
 
-          <text x="35" y="115" font-size="11" fill="#64748b">• Each field is boxed; numbers stored as double / pointer</text>
-          <text x="35" y="135" font-size="11" fill="#64748b">• 1 million objects = ~64 MB heap + GC pointer graph</text>
+          <text x="35" y="115" font-size="11" fill="#475569">• Each field is boxed; numbers stored as double / pointer</text>
+          <text x="35" y="135" font-size="11" fill="#475569">• 1 million objects = ~64 MB heap + GC pointer graph</text>
           <text x="35" y="155" font-size="11" font-weight="bold" fill="#b91c1c">❌ High pointer chasing & CPU cache misses</text>
 
           <!-- Go Struct Box -->
@@ -43,7 +43,7 @@
           <text x="640" y="87" font-size="11" font-weight="bold" fill="#9a3412">Active: 1B</text>
 
           <rect x="695" y="65" width="110" height="35" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3,3"/>
-          <text x="705" y="87" font-size="11" fill="#64748b">7B Padding</text>
+          <text x="705" y="87" font-size="11" fill="#475569">7B Padding</text>
 
           <text x="455" y="125" font-size="11" fill="#166534">• Contiguous 16-byte memory block; zero pointers!</text>
           <text x="455" y="145" font-size="11" fill="#166534">• 1 million items in []User = exactly 16 MB flat slice</text>

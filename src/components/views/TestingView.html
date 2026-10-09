@@ -1,0 +1,1386 @@
+<div id="viewTesting" class="view-container">
+  <div class="view-inner-content">
+    
+    <!-- Hero Banner -->
+    <header class="view-hero-banner" role="region" aria-label="Testing Guide Overview">
+      <div class="view-hero-tag">🧪 Production Testing Masterclass</div>
+      <h1 class="view-hero-title">Unit & Integration Testing in Go</h1>
+      <p class="view-hero-desc">
+        A definitive, practical engineering guide for Node.js developers transitioning from <strong>Jest, Vitest, and Mocha</strong> to Go’s native testing ecosystem. Master table-driven tests, mocking without monkey-patching, <code>sqlmock</code>, <strong>Testcontainers</strong> for PostgreSQL & Redis, worker queues, <code>httptest</code> APIs, microbenchmarks, and the Go race detector.
+      </p>
+    </header>
+
+    <!-- Quick Jump Navigation Sticky Pills -->
+    <nav class="test-quicknav" aria-label="Testing Topics Navigation" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:2rem; padding:0.75rem 1rem; background:#f8fafc; border:1px solid var(--border); border-radius:8px;">
+      <span style="font-size:0.8rem; font-weight:700; color:#475569; display:flex; align-items:center; margin-right:0.5rem;">⚡ JUMP TO:</span>
+      <a href="#topic-philosophy" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">1. Native Philosophy</a>
+      <a href="#topic-mocking" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">2. Mocking & Interfaces</a>
+      <a href="#topic-databases" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">3. Databases & Testcontainers</a>
+      <a href="#topic-redis" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">4. Redis & Miniredis</a>
+      <a href="#topic-queues" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">5. Queues & Workers</a>
+      <a href="#topic-httptest" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">6. HTTP & httptest</a>
+      <a href="#topic-benchmarks" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">7. Benchmarks & Race Detector</a>
+      <a href="#topic-rosetta" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">8. Jest ➔ Go Rosetta</a>
+    </nav>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 1: THE NATIVE GO TESTING PHILOSOPHY -->
+    <!-- ========================================================================= -->
+    <section id="topic-philosophy" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚡</span> 1. The Native Go Testing Philosophy (<code>testing</code> vs Jest/Vitest)
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Zero third-party test runners, zero transpilers, zero configuration files. Pure compiled binary speed.
+          </p>
+        </div>
+        <span class="qa-badge concept">Toolchain Architecture</span>
+      </div>
+
+      <!-- Mental Model Diff: Node vs Go Runner -->
+      <div class="diff-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem;">
+          <div style="font-weight: 700; color: #991b1b; font-size: 0.85rem; margin-bottom: 0.4rem;">🔴 Node.js: The Heavy Ecosystem Tax</div>
+          <ul style="font-size: 0.84rem; color: #7f1d1d; margin: 0; padding-left: 1.2rem; line-height: 1.6;">
+            <li>Requires <code>jest</code>, <code>vitest</code>, <code>mocha</code>, or <code>uvu</code> dependencies.</li>
+            <li>Requires transpilers: <code>ts-jest</code>, <code>@swc/jest</code>, <code>babel</code>, or <code>esbuild</code>.</li>
+            <li>Configuration sprawl: <code>jest.config.ts</code>, <code>babel.config.js</code>, <code>tsconfig.spec.json</code>.</li>
+            <li>Runtime overhead: V8 isolate boot, source-map translation, module cache interception.</li>
+            <li>Slow startup: 1.5s to 4s just to execute the first test file.</li>
+          </ul>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem;">
+          <div style="font-weight: 700; color: #166534; font-size: 0.85rem; margin-bottom: 0.4rem;">🟢 Go: Zero Config Native Toolchain</div>
+          <ul style="font-size: 0.84rem; color: #14532d; margin: 0; padding-left: 1.2rem; line-height: 1.6;">
+            <li>Built straight into the compiler: <code>go test ./...</code> needs zero npm installs.</li>
+            <li>Any file ending in <code>_test.go</code> is compiled exclusively during test runs.</li>
+            <li>Tests compile directly to native machine code binaries (sub-millisecond execution).</li>
+            <li>Standard signatures: <code>func TestXxx(t *testing.T)</code>.</li>
+            <li>Built-in coverage, microbenchmarks, memory profiling, and data race detection.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Deep Dive Box: Table-Driven Tests -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>📋</span> The Table-Driven Test Pattern: Idiomatic Go Gold Standard
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Jest or Vitest, developers frequently chain dozens of repetitive <code>it("should handle ...")</code> blocks or use <code>test.each()</code>. In Go, the universally accepted idiomatic pattern is the <strong>Table-Driven Test</strong>: an anonymous slice of structs defining inputs, expected outputs, and error expectations, executed in subtests with <code>t.Run()</code>.
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">calculator_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package math_test
+
+import (
+	"errors"
+	"testing"
+)
+
+func Divide(a, b float64) (float64, error) {
+	if b == 0 {
+		return 0, errors.New("cannot divide by zero")
+	}
+	return a / b, nil
+}
+
+func TestDivide(t *testing.T) {
+	// Table of test cases: inputs, expectations, and error conditions
+	tests := []struct {
+		name      string
+		a, b      float64
+		want      float64
+		wantErr   bool
+		errSubstr string
+	}{
+		{
+			name:    "positive numbers",
+			a:       10,
+			b:       2,
+			want:    5,
+			wantErr: false,
+		},
+		{
+			name:    "floating point precision",
+			a:       1,
+			b:       3,
+			want:    0.3333333333333333,
+			wantErr: false,
+		},
+		{
+			name:    "negative numbers",
+			a:       -15,
+			b:       3,
+			want:    -5,
+			wantErr: false,
+		},
+		{
+			name:      "division by zero error",
+			a:         42,
+			b:         0,
+			want:      0,
+			wantErr:   true,
+			errSubstr: "cannot divide by zero",
+		},
+	}
+
+	for _, tt := range tests {
+		// t.Run creates an isolated subtest: filters via `go test -run TestDivide/division_by_zero`
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Divide(tt.a, tt.b)
+
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("Divide(%v, %v) expected error, got nil", tt.a, tt.b)
+				}
+				if err.Error() != tt.errSubstr {
+					t.Errorf("Divide(%v, %v) error = %q, want %q", tt.a, tt.b, err.Error(), tt.errSubstr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Divide(%v, %v) unexpected error: %v", tt.a, tt.b, err)
+			}
+			if got != tt.want {
+				t.Errorf("Divide(%v, %v) = %v; want %v", tt.a, tt.b, got, tt.want)
+			}
+		})
+	}
+}</code></pre>
+        </div>
+
+        <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.85rem; color: #1e40af;">
+          <strong>🎯 Granular CLI Execution:</strong> In Go, you can execute individual subtests with regex filters without modifying your source code:
+          <br/><code>go test -v -run "TestDivide/division_by_zero" ./...</code>
+        </div>
+      </div>
+
+      <!-- Parallel Testing, t.Helper(), and t.Cleanup() -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-top: 1.5rem;">
+        
+        <!-- Card 1: t.Parallel() & Go 1.22 loop variable scoping -->
+        <div class="deepdive-box" style="margin-bottom:0;">
+          <div class="deepdive-title">🚀 Parallelism: <code>t.Parallel()</code></div>
+          <p style="color: #475569; font-size: 0.86rem; line-height: 1.5;">
+            Go runs tests sequentially by default. Adding <code>t.Parallel()</code> marks a test (or subtest) to run concurrently across multiple OS threads (<code>GOMAXPROCS</code>).
+          </p>
+          <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>func TestAPI(t *testing.T) {
+    t.Parallel() // Outer test runs in parallel
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            t.Parallel() // Subtests execute concurrently!
+            // Note: In Go < 1.22, you had to write `tt := tt`
+            // In Go 1.22+, loop variables are per-iteration!
+        })
+    }
+}</code></pre>
+          <div style="font-size: 0.8rem; color: #0369a1; background: #e0f2fe; padding: 0.4rem 0.6rem; border-radius: 4px;">
+            ⚠️ <strong>Go 1.22 Update:</strong> Prior to Go 1.22, parallel subtest closures captured the loop pointer, causing all subtests to evaluate the final item! In Go 1.22+, loop variables have per-iteration scope.
+          </div>
+        </div>
+
+        <!-- Card 2: t.Helper() -->
+        <div class="deepdive-box" style="margin-bottom:0;">
+          <div class="deepdive-title">📍 Clean Stack Traces: <code>t.Helper()</code></div>
+          <p style="color: #475569; font-size: 0.86rem; line-height: 1.5;">
+            In Node, custom assertion helpers often pollute stack traces with line numbers from inside the helper file. Go solves this cleanly with <code>t.Helper()</code>:
+          </p>
+          <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>func assertUserEqual(t *testing.T, got, want User) {
+    t.Helper() // Marks this frame as test helper
+    if got.ID != want.ID {
+        // Line number reported will be the CALLER'S line in TestUser()!
+        t.Errorf("user ID mismatch: got %s, want %s", got.ID, want.ID)
+    }
+}</code></pre>
+          <div style="font-size: 0.8rem; color: #166534; background: #dcfce7; padding: 0.4rem 0.6rem; border-radius: 4px;">
+            ✓ Eliminates noise: Failures point directly to the failing test assertion line.
+          </div>
+        </div>
+
+        <!-- Card 3: t.Cleanup() -->
+        <div class="deepdive-box" style="margin-bottom:0;">
+          <div class="deepdive-title">🧹 Reliable Teardown: <code>t.Cleanup()</code></div>
+          <p style="color: #475569; font-size: 0.86rem; line-height: 1.5;">
+            Replaces error-prone manual <code>defer</code> or global <code>afterEach()</code>. Executes in <strong>LIFO</strong> order even if subtests call <code>t.FailNow()</code> or panic.
+          </p>
+          <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>func setupTempDir(t *testing.T) string {
+    t.Helper()
+    dir, err := os.MkdirTemp("", "test-*")
+    if err != nil {
+        t.Fatal(err)
+    }
+    // Automatically called at end of test or subtest!
+    t.Cleanup(func() {
+        os.RemoveAll(dir)
+    })
+    return dir
+}</code></pre>
+          <div style="font-size: 0.8rem; color: #7c2d12; background: #ffedd5; padding: 0.4rem 0.6rem; border-radius: 4px;">
+            💡 <strong>Advantage:</strong> Setup helpers manage their own teardown without returning a cleanup function to the caller.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Assertions: Stdlib vs testify (assert vs require) -->
+      <div class="deepdive-box" style="margin-top: 1.5rem;">
+        <div class="deepdive-title">⚖️ Assertions: Standard Library vs <code>stretchr/testify</code> (assert vs require)</div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          Go does not have an <code>assert</code> keyword. The standard library philosophy favors explicit conditional statements. However, in larger microservices, the open-source library <code>github.com/stretchr/testify</code> is widely used. Understanding the critical difference between <code>assert</code> and <code>require</code> is mandatory:
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.85rem;">
+            <div style="font-weight: 700; color: #0284c7; font-size: 0.85rem; margin-bottom: 0.3rem;">🔷 <code>assert</code> (Soft Assertion)</div>
+            <p style="font-size: 0.82rem; color: #475569; margin-bottom: 0.5rem;">
+              Logs the failure via <code>t.Errorf()</code> but <strong>continues executing the test function</strong>. Use for non-fatal property checks.
+            </p>
+            <pre style="background: #0f172a; color: #f8fafc; padding: 0.5rem; border-radius: 4px; font-size: 0.78rem;"><code>assert.Equal(t, "active", user.Status)
+assert.Equal(t, 2, len(user.Roles)) // Continues even if failed!</code></pre>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.85rem;">
+            <div style="font-weight: 700; color: #dc2626; font-size: 0.85rem; margin-bottom: 0.3rem;">🔴 <code>require</code> (Hard Assertion)</div>
+            <p style="font-size: 0.82rem; color: #475569; margin-bottom: 0.5rem;">
+              Logs the failure and immediately aborts via <code>t.FailNow()</code>. <strong>Mandatory for nil/error checks before dereferencing!</strong>
+            </p>
+            <pre style="background: #0f172a; color: #f8fafc; padding: 0.5rem; border-radius: 4px; font-size: 0.78rem;"><code>require.NoError(t, err) // Aborts if err != nil!
+require.NotNil(t, user)  // Prevents nil pointer panic below!
+assert.Equal(t, "alice", user.Name)</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 2: MOCKING WITHOUT MONKEY-PATCHING -->
+    <!-- ========================================================================= -->
+    <section id="topic-mocking" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🎭</span> 2. Mocking Without Monkey-Patching (Interfaces & Caller Boundaries)
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Why Jest's <code>jest.spyOn()</code> is impossible in Go, and how Interface Substitution produces bulletproof architectures.
+          </p>
+        </div>
+        <span class="qa-badge concept">Design Pattern</span>
+      </div>
+
+      <!-- SVG Diagram: Jest Monkey-Patching vs Go Interface Substitution -->
+      <div class="diagram-card">
+        <div class="diagram-title">📊 Architectural Mental Model: Runtime Monkey-Patching vs Compile-Time Interface Substitution</div>
+        <div class="diagram-subtitle">Contrasting JavaScript runtime prototype interception with Go's consumer-defined interface boundary:</div>
+        <div class="diagram-svg-container">
+          <svg viewBox="0 0 880 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mocking comparison between Node.js Jest runtime monkey patching and Go compile time interface substitution" style="font-family: system-ui, sans-serif;">
+            <!-- Node.js Monkey-patching -->
+            <rect x="15" y="15" width="410" height="230" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
+            <text x="35" y="42" font-size="14" font-weight="bold" fill="#991b1b">🔴 Node.js: Runtime Prototype Monkey-Patching</text>
+            
+            <rect x="35" y="60" width="370" height="50" rx="6" fill="#ffffff" stroke="#f87171" stroke-width="1.5"/>
+            <text x="48" y="80" font-size="11" font-weight="bold" fill="#b91c1c">jest.spyOn(paymentGateway, 'charge')</text>
+            <text x="48" y="98" font-size="10" fill="#7f1d1d">• Mutates object prototype/descriptor at runtime</text>
+
+            <path d="M 220 110 L 220 135" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-red)"/>
+            
+            <rect x="35" y="138" width="370" height="90" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1"/>
+            <text x="48" y="158" font-size="11" font-weight="bold" fill="#991b1b">⚠️ Architectural Pitfalls:</text>
+            <text x="48" y="176" font-size="10" fill="#7f1d1d">• Global state pollution across test files if not cleared</text>
+            <text x="48" y="194" font-size="10" fill="#7f1d1d">• Brittle: Typescript compiler cannot verify argument signatures</text>
+            <text x="48" y="212" font-size="10" fill="#7f1d1d">• Fails completely in compiled, statically optimized code</text>
+
+            <!-- Go Interface Substitution -->
+            <rect x="455" y="15" width="410" height="230" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+            <text x="475" y="42" font-size="14" font-weight="bold" fill="#166534">🟢 Go: Consumer-Defined Interface Substitution</text>
+
+            <rect x="475" y="60" width="370" height="60" rx="6" fill="#ffffff" stroke="#4ade80" stroke-width="1.5"/>
+            <text x="488" y="80" font-size="11" font-weight="bold" fill="#15803d">type paymentProcessor interface { Charge(...) }</text>
+            <text x="488" y="98" font-size="10" fill="#14532d">• Defined by the CONSUMER package, not the provider!</text>
+            <text x="488" y="112" font-size="10" fill="#14532d">• Production injects StripeClient; Test injects FakePaymentProcessor</text>
+
+            <path d="M 660 120 L 660 145" stroke="#22c55e" stroke-width="2"/>
+
+            <rect x="475" y="148" width="370" height="80" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+            <text x="488" y="168" font-size="11" font-weight="bold" fill="#166534">✓ Clean Architectural Guarantees:</text>
+            <text x="488" y="186" font-size="10" fill="#14532d">• 100% static type safety: compiler verifies mock signatures</text>
+            <text x="488" y="204" font-size="10" fill="#14532d">• Zero global mutable state; parallel tests run safely</text>
+            <text x="488" y="220" font-size="10" fill="#14532d">• Eliminates tight coupling to third-party SDK structs</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- The Consumer Interface Principle -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">💡 The Golden Rule: Define Interfaces at the Consumer Boundary</div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In TypeScript, developers routinely define and export massive interfaces in repository packages:
+          <code>export interface UserRepository { get(); create(); update(); delete(); ... 20 methods }</code>.
+          Then in tests, mocking requires implementing all 20 methods or casting with <code>as unknown as UserRepository</code>.
+          <br/><br/>
+          In Go, follow <strong>Rob Pike's Go Proverb: "Accept interfaces, return structs."</strong> The consumer service declares a tiny, private interface containing <em>only the methods it actually uses</em>:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">order_service.go & order_service_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package order
+
+import (
+	"context"
+	"errors"
+	"testing"
+)
+
+// 1. Consumer defines ONLY what it requires (Single Method Interface!)
+type PaymentCharger interface {
+	Charge(ctx context.Context, amountCents int64) (string, error)
+}
+
+type OrderService struct {
+	payments PaymentCharger
+}
+
+func NewOrderService(p PaymentCharger) *OrderService {
+	return &OrderService{payments: p}
+}
+
+func (s *OrderService) Checkout(ctx context.Context, amount int64) (string, error) {
+	if amount <= 0 {
+		return "", errors.New("invalid amount")
+	}
+	return s.payments.Charge(ctx, amount)
+}
+
+// -------------------------------------------------------------
+// TEST FILE: Zero Mocking Framework Needed (Hand-Rolled Fake)
+// -------------------------------------------------------------
+
+// FakePaymentProcessor implements PaymentCharger with function fields & spy calls
+type FakePaymentProcessor struct {
+	ChargeFunc func(ctx context.Context, amountCents int64) (string, error)
+	Calls      []int64
+}
+
+func (f *FakePaymentProcessor) Charge(ctx context.Context, amountCents int64) (string, error) {
+	f.Calls = append(f.Calls, amountCents)
+	if f.ChargeFunc != nil {
+		return f.ChargeFunc(ctx, amountCents)
+	}
+	return "txn_mock_default", nil
+}
+
+func TestOrderService_Checkout(t *testing.T) {
+	t.Run("successful charge records spy call", func(t *testing.T) {
+		fake := &FakePaymentProcessor{
+			ChargeFunc: func(ctx context.Context, amountCents int64) (string, error) {
+				return "txn_stripe_999", nil
+			},
+		}
+
+		svc := NewOrderService(fake)
+		txnID, err := svc.Checkout(context.Background(), 2500)
+
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if txnID != "txn_stripe_999" {
+			t.Errorf("got txnID %q, want txn_stripe_999", txnID)
+		}
+		// Spy assertions: verifying caller arguments
+		if len(fake.Calls) != 1 || fake.Calls[0] != 2500 {
+			t.Errorf("expected 1 call with 2500 cents, got %v", fake.Calls)
+		}
+	})
+
+	t.Run("handles gateway error", func(t *testing.T) {
+		fake := &FakePaymentProcessor{
+			ChargeFunc: func(ctx context.Context, amountCents int64) (string, error) {
+				return "", errors.New("insufficient funds")
+			},
+		}
+
+		svc := NewOrderService(fake)
+		_, err := svc.Checkout(context.Background(), 5000)
+
+		if err == nil || err.Error() != "insufficient funds" {
+			t.Errorf("expected insufficient funds error, got %v", err)
+		}
+	})
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Mocking External HTTP APIs: httptest.NewServer vs RoundTripper -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">🌐 Mocking Third-Party Outbound HTTP APIs (No <code>nock</code> Needed)</div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Node.js, libraries like <code>nock</code> intercept V8’s <code>http.request</code> calls. In Go, you have two elegant, built-in options:
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+          
+          <!-- Method A: httptest.NewServer -->
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 1rem;">
+            <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem; margin-bottom: 0.4rem;">
+              Option A: <code>httptest.NewServer</code> (Local Ephemeral TCP)
+            </div>
+            <p style="font-size: 0.82rem; color: #64748b; line-height: 1.5; margin-bottom: 0.5rem;">
+              Spins up a lightweight local HTTP server on an available localhost port. Point your API client’s <code>BaseURL</code> to <code>server.URL</code>.
+            </p>
+            <pre style="background: #0f172a; color: #f8fafc; padding: 0.65rem; border-radius: 4px; font-size: 0.77rem; overflow-x: auto;"><code>ts := httptest.NewServer(
+    http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if r.Header.Get("Authorization") == "" {
+            http.Error(w, "unauthorized", http.StatusUnauthorized)
+            return
+        }
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte(`{"status":"paid"}`))
+    }),
+)
+defer ts.Close()
+
+// Client points to ephemeral local URL:
+client := NewPaymentClient(ts.URL, "secret_key")</code></pre>
+          </div>
+
+          <!-- Method B: Custom RoundTripper -->
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 1rem;">
+            <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem; margin-bottom: 0.4rem;">
+              Option B: Custom <code>http.RoundTripper</code> (Zero Socket Interceptor)
+            </div>
+            <p style="font-size: 0.82rem; color: #64748b; line-height: 1.5; margin-bottom: 0.5rem;">
+              Intercepts requests directly in memory at the transport layer of <code>http.Client</code> without opening any network ports (identical to <code>nock</code>).
+            </p>
+            <pre style="background: #0f172a; color: #f8fafc; padding: 0.65rem; border-radius: 4px; font-size: 0.77rem; overflow-x: auto;"><code>type roundTripFunc func(*http.Request) (*http.Response, error)
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
+    return f(r)
+}
+
+client := &http.Client{
+    Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+        return &http.Response{
+            StatusCode: http.StatusOK,
+            Body:       io.NopCloser(strings.NewReader(`{"id":1}`)),
+            Header:     make(http.Header),
+        }, nil
+    }),
+}</code></pre>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 3: DATABASE INTEGRATION TESTING -->
+    <!-- ========================================================================= -->
+    <section id="topic-databases" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🗄️</span> 3. Database Testing: <code>sqlmock</code>, Testcontainers & Transaction Rollback
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Unit test complex SQL queries without databases, or run real ephemeral PostgreSQL instances with zero state leakage.
+          </p>
+        </div>
+        <span class="qa-badge high">Production Grade</span>
+      </div>
+
+      <!-- Unit Testing with sqlmock -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🧪</span> Unit Testing with <code>go-sqlmock</code> (Zero Database Required)
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          <code>github.com/DATA-DOG/go-sqlmock</code> implements Go's standard <code>database/sql/driver</code> interface. It lets you simulate database interactions, regex SQL queries, expected rows, and simulated network timeouts without running any database daemon:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">user_repo_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package repository_test
+
+import (
+	"context"
+	"database/sql"
+	"testing"
+	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+type User struct {
+	ID        int64
+	Email     string
+	CreatedAt time.Time
+}
+
+func GetUserByID(ctx context.Context, db *sql.DB, id int64) (*User, error) {
+	row := db.QueryRowContext(ctx, "SELECT id, email, created_at FROM users WHERE id = $1", id)
+	var u User
+	if err := row.Scan(&u.ID, &u.Email, &u.CreatedAt); err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+func TestGetUserByID_sqlmock(t *testing.T) {
+	// Create mock db connection and mock controller
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	ctx := context.Background()
+	now := time.Now()
+
+	t.Run("found user", func(t *testing.T) {
+		// Define columns and simulated row data
+		rows := sqlmock.NewRows([]string{"id", "email", "created_at"}).
+			AddRow(42, "alex@example.com", now)
+
+		// Set expectation using regex for exact SQL statement and parameter matching
+		mock.ExpectQuery(`^SELECT (.+) FROM users WHERE id = \$1`).
+			WithArgs(int64(42)).
+			WillReturnRows(rows)
+
+		user, err := GetUserByID(ctx, db, 42)
+		require.NoError(t, err)
+		assert.Equal(t, int64(42), user.ID)
+		assert.Equal(t, "alex@example.com", user.Email)
+
+		// Assert all expected SQL statements were executed
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("not found returns sql.ErrNoRows", func(t *testing.T) {
+		mock.ExpectQuery(`^SELECT (.+) FROM users WHERE id = \$1`).
+			WithArgs(int64(999)).
+			WillReturnError(sql.ErrNoRows)
+
+		user, err := GetUserByID(ctx, db, 999)
+		assert.ErrorIs(t, err, sql.ErrNoRows)
+		assert.Nil(t, user)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Real Integration Testing with Testcontainers -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🐳</span> True Production Parity: <strong>Testcontainers for Go</strong>
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          <code>sqlmock</code> is fast, but it cannot catch SQL syntax bugs, Postgres index issues, or trigger constraints. <strong>Testcontainers for Go</strong> (<code>github.com/testcontainers/testcontainers-go</code>) programmatically starts a real PostgreSQL container, binds a dynamic port, runs schema migrations, and registers automatic cleanup via <code>t.Cleanup()</code>:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">postgres_testcontainer_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package db_test
+
+import (
+	"context"
+	"database/sql"
+	"testing"
+	"time"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
+	"github.com/testcontainers/testcontainers-go/wait"
+)
+
+// setupPostgresContainer boots an isolated Postgres 16 container for the test suite
+func setupPostgresContainer(t *testing.T) *sql.DB {
+	t.Helper()
+	ctx := context.Background()
+
+	pgContainer, err := postgres.Run(ctx,
+		"postgres:16-alpine",
+		postgres.WithDatabase("test_db"),
+		postgres.WithUsername("test_user"),
+		postgres.WithPassword("test_pass"),
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("database system is ready to accept connections").
+				WithOccurrence(2).
+				WithStartupTimeout(10*time.Second),
+		),
+	)
+	require.NoError(t, err)
+
+	// Automatic teardown when tests complete!
+	t.Cleanup(func() {
+		_ = pgContainer.Terminate(ctx)
+	})
+
+	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	require.NoError(t, err)
+
+	db, err := sql.Open("pgx", connStr)
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = db.Close() })
+
+	// Run initial DDL migration
+	_, err = db.Exec(`
+		CREATE TABLE users (
+			id SERIAL PRIMARY KEY,
+			email TEXT NOT NULL UNIQUE,
+			created_at TIMESTAMPTZ DEFAULT NOW()
+		);
+	`)
+	require.NoError(t, err)
+
+	return db
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- The Transaction Rollback Pattern -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🔄</span> The Transaction Rollback Pattern (Sub-Millisecond Isolation)
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          <strong>The Problem in Node.js:</strong> When testing against real databases in Node, tests often run <code>TRUNCATE TABLE users CASCADE</code> in <code>beforeEach()</code>. This destroys test speed (200ms+ per test) and prevents parallel test execution.
+          <br/><br/>
+          <strong>The Go Solution:</strong> Start a database transaction at the start of each subtest, execute all queries inside that transaction, and register <code>defer tx.Rollback()</code>. The test runs against real PostgreSQL engine rules, but <strong>zero rows ever persist</strong>. Tests run in under 2ms and can execute in parallel!
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">tx_rollback_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>func TestUserRepository_IsolatedWithRollback(t *testing.T) {
+	db := setupPostgresContainer(t) // Shared container connection pool
+
+	t.Run("inserts and queries user without dirtying database", func(t *testing.T) {
+		ctx := context.Background()
+
+		// 1. Begin isolated transaction
+		tx, err := db.BeginTx(ctx, nil)
+		require.NoError(t, err)
+
+		// 2. Guaranteed rollback at test conclusion
+		defer func() {
+			_ = tx.Rollback()
+		}()
+
+		// 3. Perform mutation inside transaction
+		var id int64
+		err = tx.QueryRowContext(ctx, 
+			"INSERT INTO users (email) VALUES ($1) RETURNING id", 
+			"isolated@example.com",
+		).Scan(&id)
+		require.NoError(t, err)
+		require.Greater(t, id, int64(0))
+
+		// 4. Verify record exists WITHIN transaction
+		var count int
+		err = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM users").Scan(&count)
+		require.NoError(t, err)
+		require.Equal(t, 1, count)
+	})
+
+	t.Run("subsequent test starts with pristine empty database", func(t *testing.T) {
+		ctx := context.Background()
+
+		// Querying the root db shows 0 rows because previous test rolled back!
+		var count int
+		err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users").Scan(&count)
+		require.NoError(t, err)
+		require.Equal(t, 0, count, "database must have zero rows!")
+	})
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 4: REDIS INTEGRATION TESTING -->
+    <!-- ========================================================================= -->
+    <section id="topic-redis" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🔴</span> 4. Redis Testing: Sub-Millisecond <code>miniredis</code> vs Testcontainers
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Lightning-fast in-memory Redis testing with time-travel TTL manipulation, plus real clustered container testing.
+          </p>
+        </div>
+        <span class="qa-badge concept">Caching & PubSub</span>
+      </div>
+
+      <!-- Miniredis In-Memory -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>⚡</span> Sub-Millisecond Redis Testing with <code>alicebob/miniredis</code>
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Node.js, developers often use <code>ioredis-mock</code>, which suffers from incomplete Redis command coverage.
+          In Go, <code>github.com/alicebob/miniredis/v2</code> is a pure Go in-memory server that speaks the exact Redis RESP wire protocol. It boots in <strong>0.5 milliseconds</strong>, requires no Docker daemon, and provides <strong>time-travel TTL testing</strong>:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">cache_miniredis_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package cache_test
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/alicebob/miniredis/v2"
+	"github.com/redis/go-redis/v9"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestSessionCache_TTL_TimeTravel(t *testing.T) {
+	// 1. Boot in-memory Redis instance (sub-millisecond boot, zero docker)
+	mr := miniredis.RunT(t)
+
+	// 2. Connect standard production go-redis client to miniredis address
+	rdb := redis.NewClient(&redis.Options{
+		Addr: mr.Addr(),
+	})
+	defer rdb.Close()
+
+	ctx := context.Background()
+
+	// 3. Write a key with a 1-hour expiration TTL
+	err := rdb.Set(ctx, "session:usr_99", "active_jwt_token", 1*time.Hour).Err()
+	require.NoError(t, err)
+
+	// Verify key exists immediately
+	val, err := rdb.Get(ctx, "session:usr_99").Result()
+	require.NoError(t, err)
+	assert.Equal(t, "active_jwt_token", val)
+
+	// 4. TIME TRAVEL: Fast-forward miniredis clock by 61 minutes without time.Sleep()!
+	mr.FastForward(61 * time.Minute)
+
+	// 5. Assert key has automatically expired!
+	_, err = rdb.Get(ctx, "session:usr_99").Result()
+	assert.ErrorIs(t, err, redis.Nil, "key must be expired after fast forwarding past TTL")
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Testcontainers Redis for Pub/Sub & Lua -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>📦</span> When to Use Testcontainers Redis (Streams, Lua & Pub/Sub)
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          Use <code>miniredis</code> for 95% of standard unit & cache tests. Switch to <strong>Testcontainers Redis</strong> (<code>testcontainers-go/modules/redis</code>) when testing Redis 7.2+ Consumer Groups / Streams (<code>XREADGROUP</code>), complex Lua scripts (<code>EVALSHA</code>), or Redis Cluster semantics:
+        </p>
+
+        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>redisContainer, err := redis.Run(ctx, "redis:7.2-alpine")
+require.NoError(t, err)
+t.Cleanup(func() { _ = redisContainer.Terminate(ctx) })
+
+endpoint, err := redisContainer.ConnectionString(ctx)
+rdb := redis.NewClient(&redis.Options{Addr: endpoint})</code></pre>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 5: BACKGROUND QUEUE & WORKER TESTING -->
+    <!-- ========================================================================= -->
+    <section id="topic-queues" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📨</span> 5. Background Queue & Worker Testing (Channel Queues & DLQs)
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Deterministic testing of concurrent worker pools, exponential backoff retries, and Dead Letter Queues without external brokers.
+          </p>
+        </div>
+        <span class="qa-badge concept">Concurrency & Queues</span>
+      </div>
+
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>⚙️</span> Testing Worker Pools & Channel Queues with <code>sync.WaitGroup</code>
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Node.js, queues like BullMQ rely on Redis and external workers. In Go, high-throughput asynchronous work is frequently processed in-process using <strong>buffered channels and worker goroutines</strong>. Here is how to test workers deterministically with graceful shutdown and DLQ routing:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">worker_pool_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package queue_test
+
+import (
+	"context"
+	"errors"
+	"sync"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+type Job struct {
+	ID      string
+	Payload string
+	Retries int
+}
+
+// Worker processes jobs from inCh. If processing fails after maxRetries, sends to dlqCh.
+func StartWorkerPool(ctx context.Context, numWorkers int, inCh <-chan Job, dlqCh chan<- Job, handler func(Job) error) *sync.WaitGroup {
+	var wg sync.WaitGroup
+	maxRetries := 2
+
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case job, ok := <-inCh:
+					if !ok {
+						return // Channel closed, worker drains and exits
+					}
+					if err := handler(job); err != nil {
+						if job.Retries >= maxRetries {
+							dlqCh <- job // Exhausted retries -> route to Dead Letter Queue
+						} else {
+							job.Retries++
+							// In real systems re-enqueue with backoff; here we re-evaluate
+						}
+					}
+				}
+			}
+		}()
+	}
+	return &wg
+}
+
+func TestWorkerPool_DLQ_Routing(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	inCh := make(chan Job, 10)
+	dlqCh := make(chan Job, 10)
+
+	var processedCount int
+	var mu sync.Mutex
+
+	// Handler fails for job "bad_job", succeeds for others
+	handler := func(j Job) error {
+		mu.Lock()
+		defer mu.Unlock()
+		processedCount++
+		if j.ID == "bad_job" {
+			return errors.New("simulated fatal error")
+		}
+		return nil
+	}
+
+	// Spin up 3 concurrent workers
+	wg := StartWorkerPool(ctx, 3, inCh, dlqCh, handler)
+
+	// Feed jobs into queue
+	inCh <- Job{ID: "job_1", Payload: "send_email"}
+	inCh <- Job{ID: "bad_job", Payload: "corrupt_data", Retries: 2} // Should route to DLQ!
+	inCh <- Job{ID: "job_2", Payload: "process_pdf"}
+
+	// Close queue to signal completion
+	close(inCh)
+
+	// Wait for workers to cleanly shut down
+	wg.Wait()
+
+	// Assert DLQ received the failing job
+	require.Equal(t, 1, len(dlqCh), "expected exactly 1 job in DLQ")
+	deadJob := <-dlqCh
+	assert.Equal(t, "bad_job", deadJob.ID)
+
+	mu.Lock()
+	assert.Equal(t, 3, processedCount)
+	mu.Unlock()
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 6: HTTP API / WEB SERVER TESTING (httptest) -->
+    <!-- ========================================================================= -->
+    <section id="topic-httptest" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🌐</span> 6. HTTP API & Middleware Testing with <code>httptest</code>
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            How <code>httptest.ResponseRecorder</code> executes entire HTTP pipelines in-memory in microseconds (comparing with Supertest).
+          </p>
+        </div>
+        <span class="qa-badge concept">Web APIs</span>
+      </div>
+
+      <!-- In-Memory Testing vs Supertest -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>⚡</span> In-Memory Testing: <code>httptest.NewRecorder</code> vs Express Supertest
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Express, testing with <code>supertest(app).get('/api')</code> binds an ephemeral OS TCP port, issues a genuine operating system socket connection, and navigates the Node network stack.
+          <br/><br/>
+          In Go, <code>net/http/httptest.ResponseRecorder</code> satisfies Go’s <code>http.ResponseWriter</code> interface directly in memory. <strong>No TCP sockets, no port collisions, and zero network latency.</strong>
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">api_handler_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package api_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type UserResponse struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+// UserHandler handles user creation
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req CreateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Email == "" {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	resp := UserResponse{
+		ID:    101,
+		Name:  req.Name,
+		Email: req.Email,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(resp)
+}
+
+func TestUserHandler_InMemory(t *testing.T) {
+	t.Run("successfully creates user (201 Created)", func(t *testing.T) {
+		payload := []byte(`{"name":"Elena","email":"elena@example.com"}`)
+
+		// 1. Construct synthetic in-memory HTTP request
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(payload))
+		req.Header.Set("Content-Type", "application/json")
+
+		// 2. ResponseRecorder captures response in memory (implements http.ResponseWriter)
+		rec := httptest.NewRecorder()
+
+		// 3. Directly invoke the handler
+		UserHandler(rec, req)
+
+		// 4. Assert status code and headers
+		require.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, "application/json", rec.Header().Get("Content-Type"))
+
+		// 5. Decode JSON body and assert fields
+		var res UserResponse
+		err := json.NewDecoder(rec.Body).Decode(&res)
+		require.NoError(t, err)
+		assert.Equal(t, int64(101), res.ID)
+		assert.Equal(t, "Elena", res.Name)
+	})
+
+	t.Run("rejects invalid JSON with 400 Bad Request", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte(`invalid`)))
+		rec := httptest.NewRecorder()
+
+		UserHandler(rec, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	})
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Middleware Testing -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🛡️</span> Testing HTTP Middlewares in Total Isolation
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          In Go, middlewares are simply functions that wrap <code>http.Handler</code>: <code>func(next http.Handler) http.Handler</code>. You can test authorization, rate limiting, and header injection with dummy pass-through handlers:
+        </p>
+
+        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>func AuthMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        token := r.Header.Get("Authorization")
+        if token != "Bearer valid-token" {
+            http.Error(w, "unauthorized", http.StatusUnauthorized)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
+}
+
+func TestAuthMiddleware(t *testing.T) {
+    // Dummy handler to verify pass-through
+    nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("passed"))
+    })
+
+    wrapped := AuthMiddleware(nextHandler)
+
+    t.Run("missing header returns 401", func(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest(http.MethodGet, "/protected", nil)
+        wrapped.ServeHTTP(rec, req)
+        assert.Equal(t, http.StatusUnauthorized, rec.Code)
+    })
+
+    t.Run("valid token passes through to next handler (200 OK)", func(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest(http.MethodGet, "/protected", nil)
+        req.Header.Set("Authorization", "Bearer valid-token")
+        wrapped.ServeHTTP(rec, req)
+        assert.Equal(t, http.StatusOK, rec.Code)
+        assert.Equal(t, "passed", rec.Body.String())
+    })
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 7: BENCHMARKING, PROFILING & THE RACE DETECTOR -->
+    <!-- ========================================================================= -->
+    <section id="topic-benchmarks" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🏎️</span> 7. Benchmarks, Profiling & The Go Race Detector
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Measure nanoseconds and heap allocations with <code>testing.B</code>, and catch race conditions before they hit production.
+          </p>
+        </div>
+        <span class="qa-badge high">Deep Systems Engineering</span>
+      </div>
+
+      <!-- Microbenchmarks with testing.B -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>⏱️</span> Writing Microbenchmarks with <code>b.ReportAllocs()</code>
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          Node.js requires external npm packages like <code>benchmark.js</code> or <code>mitata</code>. Go includes a built-in benchmarking harness directly inside the <code>testing</code> package:
+        </p>
+
+        <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-family: monospace; color: #94a3b8;">json_bench_test.go</span>
+            <button class="copy-snippet-btn" onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.innerText); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+          </div>
+          <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83rem; color: #f8fafc; line-height: 1.6; overflow-x: auto;"><code>package bench_test
+
+import (
+	"encoding/json"
+	"testing"
+)
+
+type LogEvent struct {
+	Level   string `json:"level"`
+	Message string `json:"message"`
+	UserID  int64  `json:"user_id"`
+}
+
+func BenchmarkJSONMarshal(b *testing.B) {
+	event := LogEvent{
+		Level:   "info",
+		Message: "user completed payment transaction",
+		UserID:  98231,
+	}
+
+	// 1. Print heap memory allocations per operation
+	b.ReportAllocs()
+
+	// 2. Reset timer to discard setup overhead
+	b.ResetTimer()
+
+	// 3. b.N is dynamically tuned by the Go runtime (e.g. 1,000,000 iterations)
+	for i := 0; i < b.N; i++ {
+		_, err := json.Marshal(event)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}</code></pre>
+        </div>
+
+        <div style="background: #1e293b; color: #e2e8f0; padding: 0.85rem; border-radius: 6px; font-family: monospace; font-size: 0.82rem; margin-top: 0.5rem;">
+          <div style="color: #38bdf8; margin-bottom: 0.3rem;">$ go test -bench=BenchmarkJSONMarshal -benchmem ./...</div>
+          BenchmarkJSONMarshal-10   2841912   412.3 ns/op   128 B/op   2 allocs/op
+        </div>
+        <p style="font-size: 0.84rem; color: #64748b; margin-top: 0.5rem;">
+          <strong>Interpreting Metrics:</strong>
+          <code>412.3 ns/op</code> = Nanoseconds per execution.
+          <code>128 B/op</code> = Bytes allocated on the heap per operation.
+          <code>2 allocs/op</code> = Number of heap allocations per operation (crucial for GC tuning!).
+        </p>
+      </div>
+
+      <!-- The Go Race Detector -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🚨</span> Concurrency Testing: The Go Race Detector (<code>go test -race</code>)
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          <strong>Why this doesn't exist in standard Node.js:</strong> Because Node.js runs on a single V8 thread, you never encounter true OS-level memory race conditions. In Go, multiple goroutines execute on real multicore threads simultaneously. If two goroutines access a shared memory location and at least one is a write, a <strong>data race</strong> occurs, causing memory corruption or crashes.
+          <br/><br/>
+          Go includes <strong>ThreadSanitizer (TSAN)</strong> directly in the compiler. Running <code>go test -race ./...</code> instruments all memory reads and writes:
+        </p>
+
+        <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 6px; padding: 1rem; margin: 0.75rem 0;">
+          <div style="font-weight: 700; color: #991b1b; font-size: 0.85rem; margin-bottom: 0.4rem;">⚠️ Unsynchronized Concurrent Map Write (Catastrophic Race)</div>
+          <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;"><code>func TestRaceCondition(t *testing.T) {
+    m := make(map[string]int)
+    go func() {
+        m["visitors"]++ // Write 1
+    }()
+    go func() {
+        m["visitors"]++ // Concurrent Write 2 -> DATA RACE!
+    }()
+}</code></pre>
+          <div style="background: #450a0a; color: #fca5a5; padding: 0.65rem; border-radius: 4px; font-family: monospace; font-size: 0.75rem; margin-top: 0.5rem; line-height: 1.5;">
+            ==================<br/>
+            WARNING: DATA RACE<br/>
+            Write at 0x00c0000a6060 by goroutine 8:<br/>
+              runtime.mapassign_faststr()<br/>
+            Previous write at 0x00c0000a6060 by goroutine 7:<br/>
+              runtime.mapassign_faststr()<br/>
+            ==================
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 1rem; margin-top: 0.75rem;">
+          <div style="font-weight: 700; color: #166534; font-size: 0.85rem; margin-bottom: 0.4rem;">✅ The Fix: <code>sync.Mutex</code> or Atomic Operations</div>
+          <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;"><code>type SafeCounter struct {
+    mu sync.Mutex
+    m  map[string]int
+}
+func (c *SafeCounter) Inc(key string) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.m[key]++
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Test Coverage -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>📊</span> Visualizing Test Coverage (HTML Heatmap)
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          Generate comprehensive line-by-line coverage profiles without Istanbul or c8:
+        </p>
+        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.82rem; overflow-x: auto; margin: 0.5rem 0;"><code># 1. Run tests with coverage profile output
+go test -coverprofile=coverage.out ./...
+
+# 2. Inspect per-function breakdown in terminal
+go tool cover -func=coverage.out
+
+# 3. Open interactive browser visualizer with highlighted untested branches
+go tool cover -html=coverage.out</code></pre>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TOPIC 8: ROSETTA CHEAT SHEET -->
+    <!-- ========================================================================= -->
+    <section id="topic-rosetta" style="margin-bottom: 3rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.45rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📖</span> 8. Jest / Vitest ➔ Go Rosetta Cheat Sheet
+          </h2>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+            Direct side-by-side syntax translations for the most common Node.js testing patterns.
+          </p>
+        </div>
+        <span class="qa-badge concept">Reference Table</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="rosetta-table" style="width: 100%; border-collapse: collapse; margin-top: 1rem;" aria-label="Jest to Go testing comparison table">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; color: #334155; width: 28%;">Jest / Vitest (Node.js)</th>
+              <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; color: #334155; width: 42%;">Idiomatic Go Equivalent</th>
+              <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; color: #334155; width: 30%;">Key Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>describe("Calculator", () => { ... })</code></td>
+              <td><code>func TestCalculator(t *testing.T) { ... }</code></td>
+              <td>Top-level suite is simply a Go test function.</td>
+            </tr>
+            <tr>
+              <td><code>it("should add", () => { ... })</code></td>
+              <td><code>t.Run("should add", func(t *testing.T) { ... })</code></td>
+              <td>Subtest with isolated filtering support.</td>
+            </tr>
+            <tr>
+              <td><code>beforeEach(() => { ... })</code></td>
+              <td>Helper function + <code>t.Cleanup(func() { ... })</code></td>
+              <td>Scoped locally per test rather than global mutable hook.</td>
+            </tr>
+            <tr>
+              <td><code>afterEach(() => { ... })</code></td>
+              <td><code>t.Cleanup(func() { ... })</code></td>
+              <td>Guaranteed LIFO execution; survives panics and aborts.</td>
+            </tr>
+            <tr>
+              <td><code>beforeAll() / afterAll()</code></td>
+              <td><code>func TestMain(m *testing.M) { ... os.Exit(m.Run()) }</code></td>
+              <td>Suite-level lifecycle hook for starting DB containers.</td>
+            </tr>
+            <tr>
+              <td><code>expect(a).toBe(b)</code></td>
+              <td><code>if a != b { t.Fatalf("got %v, want %v", a, b) }</code> or <code>assert.Equal(t, b, a)</code></td>
+              <td>Explicit type-checked comparison or testify.</td>
+            </tr>
+            <tr>
+              <td><code>expect(a).toEqual(b)</code></td>
+              <td><code>if !reflect.DeepEqual(a, b)</code> or <code>assert.Equal(t, b, a)</code></td>
+              <td>Structural deep equality for slices, maps, structs.</td>
+            </tr>
+            <tr>
+              <td><code>expect(fn).toThrow()</code></td>
+              <td><code>assert.Panics(t, fn)</code> or <code>if err == nil { t.Fatal(...) }</code></td>
+              <td>Go functions return errors as values, rarely panicking.</td>
+            </tr>
+            <tr>
+              <td><code>test.concurrent()</code></td>
+              <td><code>t.Parallel()</code></td>
+              <td>Runs across multiple OS CPU cores simultaneously.</td>
+            </tr>
+            <tr>
+              <td><code>test.skip() / test.only()</code></td>
+              <td><code>t.Skip("reason")</code> / <code>go test -run TestName</code></td>
+              <td>Skipping programmatically vs CLI filter flag.</td>
+            </tr>
+            <tr>
+              <td><code>jest.fn() / vi.fn()</code></td>
+              <td>Hand-rolled Fake struct with function field & call slice</td>
+              <td>Zero external mock library required; 100% type-safe.</td>
+            </tr>
+            <tr>
+              <td><code>jest.spyOn(obj, 'method')</code></td>
+              <td>Consumer Interface Substitution</td>
+              <td>Go prohibits runtime monkey-patching; use interfaces.</td>
+            </tr>
+            <tr>
+              <td><code>supertest(app).get('/users')</code></td>
+              <td><code>httptest.NewRecorder()</code> + <code>httptest.NewRequest()</code></td>
+              <td>In-memory HTTP pipeline execution (no TCP socket).</td>
+            </tr>
+            <tr>
+              <td><code>nock('https://api.com')</code></td>
+              <td><code>httptest.NewServer()</code> or custom <code>http.RoundTripper</code></td>
+              <td>Ephemeral local server or transport layer interceptor.</td>
+            </tr>
+            <tr>
+              <td><code>vitest --watch</code></td>
+              <td><code>gow test</code> or <code>gotestsum --watch</code></td>
+              <td>CLI file watcher tools for continuous compilation.</td>
+            </tr>
+            <tr>
+              <td><em>(No Node.js equivalent)</em></td>
+              <td><code>go test -race ./...</code></td>
+              <td>TSAN multi-threaded hardware data race detector.</td>
+            </tr>
+            <tr>
+              <td><em>(No built-in Node equivalent)</em></td>
+              <td><code>func BenchmarkX(b *testing.B)</code></td>
+              <td>Native nanosecond microbenchmarks with heap metrics.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Interactive Code Copying Feedback Script -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Wire up smooth scrolling for quicknav links
+        document.querySelectorAll('.test-quicknav a').forEach(anchor => {
+          anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetEl = document.querySelector(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              history.pushState(null, '', targetId);
+            }
+          });
+        });
+      });
+    </script>
+
+  </div>
+</div>

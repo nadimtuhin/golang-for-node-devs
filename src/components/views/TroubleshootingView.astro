@@ -2,3 +2,29 @@
 import htmlContent from "./TroubleshootingView.html?raw";
 ---
 <Fragment set:html={htmlContent} />
+
+<script>
+  // Interactive copy functionality for code snippets
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const btn = target.closest('.copy-code-btn') as HTMLElement;
+    if (!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if (!targetId) return;
+    const codeEl = document.getElementById(targetId);
+    if (!codeEl) return;
+    
+    const textToCopy = codeEl.innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const origText = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = origText;
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+    });
+  });
+</script>

@@ -1,31 +1,919 @@
 <div id="viewModExplain" class="view-container">
-    <div class="view-inner-content">
-    <h2 style="font-size: 1.5rem; margin-bottom: 0.4rem; color: #0f172a;">📦 Dependency Management: Go Modules vs npm</h2>
-    <p style="color: #64748b; margin-bottom: 1.5rem;">How <code>go.mod</code> and <code>go.sum</code> replace <code>package.json</code>, <code>package-lock.json</code>, and the <code>node_modules</code> folder.</p>
+  <div class="view-inner-content">
 
-    <div class="deepdive-box">
-      <div class="deepdive-title">📄 1. <code>package.json</code> vs <code>go.mod</code></div>
-      <p style="color: #475569; margin-bottom: 0.75rem;">
-        In Node, <code>package.json</code> lists package names and semantic version ranges registered on npmjs.org.
+    <!-- Hero Banner -->
+    <header class="view-hero-banner" role="region" aria-label="Module Guide Introduction">
+      <div class="view-hero-tag">
+        <span aria-hidden="true">📦</span> ARCHITECTURE &amp; SUPPLY CHAIN INTEGRITY
+      </div>
+      <h1 class="view-hero-title">Go Dependency Management: <code>go.mod</code> vs <code>npm</code></h1>
+      <p class="view-hero-desc">
+        An exhaustive, production-grade guide for Node.js and TypeScript developers transitioning to Go Modules.
+        Discover how Minimal Version Selection (MVS), cryptographic Merkle tree integrity, Semantic Import Versioning,
+        and hermetic vendoring eliminate dependency hell, diamond resolution conflicts, and supply-chain RCE attacks.
       </p>
-      <p style="color: #475569; margin-bottom: 0.75rem;">
-        In Go, <strong>there is NO centralized npm registry</strong>. <code>go.mod</code> declares dependencies using direct Git repository paths (e.g., <code>github.com/gofiber/fiber/v2</code>).
-      </p>
+    </header>
+
+    <!-- Quick Mental Model Comparison Grid -->
+    <section aria-labelledby="heading-quick-summary" style="margin-bottom: 2.5rem;">
+      <h2 id="heading-quick-summary" style="font-size: 1.25rem; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        ⚡ The 5 Core Paradigm Shifts at a Glance
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+        
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>📄</span> Specification Philosophy
+          </div>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 0.5rem;">
+            <strong>Node (<code>package.json</code>):</strong> Conflates dependencies, arbitrary lifecycle hooks (<code>postinstall</code>), build tool configurations, and metadata in JSON.
+          </p>
+          <p style="font-size: 0.88rem; color: #0f172a;">
+            <strong>Go (<code>go.mod</code>):</strong> Strictly declarative language specification. Zero script execution, zero build config, exact minimal version requirements.
+          </p>
+        </div>
+
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>🔒</span> Lockfile vs Integrity Log
+          </div>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 0.5rem;">
+            <strong>Node (<code>package-lock.json</code>):</strong> A complete graph tree lockfile. Without it, npm re-resolves versions across SemVer ranges.
+          </p>
+          <p style="font-size: 0.88rem; color: #0f172a;">
+            <strong>Go (<code>go.sum</code>):</strong> NOT a lockfile. A cryptographic SHA-256 Merkle tree ledger validating that downloaded code has never been altered.
+          </p>
+        </div>
+
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>📐</span> Resolution Algorithm
+          </div>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 0.5rem;">
+            <strong>Node (SemVer Ranges):</strong> "Pick the newest compatible version" (e.g. <code>^1.2.0</code>). Prone to non-deterministic builds and zero-day regressions.
+          </p>
+          <p style="font-size: 0.88rem; color: #0f172a;">
+            <strong>Go (MVS):</strong> Minimal Version Selection. Selects the <em>oldest</em> (minimum) version that satisfies all constraints, guaranteeing 100% deterministic builds.
+          </p>
+        </div>
+
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>📁</span> Storage &amp; Vendoring
+          </div>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 0.5rem;">
+            <strong>Node (<code>node_modules</code>):</strong> Massive, recursive 500MB+ folder in every local repo. Millions of small inodes, slow disk I/O, slow Docker builds.
+          </p>
+          <p style="font-size: 0.88rem; color: #0f172a;">
+            <strong>Go (Global Cache / Vendor):</strong> Modules downloaded once to <code>$GOPATH/pkg/mod</code> (read-only). <code>go mod vendor</code> creates a tiny, flat, single-level copy.
+          </p>
+        </div>
+
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>🛡️</span> Supply Chain Security
+          </div>
+          <p style="font-size: 0.88rem; color: #475569; margin-bottom: 0.5rem;">
+            <strong>Node (npm scripts):</strong> Malicious packages execute arbitrary shell commands on <code>npm install</code> via <code>postinstall</code> hooks (credential theft, RCE).
+          </p>
+          <p style="font-size: 0.88rem; color: #0f172a;">
+            <strong>Go (Proxy &amp; SumDB):</strong> Zero script execution. Packages are immutable source archives verified against Google's global append-only Checksum Database.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 1: Core Philosophy & Architecture -->
+    <section aria-labelledby="heading-sec-1" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-1" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🏛️</span> 1. Core Philosophy &amp; Architecture
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Declarative modules vs metadata-heavy package manifests, and why <code>go.sum</code> is not what you think it is.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">📄 <code>go.mod</code> vs <code>package.json</code>: Declarative Code vs Multi-Tool Kitchen Sink</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          In Node.js, <code>package.json</code> was designed in the early days of CommonJS to serve many competing purposes.
+          It mixes dependency version ranges, arbitrary lifecycle execution hooks (<code>postinstall</code>, <code>pretest</code>),
+          build configurations for external tools (ESLint, Prettier, Babel, Jest, Tailwind), and publication metadata (author, keywords, repository URL).
+        </p>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          In contrast, Go treats <code>go.mod</code> as a <strong>first-class language construct</strong> parsed directly by the Go compiler.
+          It contains no tool configs, no scripts, and no registry publishing metadata. It contains only 5 fundamental directives:
+          <code>module</code> (identity), <code>go</code> (minimum Go toolchain version), <code>require</code> (dependencies),
+          <code>replace</code> (module overrides), and <code>exclude</code> / <code>retract</code> (disallowed versions).
+        </p>
+
+        <!-- Side-by-side Code Comparison -->
+        <div class="code-diff-grid">
+          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem;">
+            <div style="font-weight: 800; color: #15803d; font-size: 0.8rem; margin-bottom: 0.5rem;">
+              🟢 Node.js: <code>package.json</code> (Kitchen Sink)
+            </div>
+            <pre style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #334155; margin: 0; overflow-x: auto; line-height: 1.5;"><code>{
+  "name": "payment-api",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "node setup.js", // ⚠️ RCE risk
+    "build": "tsc -b",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.19.2",           // ⚠️ SemVer range
+    "pg": "~8.11.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "jest": { "roots": ["&lt;rootDir&gt;/src"] }
+}</code></pre>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem;">
+            <div style="font-weight: 800; color: #007d9c; font-size: 0.8rem; margin-bottom: 0.5rem;">
+              🐹 Go: <code>go.mod</code> (Strict Declarative Module)
+            </div>
+            <pre style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #334155; margin: 0; overflow-x: auto; line-height: 1.5;"><code>module github.com/myorg/payment-api
+
+go 1.23.1
+
+require (
+    github.com/gin-gonic/gin v1.10.0
+    github.com/jackc/pgx/v5 v5.7.1
+    go.uber.org/zap v1.27.0
+)
+
+require (
+    golang.org/x/crypto v0.27.0 // indirect
+    golang.org/x/text v0.18.0 // indirect
+)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🔒 The Big Myth: Why <code>go.sum</code> is NOT a Lockfile</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          Coming from Node.js, developers assume <code>go.sum</code> is Go's equivalent of <code>package-lock.json</code> or <code>pnpm-lock.yaml</code>.
+          <strong>This is fundamentally false:</strong>
+        </p>
+        <ul style="color: #334155; margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.6;">
+          <li>
+            <strong>In npm:</strong> <code>package.json</code> uses fuzzy SemVer ranges (<code>^</code>, <code>~</code>). If you delete <code>package-lock.json</code>,
+            running <code>npm install</code> tomorrow may download completely different versions of every package in your tree!
+          </li>
+          <li>
+            <strong>In Go:</strong> <code>go.mod</code> already contains exact, minimum version numbers. If you delete <code>go.sum</code>,
+            running <code>go build</code> will compute and select the <strong>exact same versions</strong>. The dependency resolution algorithm does not change!
+          </li>
+        </ul>
+
+        <div class="qa-mental-model">
+          <strong>Key Insight:</strong> <code>go.sum</code> is not a lockfile; it is a <strong>cryptographic integrity ledger</strong>.
+          It records SHA-256 hashes of the files inside the downloaded module zip archive to guarantee that upstream authors or compromised proxies cannot alter a released version.
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.5rem;">
+          Anatomy of a <code>go.sum</code> Entry
+        </h4>
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.82rem; line-height:1.6; overflow-x: auto;">github.com/gin-gonic/gin v1.10.0 h1:2t5mQYpL4aZ5wzS/Q...=
+github.com/gin-gonic/gin v1.10.0/go.mod h1:1q5C6D7E8F9G...=</pre>
+        
+        <p style="color: #475569; font-size: 0.88rem; margin-top: 0.75rem;">
+          Notice there are <strong>two entries per version</strong>:
+        </p>
+        <ol style="color: #475569; font-size: 0.88rem; margin-left: 1.5rem; line-height: 1.6;">
+          <li>
+            <code>h1:&lt;hash&gt;</code> represents <strong>Hash algorithm 1</strong> (SHA-256) computed over the complete directory tree of the module's source code.
+          </li>
+          <li>
+            <code>/go.mod h1:&lt;hash&gt;</code> is a hash of <em>only</em> that module's <code>go.mod</code> file. This allows the Go toolchain to resolve dependency graphs without downloading hundreds of megabytes of unused source code archives!
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Minimal Version Selection (MVS) -->
+    <section aria-labelledby="heading-sec-2" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-2" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚖️</span> 2. Minimal Version Selection (MVS) vs npm SemVer Ranges
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          How Russ Cox's MVS algorithm achieves 100% deterministic builds without SAT solvers or duplicate package bloat.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🧠 The Philosophical Divide</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          In npm, version ranges default to "optimistic upgrading". When your <code>package.json</code> specifies <code>^1.2.0</code>,
+          npm interprets this as <em>"Give me the latest, highest possible version &lt; 2.0.0"</em>.
+          If the author of a library publishes <code>v1.9.4</code> at 3 AM on a Saturday, any developer or CI pipeline running <code>npm install</code>
+          automatically pulls that new release — introducing potential regressions, breaking changes, or zero-day supply chain attacks.
+        </p>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          Go takes the exact opposite stance based on the principle of <strong>High Fidelity</strong>:
+          <em>"A build should use the oldest version of every dependency that satisfies all explicit constraints."</em>
+        </p>
+
+        <!-- SVG Diagram: Diamond Dependency & MVS -->
+        <div class="diagram-card" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="diagram-title">
+            <span>📊</span> Visualizing the Diamond Dependency Problem: npm vs Go MVS
+          </div>
+          <div class="diagram-subtitle">
+            Your Root module requires Module A and Module B. Both depend on Database Driver D:
+          </div>
+          <div class="diagram-svg-container">
+            <svg viewBox="0 0 880 340" width="100%" height="340" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+              <!-- Left side: npm -->
+              <rect x="20" y="20" width="400" height="300" rx="10" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/>
+              <text x="40" y="48" font-size="15" font-weight="bold" fill="#991b1b">🔴 Node.js npm Resolution (SemVer Ranges)</text>
+              
+              <!-- Root -->
+              <rect x="150" y="65" width="140" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="175" y="87" font-size="12" font-weight="bold" fill="#0f172a">App (Root)</text>
+
+              <!-- Lines to A and B -->
+              <path d="M 180 99 L 90 140" stroke="#94a3b8" stroke-width="2"/>
+              <path d="M 260 99 L 340 140" stroke="#94a3b8" stroke-width="2"/>
+
+              <!-- Node A -->
+              <rect x="35" y="140" width="125" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="45" y="160" font-size="11" font-weight="bold" fill="#0f172a">Module A</text>
+              <text x="45" y="174" font-size="10" fill="#dc2626">wants D: ^1.2.0</text>
+
+              <!-- Node B -->
+              <rect x="280" y="140" width="125" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="290" y="160" font-size="11" font-weight="bold" fill="#0f172a">Module B</text>
+              <text x="290" y="174" font-size="10" fill="#dc2626">wants D: ^1.4.0</text>
+
+              <!-- Lines to D -->
+              <path d="M 97 182 L 180 235" stroke="#94a3b8" stroke-width="2"/>
+              <path d="M 342 182 L 260 235" stroke="#94a3b8" stroke-width="2"/>
+
+              <!-- Resolution npm -->
+              <rect x="110" y="235" width="220" height="70" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+              <text x="125" y="258" font-size="12" font-weight="bold" fill="#991b1b">npm Result: Driver D v1.9.0</text>
+              <text x="125" y="276" font-size="10.5" fill="#7f1d1d">• Picks newest published on npm registry</text>
+              <text x="125" y="292" font-size="10.5" fill="#7f1d1d">• Neither A nor B was ever tested on v1.9.0!</text>
+
+              <!-- Right side: Go MVS -->
+              <rect x="460" y="20" width="400" height="300" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+              <text x="480" y="48" font-size="15" font-weight="bold" fill="#166534">🐹 Go MVS Resolution (Minimal Version)</text>
+
+              <!-- Root -->
+              <rect x="590" y="65" width="140" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="615" y="87" font-size="12" font-weight="bold" fill="#0f172a">App (Root)</text>
+
+              <!-- Lines to A and B -->
+              <path d="M 620 99 L 530 140" stroke="#94a3b8" stroke-width="2"/>
+              <path d="M 700 99 L 780 140" stroke="#94a3b8" stroke-width="2"/>
+
+              <!-- Go A -->
+              <rect x="475" y="140" width="125" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="485" y="160" font-size="11" font-weight="bold" fill="#0f172a">Module A</text>
+              <text x="485" y="174" font-size="10" fill="#16a34a">requires D v1.2.0</text>
+
+              <!-- Go B -->
+              <rect x="720" y="140" width="125" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+              <text x="730" y="160" font-size="11" font-weight="bold" fill="#0f172a">Module B</text>
+              <text x="730" y="174" font-size="10" fill="#16a34a">requires D v1.4.0</text>
+
+              <!-- Lines to D -->
+              <path d="M 537 182 L 620 235" stroke="#16a34a" stroke-width="2"/>
+              <path d="M 782 182 L 700 235" stroke="#16a34a" stroke-width="2"/>
+
+              <!-- Resolution Go -->
+              <rect x="550" y="235" width="220" height="70" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="565" y="258" font-size="12" font-weight="bold" fill="#166534">Go MVS Result: Driver D v1.4.0</text>
+              <text x="565" y="276" font-size="10.5" fill="#14532d">• Selects max(v1.2.0, v1.4.0) = v1.4.0</text>
+              <text x="565" y="292" font-size="10.5" fill="#14532d">• Ignores unrequested v1.9.0 entirely!</text>
+            </svg>
+          </div>
+        </div>
+
+        <h4 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.5rem;">
+          Why MVS Eliminates Diamond Dependency Hell
+        </h4>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          In Node.js, when two packages require conflicting versions of the same dependency, npm uses version hoisting and nested <code>node_modules</code>.
+          This means your binary runs with <strong>two distinct copies of package D loaded in memory simultaneously</strong>.
+          In JavaScript, this causes disastrous bugs:
+        </p>
+        <ul style="color: #334155; margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.6;">
+          <li><code>instanceof</code> checks fail because Class D in Module A does not match Class D in Module B.</li>
+          <li>Singletons (like database connection pools or telemetry clients) are instantiated twice, exhausting resources.</li>
+          <li>Resolving complex graphs requires an NP-complete SAT solver that slows down package installations.</li>
+        </ul>
+        <p style="color: #334155;">
+          With Go MVS, dependency resolution runs in <strong>linear time</strong>.
+          The algorithm simply walks the requirement tree, and for any dependency D, it selects <code>max(required_versions)</code>.
+          Because Go strictly enforces backward compatibility within major versions, selecting <code>v1.4.0</code> is guaranteed to satisfy
+          Module A's requirement of <code>v1.2.0</code>. There is only ever <strong>one single copy</strong> of package D in the final binary!
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Direct vs Indirect Dependencies -->
+    <section aria-labelledby="heading-sec-3" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-3" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🔍</span> 3. Direct vs Indirect Dependencies (<code>// indirect</code>)
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Why transitive dependencies appear in your root <code>go.mod</code> and how to keep it clean with <code>go mod tidy</code>.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">❓ When and Why Does Go Add <code>// indirect</code>?</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          In Node.js, <code>package.json</code> only lists packages that you directly installed via <code>npm install &lt;pkg&gt;</code>.
+          Transitive sub-dependencies are hidden away in <code>package-lock.json</code>.
+          In Go, you will often open <code>go.mod</code> and see packages tagged with <code>// indirect</code>:
+        </p>
+
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.85rem; line-height:1.5; overflow-x: auto;">require (
+    github.com/gin-gonic/gin v1.10.0 // Direct dependency (imported in your .go files)
+    golang.org/x/net v0.29.0 // indirect (imported by gin, NOT by your code)
+    golang.org/x/sys v0.25.0 // indirect
+)</pre>
+
+        <p style="color: #334155; margin-top: 1rem; margin-bottom: 0.75rem;">
+          Go records a dependency as <code>// indirect</code> in your root <code>go.mod</code> under two specific circumstances:
+        </p>
+        <ol style="color: #334155; margin-left: 1.5rem; margin-bottom: 1.25rem; line-height: 1.6;">
+          <li>
+            <strong>Transitive Dependency Without a <code>go.mod</code>:</strong> If you import an older or legacy third-party package that does not have its own <code>go.mod</code> file, Go records all of its transitive requirements in your root <code>go.mod</code> to preserve reproducibility.
+          </li>
+          <li>
+            <strong>Minimum Version Elevation (Upgrade Override):</strong> If your direct dependency <code>A</code> requires transitive dependency <code>B v1.1.0</code>, but you explicitly run <code>go get B@v1.4.0</code> to patch a bug or security issue, Go must record <code>B v1.4.0 // indirect</code> in your root <code>go.mod</code> so MVS knows to select <code>v1.4.0</code> instead of <code>v1.1.0</code>.
+          </li>
+        </ol>
+
+        <div class="qa-pro-tip">
+          <strong>Pro-Tip: Keep your <code>go.mod</code> clean with <code>go mod tidy</code>:</strong>
+          Running <code>go mod tidy</code> scans all <code>.go</code> files in your module, adds any missing module requirements needed to build your packages,
+          and automatically removes any direct or indirect requirements that are no longer used anywhere in the build graph.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Directives Deep Dive -->
+    <section aria-labelledby="heading-sec-4" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-4" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🛠️</span> 4. Directives Deep Dive: <code>replace</code>, <code>exclude</code>, and <code>retract</code>
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Master local multi-module monorepos, patching third-party CVEs, blocking broken releases, and version revocation.
+        </p>
+      </div>
+
+      <!-- replace directive -->
+      <div class="deepdive-box">
+        <div class="deepdive-title" style="color: #0f172a;">
+          <span>🔄</span> 1. The <code>replace</code> Directive (Monorepos &amp; Upstream Patching)
+        </div>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          In Node.js, testing local packages or hot-patching a dependency requires <code>npm link</code>, <code>pnpm link</code>,
+          or modifying <code>package.json</code> to point to a local file path (<code>file:../lib</code>), which often creates symlink bugs or gets accidentally committed to Git.
+        </p>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          In Go, the <code>replace</code> directive redirects a module path to another location — either a local directory on your filesystem or a custom Git fork:
+        </p>
+
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.2rem; border-radius:8px; font-size:0.83rem; line-height:1.6; overflow-x: auto;">// Use-Case A: Local Monorepo Development
+replace github.com/myorg/auth-service/pkg/client => ../auth-client
+
+// Use-Case B: Patching a Critical CVE in Upstream Library with your Organization's Fork
+replace github.com/upstream/vulnerable-lib v1.2.0 => github.com/myorg/fixed-fork v1.2.1-cvepatch</pre>
+
+        <div class="qa-mental-model" style="margin-top: 1rem;">
+          <strong>CRITICAL ARCHITECTURAL RULE:</strong> The <code>replace</code> directive is <strong>ONLY honored in the main (root) module</strong>!
+          If a third-party library you import includes a <code>replace</code> directive in its own <code>go.mod</code>, Go completely ignores it.
+          This prevents malicious dependencies from hijacking your module resolution graph!
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.5rem;">
+          Modern Alternative: Go Workspaces (<code>go.work</code> introduced in Go 1.18)
+        </h4>
+        <p style="color: #475569; font-size: 0.88rem; line-height: 1.6;">
+          Instead of writing <code>replace</code> in your <code>go.mod</code> and risking committing local filesystem paths to Git,
+          you can use a <code>go.work</code> file at the monorepo root:
+        </p>
+        <pre class="code-block" style="background:#1e293b; color:#f8fafc; padding:0.85rem; border-radius:6px; font-size:0.8rem; line-height:1.5; overflow-x: auto;">go 1.23.1
+
+use (
+    ./services/payment-gateway
+    ./services/auth-api
+    ./shared/logger
+)</pre>
+        <p style="color: #64748b; font-size: 0.82rem; margin-top: 0.4rem;">
+          <code>go.work</code> is kept in <code>.gitignore</code>. The Go toolchain automatically resolves inter-module references locally across all directories listed in <code>use</code>!
+        </p>
+      </div>
+
+      <!-- exclude and retract directives -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem;">
+        
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #b91c1c;">
+            <span>🚫</span> 2. The <code>exclude</code> Directive
+          </div>
+          <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+            Prevents the Go toolchain from ever selecting a specific buggy or broken version of a dependency during MVS traversal:
+          </p>
+          <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:0.85rem; border-radius:6px; font-size:0.8rem; line-height:1.5; overflow-x: auto;">exclude (
+    // Skip broken release with memory leak
+    github.com/gin-gonic/gin v1.9.0
+)</pre>
+          <p style="color: #64748b; font-size: 0.82rem; margin-top: 0.5rem;">
+            Like <code>replace</code>, <code>exclude</code> only applies in the root module.
+          </p>
+        </div>
+
+        <div class="deepdive-box" style="margin-bottom: 0;">
+          <div class="deepdive-title" style="color: #d97706;">
+            <span>↩️</span> 3. The <code>retract</code> Directive
+          </div>
+          <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+            For module authors to officially deprecate or recall an accidental, broken, or insecure release:
+          </p>
+          <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:0.85rem; border-radius:6px; font-size:0.8rem; line-height:1.5; overflow-x: auto;">// In the author's own go.mod:
+retract (
+    v1.0.1 // Accidental release with API key leak
+    [v1.1.0, v1.1.3] // Panics on Windows platforms
+)</pre>
+          <p style="color: #64748b; font-size: 0.82rem; margin-top: 0.5rem;">
+            <code>go get</code> refuses to resolve to retracted versions, but existing pinned builds will not break.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: Major Version Suffixes -->
+    <section aria-labelledby="heading-sec-5" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-5" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🏷️</span> 5. Major Version Suffixes (Semantic Import Versioning)
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Why Go places <code>/v2</code>, <code>/v3</code> directly into the import path and how it enables seamless co-existence.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🧩 The Import Compatibility Rule</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          In the Node.js ecosystem, upgrading from Express v4 to v5 or from React 17 to 18 is done by modifying the version string in <code>package.json</code>.
+          The import path remains identical: <code>import express from 'express'</code>.
+          However, because v5 introduces breaking API changes, any code or plugin expecting v4 breaks immediately upon upgrade.
+        </p>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          Go solves this with Russ Cox's <strong>Import Compatibility Rule</strong>:
+          <em style="color: #0369a1; font-weight: 600;">"If an old package and a new package have the same import path, the new package MUST be backwards-compatible with the old one."</em>
+        </p>
+        <p style="color: #334155; margin-bottom: 1.25rem;">
+          Therefore, by definition: <strong>If you introduce a breaking API change (v2.0.0+), it is fundamentally a DIFFERENT PACKAGE.</strong>
+          It must have a distinct import path:
+        </p>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.88rem; font-family: 'JetBrains Mono', monospace; line-height: 1.7;">
+            <div><span style="color: #64748b;">// Major version 0 and 1:</span> import "github.com/jackc/pgx"</div>
+            <div><span style="color: #64748b;">// Major version 2:</span> import "github.com/jackc/pgx/v2"</div>
+            <div><span style="color: #64748b;">// Major version 5 (Current):</span> import "<span style="color: #0284c7; font-weight: 700;">github.com/jackc/pgx/v5</span>"</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+          The Superpower: Dual-Version Importing Without Collision
+        </h4>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          Because v1 and v2 have different import paths, Go allows you to <strong>import both v1 and v2 in the same binary simultaneously</strong>.
+          This makes large-scale architectural refactors painless:
+        </p>
+
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.2rem; border-radius:8px; font-size:0.83rem; line-height:1.6; overflow-x: auto;">package main
+
+import (
+    "fmt"
+    // Import both versions in the same file!
+    redisv8 "github.com/go-redis/redis/v8"
+    redisv9 "github.com/redis/go-redis/v9"
+)
+
+func main() {
+    // Legacy client running during phased migration
+    clientOld := redisv8.NewClient(&redisv8.Options{Addr: "localhost:6379"})
+    
+    // New client running with updated context API
+    clientNew := redisv9.NewClient(&redisv9.Options{Addr: "localhost:6379"})
+
+    fmt.Println(clientOld, clientNew)
+}</pre>
+
+        <p style="color: #475569; font-size: 0.88rem; margin-top: 1rem;">
+          In Node.js, attempting to load two different major versions of a library often triggers symbol collisions,
+          duplicate prototype declarations, or <code>instanceof</code> identity mismatches. In Go, they are completely isolated, statically checked packages.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: Vendoring vs node_modules -->
+    <section aria-labelledby="heading-sec-6" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-6" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📁</span> 6. Vendoring (<code>go mod vendor</code>) vs <code>node_modules</code>
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Why Go has no <code>node_modules</code> folder, and how flat vendoring delivers hermetic, air-gapped CI builds.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🗑️ Where are my dependencies downloaded?</h3>
+        <p style="color: #334155; margin-bottom: 1rem;">
+          When you clone a Node.js repository, the very first command you must run is <code>npm install</code>.
+          This downloads hundreds of megabytes of nested packages into a local <code>node_modules/</code> folder inside that specific repository.
+          If you have 10 microservices on your laptop using TypeScript and Express, you have 10 separate copies of Express on your hard drive.
+        </p>
+        <p style="color: #334155; margin-bottom: 1.25rem;">
+          In Go, <strong>there is no project-local dependency folder by default</strong>.
+          Dependencies are downloaded once globally to <code>$GOPATH/pkg/mod/</code> (typically <code>~/go/pkg/mod/</code>).
+          These downloaded files are <strong>read-only</strong> (permissions <code>0555</code>) to prevent accidental mutation or malware tampering.
+          All Go projects on your machine share this single immutable global cache.
+        </p>
+
+        <!-- Comparison Table: node_modules vs vendor -->
+        <table class="rosetta-table" aria-label="Comparison between Node node_modules and Go vendor directory">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 20%;">Dimension</th>
+              <th scope="col" style="width: 40%;">Node.js: <code>node_modules</code></th>
+              <th scope="col" style="width: 40%;">Go: <code>go mod vendor</code></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Directory Structure</strong></td>
+              <td>Deep, recursive tree or complex symlink farm (pnpm)</td>
+              <td><strong>Flat, single-level</strong> directory structure</td>
+            </tr>
+            <tr>
+              <td><strong>Files Included</strong></td>
+              <td>Readmes, tests, benchmarks, docs, package.json for every dependency</td>
+              <td><strong>Only the exact compiled .go source files</strong> actually referenced by your binary</td>
+            </tr>
+            <tr>
+              <td><strong>Disk Size</strong></td>
+              <td>Frequently 300 MB – 1.2 GB+</td>
+              <td><strong>Typically 5 MB – 25 MB</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Git Check-In</strong></td>
+              <td>Almost never (causes merge conflicts &amp; git repository bloat)</td>
+              <td><strong>Common for enterprise</strong> air-gapped compliance &amp; reproducibility</td>
+            </tr>
+            <tr>
+              <td><strong>Docker Build Impact</strong></td>
+              <td>Requires slow <code>RUN npm ci</code> inside every build layer</td>
+              <td><code>COPY vendor/ .</code> allows <strong>instant offline compilation</strong> with <code>go build -mod=vendor</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="qa-pro-tip" style="margin-top: 1.25rem;">
+          <strong>Enterprise Air-Gapped Builds:</strong>
+          Running <code>go mod vendor</code> copies all required dependencies into a <code>vendor/</code> directory in your project root.
+          You can compile your entire application in an air-gapped environment with zero internet access:
+          <code style="background: #ffffff; padding: 0.2rem 0.4rem; border-radius: 4px; color: #1e40af;">go build -mod=vendor ./cmd/server</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: Supply Chain Security & Ecosystem Infrastructure -->
+    <section aria-labelledby="heading-sec-7" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-7" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🛡️</span> 7. Supply Chain Security &amp; Ecosystem Infrastructure
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          The Go Module Proxy, Checksum Database, enterprise <code>GOPRIVATE</code>, and why Go has zero <code>postinstall</code> RCE attacks.
+        </p>
+      </div>
+
+      <!-- Infrastructure SVG Diagram -->
+      <div class="diagram-card">
+        <div class="diagram-title">
+          <span>🌐</span> The Go Supply Chain Architecture: Proxy, SumDB, &amp; Private Repos
+        </div>
+        <div class="diagram-subtitle">
+          How Go guarantees high availability, immutability, and enterprise confidentiality:
+        </div>
+        <div class="diagram-svg-container">
+          <svg viewBox="0 0 880 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+            <!-- Developer Machine -->
+            <rect x="20" y="70" width="180" height="140" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+            <text x="35" y="100" font-size="14" font-weight="bold" fill="#0369a1">💻 Dev Machine / CI</text>
+            <text x="35" y="125" font-size="11" fill="#0f172a"><code>go get &lt;module&gt;</code></text>
+            <text x="35" y="145" font-size="10.5" fill="#475569">• Checks GOPRIVATE</text>
+            <text x="35" y="165" font-size="10.5" fill="#475569">• Verifies go.sum</text>
+            <text x="35" y="185" font-size="10.5" fill="#15803d">✓ Zero script execution</text>
+
+            <!-- Arrows to Proxy and Direct -->
+            <path d="M 200 110 L 310 75" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="215" y="85" font-size="10.5" fill="#0284c7" font-weight="600">Public Module</text>
+
+            <path d="M 200 170 L 310 205" stroke="#ea580c" stroke-width="2" stroke-dasharray="4,4"/>
+            <text x="215" y="200" font-size="10.5" fill="#ea580c" font-weight="600">GOPRIVATE Match</text>
+
+            <!-- Box 1: Go Module Proxy -->
+            <rect x="310" y="30" width="240" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="325" y="55" font-size="13" font-weight="bold" fill="#0f172a">📦 Go Module Proxy</text>
+            <text x="325" y="72" font-size="11" fill="#0284c7">proxy.golang.org (Google CDN)</text>
+            <text x="325" y="90" font-size="10.5" fill="#64748b">• Content-addressable zip cache</text>
+            <text x="325" y="106" font-size="10.5" fill="#15803d">✓ Immune to deleted GitHub repos!</text>
+
+            <!-- Arrow from Proxy to SumDB -->
+            <path d="M 550 75 L 630 75" stroke="#0284c7" stroke-width="2"/>
+            <text x="560" y="68" font-size="10" fill="#64748b">Verify Hash</text>
+
+            <!-- Box 2: Checksum Database -->
+            <rect x="630" y="30" width="230" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="645" y="55" font-size="13" font-weight="bold" fill="#0f172a">🔒 Checksum Database</text>
+            <text x="645" y="72" font-size="11" fill="#0284c7">sum.golang.org (Merkle Tree)</text>
+            <text x="645" y="90" font-size="10.5" fill="#64748b">• Append-only public ledger</text>
+            <text x="645" y="106" font-size="10.5" fill="#15803d">✓ Detects force-pushed git tags</text>
+
+            <!-- Box 3: Private Git Repos -->
+            <rect x="310" y="160" width="550" height="90" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+            <text x="325" y="185" font-size="13" font-weight="bold" fill="#9a3412">🏢 Private Enterprise Repos (GitHub / GitLab / Bitbucket)</text>
+            <text x="325" y="205" font-size="11" fill="#ea580c">Direct Git SSH / Token Access</text>
+            <text x="325" y="224" font-size="10.5" fill="#475569">• Bypasses proxy.golang.org &amp; sum.golang.org entirely</text>
+            <text x="325" y="240" font-size="10.5" fill="#15803d">✓ Zero proprietary code or metadata leaks to Google servers</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🚀 1. The Go Module Proxy (<code>proxy.golang.org</code>)</h3>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          In 2016, the entire Node.js world ground to a halt when the author of <code>left-pad</code> unpublished his 11-line package from npmjs.org.
+          Thousands of production deployments worldwide broke immediately.
+        </p>
+        <p style="color: #334155;">
+          <strong>Why this cannot happen in Go:</strong>
+          When any developer requests a public module, <code>proxy.golang.org</code> caches the module zip file and <code>go.mod</code> permanently.
+          Even if the original author deletes their GitHub account, makes the repository private, or renames their repository,
+          the module remains permanently downloadable and cached for the rest of the world.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🌳 2. The Checksum Database (<code>sum.golang.org</code>)</h3>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          What if a malicious author force-pushes a commit to Git tag <code>v1.2.0</code> with a crypto-miner?
+          Or what if an attacker performs a Man-in-the-Middle (MITM) attack or compromises a regional proxy?
+        </p>
+        <p style="color: #334155;">
+          The Go Checksum Database (SumDB) is a <strong>transparent, append-only Merkle tree ledger</strong> (similar to Certificate Transparency for SSL/TLS).
+          Once a cryptographic hash is recorded for <code>github.com/foo/bar v1.2.0</code>, it can never be altered.
+          Every developer's machine verifies downloaded files against SumDB before writing them to <code>go.sum</code>.
+          If a single byte changes, the build aborts immediately with a security failure:
+          <code style="background: #fee2e2; color: #b91c1c; padding: 0.1rem 0.3rem; border-radius: 4px;">SECURITY ERROR: checksum mismatch</code>.
+        </p>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title">🏢 3. Enterprise Privacy: The <code>GOPRIVATE</code> Variable</h3>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          Companies cannot publish proprietary backend code to Google's public proxy or checksum database.
+          Go provides environment variables to cleanly segregate private code:
+        </p>
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.83rem; line-height:1.5; overflow-x: auto;"># Direct all company repositories straight to internal Git servers:
+export GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
+
+# Setting GOPRIVATE automatically configures:
+# 1. GONOPROXY (bypasses proxy.golang.org)
+# 2. GONOSUMDB (bypasses sum.golang.org)</pre>
+      </div>
+
+      <div class="deepdive-box">
+        <h3 class="deepdive-title" style="color: #15803d;">⚡ 4. The "No Postinstall" Superpower (Zero Supply-Chain RCE)</h3>
+        <p style="color: #334155; margin-bottom: 0.75rem;">
+          The single most devastating attack vector in the npm ecosystem is the <strong>lifecycle install script</strong>.
+          When you run <code>npm install</code>, npm automatically executes any script defined in a package's <code>postinstall</code> field:
+        </p>
+        <ul style="color: #334155; margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.6;">
+          <li>Attackers have compromised packages like <code>event-stream</code>, <code>colors</code>, <code>ua-parser-js</code>, and <code>node-ipc</code> to wipe files, exfiltrate AWS keys, and open reverse shells.</li>
+          <li>Simply running <code>npm install</code> on an untrusted pull request can compromise your local laptop.</li>
+        </ul>
+        <div class="qa-mental-model">
+          <strong>Go's Radical Security Model:</strong>
+          Go modules have <strong>ZERO post-install execution scripts</strong>.
+          Running <code>go get</code> or <code>go build</code> does not execute arbitrary shell commands.
+          Dependencies in Go are pure source code archives. The compiler only parses Go syntax at build time,
+          rendering the entire class of npm-style installation RCE attacks physically impossible in Go!
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: Rosetta Command Reference -->
+    <section aria-labelledby="heading-sec-8" style="margin-bottom: 3rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-8" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📖</span> 8. Rosetta Command Reference: npm vs Go Tooling
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Side-by-side command translation covering installation, upgrades, pruning, auditing, and graph queries.
+        </p>
+      </div>
+
+      <div style="overflow-x: auto; background: #ffffff; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+        <table class="rosetta-table" aria-label="Rosetta Command Reference: Node.js npm vs Go CLI">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 22%;">Task / Workflow</th>
+              <th scope="col" style="width: 28%;">Node.js (npm / pnpm)</th>
+              <th scope="col" style="width: 30%;">Go Toolchain</th>
+              <th scope="col" style="width: 20%;">Key Behavioral Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Initialize Project</strong></td>
+              <td><code>npm init -y</code></td>
+              <td><code>go mod init &lt;path&gt;</code><br><span style="font-size: 0.75rem; color: #64748b;">e.g. <code>go mod init github.com/u/app</code></span></td>
+              <td>Go requires the canonical repository import path as the module name.</td>
+            </tr>
+            <tr>
+              <td><strong>Add Dependency</strong></td>
+              <td><code>npm install express</code></td>
+              <td><code>go get github.com/gin-gonic/gin</code></td>
+              <td>Downloads module, updates <code>go.mod</code> and <code>go.sum</code> with SHA-256 hash.</td>
+            </tr>
+            <tr>
+              <td><strong>Add Specific Version</strong></td>
+              <td><code>npm i lodash@4.17.21</code></td>
+              <td><code>go get github.com/lib@v1.2.3</code></td>
+              <td>Go pins exact Git tag or commit hash.</td>
+            </tr>
+            <tr>
+              <td><strong>Install Global CLI Tool</strong></td>
+              <td><code>npm install -g nodemon</code></td>
+              <td><code>go install &lt;pkg&gt;@latest</code><br><span style="font-size: 0.75rem; color: #64748b;">e.g. <code>go install github.com/air-verse/air@latest</code></span></td>
+              <td>Compiles a binary directly into <code>$GOPATH/bin</code> (zero npm global wrapper overhead).</td>
+            </tr>
+            <tr>
+              <td><strong>Upgrade Dependencies</strong></td>
+              <td><code>npm update</code></td>
+              <td><code>go get -u ./...</code><br><span style="font-size: 0.75rem; color: #64748b;">(or <code>go get -u=patch</code>)</span></td>
+              <td><code>-u</code> upgrades minor/patch; <code>-u=patch</code> only upgrades patch releases.</td>
+            </tr>
+            <tr>
+              <td><strong>Prune Unused Deps</strong></td>
+              <td><code>npm prune</code> / <code>npx depcheck</code></td>
+              <td><code>go mod tidy</code></td>
+              <td><code>go mod tidy</code> synchronizes <code>go.mod</code> with actual <code>import</code> statements in your <code>.go</code> files.</td>
+            </tr>
+            <tr>
+              <td><strong>Verify Integrity</strong></td>
+              <td><code>npm cache verify</code></td>
+              <td><code>go mod verify</code></td>
+              <td>Validates that downloaded dependencies in cache match the hashes in <code>go.sum</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Vulnerability Audit</strong></td>
+              <td><code>npm audit</code><br><span style="font-size: 0.75rem; color: #b91c1c;">(High false-positive rate)</span></td>
+              <td><code>govulncheck ./...</code></td>
+              <td><strong>Static Call-Graph Analysis:</strong> Only flags CVEs if your code actually calls the vulnerable function symbol!</td>
+            </tr>
+            <tr>
+              <td><strong>Inspect Dependency Tree</strong></td>
+              <td><code>npm ls --all</code></td>
+              <td><code>go mod graph</code></td>
+              <td>Outputs the full directed graph of module requirements as raw text edges.</td>
+            </tr>
+            <tr>
+              <td><strong>Why Is Package Required?</strong></td>
+              <td><code>npm explain &lt;pkg&gt;</code> / <code>pnpm why</code></td>
+              <td><code>go mod why -m &lt;pkg&gt;</code></td>
+              <td>Shows the exact shortest path from your root module to the target package.</td>
+            </tr>
+            <tr>
+              <td><strong>Local Linking / Workspace</strong></td>
+              <td><code>npm link</code></td>
+              <td><code>go.work</code> or <code>replace</code> directive</td>
+              <td><code>go.work</code> seamlessly binds multiple local repositories without polluting Git.</td>
+            </tr>
+            <tr>
+              <td><strong>Clean Global Cache</strong></td>
+              <td><code>npm cache clean --force</code></td>
+              <td><code>go clean -modcache</code></td>
+              <td>Clears read-only downloaded files from <code>$GOPATH/pkg/mod/</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Vendor Offline Copy</strong></td>
+              <td><em>n/a (or npm pack)</em></td>
+              <td><code>go mod vendor</code></td>
+              <td>Creates a flat, single-level local copy of all compiled dependencies for hermetic builds.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 9: Interactive Deep Dive QA -->
+    <section aria-labelledby="heading-sec-9" style="margin-bottom: 2rem;">
+      <div style="border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+        <h2 id="heading-sec-9" style="font-size: 1.4rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🎯</span> 9. Frequently Asked Architecture Questions
+        </h2>
+        <p style="color: #64748b; font-size: 0.95rem;">
+          Deep answers to common questions asked by senior Node.js engineers moving to Go.
+        </p>
+      </div>
+
+      <!-- QA 1 -->
+      <div class="qa-card">
+        <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== 'none'; b.style.display = open ? 'none' : 'block'; this.setAttribute('aria-expanded', !open);">
+          <span>Q1: Why doesn't Go support SemVer range wildcards like <code>^1.2.0</code> or <code>~1.2.0</code>?</span>
+          <span class="qa-badge concept">Algorithm</span>
+        </button>
+        <div class="qa-body">
+          <p>
+            SemVer range wildcards (like <code>^</code> or <code>~</code>) introduce <strong>non-determinism</strong> into software builds.
+            With range wildcards, the exact code being compiled depends on what time of day you run the installation command:
+          </p>
+          <ul>
+            <li>If Developer A runs <code>npm install</code> on Monday, they get version 1.2.3.</li>
+            <li>If Developer B clones the project on Tuesday after a patch release, they get version 1.2.4.</li>
+            <li>If 1.2.4 introduces a subtle timing regression, Developer B experiences a bug that Developer A cannot reproduce.</li>
+          </ul>
+          <p>
+            Go's creator Russ Cox designed Minimal Version Selection (MVS) so that builds are <strong>reproducible across time and machines</strong>.
+            In Go, if you want a newer version, you must explicitly upgrade it via <code>go get -u</code>.
+          </p>
+        </div>
+      </div>
+
+      <!-- QA 2 -->
+      <div class="qa-card">
+        <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== 'none'; b.style.display = open ? 'none' : 'block'; this.setAttribute('aria-expanded', !open);">
+          <span>Q2: Why does <code>govulncheck</code> report 0 vulnerabilities when my dependency has a known CVE?</span>
+          <span class="qa-badge high">Security</span>
+        </button>
+        <div class="qa-body">
+          <div class="qa-mental-model">
+            <strong>The npm audit problem:</strong> In Node.js, <code>npm audit</code> inspects version strings in <code>package-lock.json</code>.
+            If you have a 1,000-line library and 1 function in it has a CVE, <code>npm audit</code> triggers a red alert — even if your project never calls that function!
+            This creates massive "alert fatigue" where developers learn to ignore security reports.
+          </div>
+          <p>
+            <strong>How <code>govulncheck</code> works:</strong>
+            Go's official vulnerability scanner uses the Go compiler's <strong>static call-graph analysis</strong>.
+            It parses your code, builds the entire AST and call graph, and checks if your binary's execution paths actually reach the specific vulnerable function symbol.
+            If your application never calls the vulnerable function, the code is dead and stripped by the compiler; <code>govulncheck</code> knows you are not vulnerable.
+          </p>
+        </div>
+      </div>
+
+      <!-- QA 3 -->
+      <div class="qa-card">
+        <button type="button" class="qa-header" aria-expanded="true" onclick="const b = this.nextElementSibling; const open = b.style.display !== 'none'; b.style.display = open ? 'none' : 'block'; this.setAttribute('aria-expanded', !open);">
+          <span>Q3: What should I check into Git: <code>go.mod</code>, <code>go.sum</code>, or <code>vendor/</code>?</span>
+          <span class="qa-badge medium">Best Practice</span>
+        </button>
+        <div class="qa-body">
+          <ul>
+            <li><strong>Always Commit:</strong> Both <code>go.mod</code> and <code>go.sum</code> MUST be committed to Git. Never git-ignore <code>go.sum</code>.</li>
+            <li><strong>Optional Commit (<code>vendor/</code>):</strong> Commit <code>vendor/</code> if your organization requires air-gapped CI/CD builds with no external internet access, or if you need 100% self-contained compliance archives. Otherwise, omitting <code>vendor/</code> and letting CI fetch from the Go module proxy is standard practice.</li>
+            <li><strong>Never Commit:</strong> Never commit <code>go.work</code> or <code>go.work.sum</code> to shared repositories. Keep <code>go.work</code> in your global <code>.gitignore</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer Action Navigation -->
+    <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: gap: 1rem;">
+      <a href="/docker" class="action-btn" style="text-decoration: none;">
+        <span>⬅️</span> 🐳 Next: Production Docker for Go
+      </a>
+      <a href="/cheatsheet" class="action-btn" style="text-decoration: none;">
+        <span>📖</span> Rosetta Cheatsheet <span>➡️</span>
+      </a>
     </div>
 
-    <div class="deepdive-box">
-      <div class="deepdive-title">🔒 2. <code>package-lock.json</code> vs <code>go.sum</code> (Cryptographic Security)</div>
-      <p style="color: #475569;">
-        <code>go.sum</code> is a cryptographic SHA-256 ledger. If a package author deletes their repo or force-pushes a malicious change to a Git tag (supply chain attack), the Go compiler detects the mismatch and aborts the build.
-      </p>
-    </div>
-
-    <div class="deepdive-box">
-      <div class="deepdive-title">🗑️ 3. Where is <code>node_modules</code>?</div>
-      <p style="color: #475569;">
-        Go never creates a local dependency folder in your project. Dependencies are downloaded once globally to <code>$GOPATH/pkg/mod/</code> and shared across all projects.
-      </p>
-    </div>
   </div>
-
-  <!-- VIEW: CHEATSHEET -->
+</div>

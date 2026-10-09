@@ -27,7 +27,7 @@ func main() {
 	age := 15
 	isEngineer := true
 
-	fmt.Printf("User: %s | Age: %d | Engineer: %t\n\n", name, age, isEngineer)
+	fmt.Printf("User: %s | Age: %d | Engineer: %t\\n\\n", name, age, isEngineer)
 
 	// 2. Zero Values (no undefined or NaN in Go!)
 	var defaultNumber int
@@ -36,10 +36,10 @@ func main() {
 	var defaultPointer *string
 
 	fmt.Println("--- Guaranteed Zero Values in Go ---")
-	fmt.Printf("int:     %d\n", defaultNumber)
-	fmt.Printf("string:  '%s'\n", defaultString)
-	fmt.Printf("bool:    %t\n", defaultBool)
-	fmt.Printf("pointer: %v (Go's null)\n", defaultPointer)
+	fmt.Printf("int:     %d\\n", defaultNumber)
+	fmt.Printf("string:  '%s'\\n", defaultString)
+	fmt.Printf("bool:    %t\\n", defaultBool)
+	fmt.Printf("pointer: %v (Go's null)\\n", defaultPointer)
 }`
       },
 
@@ -73,7 +73,7 @@ func safeDivide(a, b float64) (float64, error) {
 
 func main() {
 	loud, count := formatName("golang")
-	fmt.Printf("Formatted: %s, Length: %d\n\n", loud, count)
+	fmt.Printf("Formatted: %s, Length: %d\\n\\n", loud, count)
 
 	shouted, _ := formatName("backend")
 	fmt.Println("Only wanted the name:", shouted)
@@ -82,7 +82,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Error:", err)
 	} else {
-		fmt.Printf("10 / 2 = %.2f\n", res)
+		fmt.Printf("10 / 2 = %.2f\\n", res)
 	}
 }`
       },
@@ -123,7 +123,7 @@ func main() {
 
 	fmt.Println(dev.Introduce())
 	dev.LevelUp()
-	fmt.Printf("After LevelUp: %d years of experience\n", dev.YearsExp)
+	fmt.Printf("After LevelUp: %d years of experience\\n", dev.YearsExp)
 }`
       },
 
@@ -196,7 +196,7 @@ func main() {
 	fmt.Println()
 
 	if status := 200; status >= 200 && status < 300 {
-		fmt.Printf("HTTP Success (status %d)\n", status)
+		fmt.Printf("HTTP Success (status %d)\\n", status)
 	}
 
 	role := "admin"
@@ -238,10 +238,10 @@ func internalMultiplier(p int) int {
 func main() {
 	fmt.Println("=== Go Capitalization Visibility Rule ===")
 	fmt.Println("Capital (Public):    fmt.Println, http.ListenAndServe, json.Marshal")
-	fmt.Println("Lowercase (Private): internal functions and unexported struct fields\n")
+	fmt.Println("Lowercase (Private): internal functions and unexported struct fields\\n")
 
 	reward := CalculateReward(5)
-	fmt.Printf("Calculated reward: %d points\n", reward)
+	fmt.Printf("Calculated reward: %d points\\n", reward)
 }`
       },
 
@@ -505,7 +505,7 @@ func main() {
 	json.NewDecoder(res.Body).Decode(&quote)
 
 	fmt.Printf("Status: %d\\n", res.StatusCode)
-	fmt.Printf("Quote: \"%s\" — %s\\n", quote.Quote, quote.Author)
+	fmt.Printf("Quote: \\"%s\\" — %s\\n", quote.Quote, quote.Author)
 }`
       },
 
@@ -1287,15 +1287,15 @@ func updateByPointer(p *Profile) {
 
 func main() {
 	user := Profile{Name: "Alex", Role: "Fullstack", Views: 10}
-	fmt.Printf("Initial: %+v (Memory Address: %p)\n", user, &user)
+	fmt.Printf("Initial: %+v (Memory Address: %p)\\n", user, &user)
 
 	// 1. Pass by value (Copy)
 	updateByValue(user)
-	fmt.Printf("After updateByValue:   %+v (Views unchanged!)\n", user)
+	fmt.Printf("After updateByValue:   %+v (Views unchanged!)\\n", user)
 
 	// 2. Pass by pointer (Memory address reference)
 	updateByPointer(&user)
-	fmt.Printf("After updateByPointer: %+v (Views mutated!)\n", user)
+	fmt.Printf("After updateByPointer: %+v (Views mutated!)\\n", user)
 }`
       },
 
@@ -1314,13 +1314,13 @@ import "fmt"
 func inspectValue(val any) {
 	switch v := val.(type) {
 	case string:
-		fmt.Printf("String [len=%d]: %q\n", len(v), v)
+		fmt.Printf("String [len=%d]: %q\\n", len(v), v)
 	case int:
-		fmt.Printf("Integer [doubled]: %d\n", v*2)
+		fmt.Printf("Integer [doubled]: %d\\n", v*2)
 	case []string:
-		fmt.Printf("Slice of %d strings: %v\n", len(v), v)
+		fmt.Printf("Slice of %d strings: %v\\n", len(v), v)
 	default:
-		fmt.Printf("Unknown type: %T with value %v\n", v, v)
+		fmt.Printf("Unknown type: %T with value %v\\n", v, v)
 	}
 }
 
@@ -1330,13 +1330,13 @@ func main() {
 	// 1. Safe Type Assertion with comma-ok idiom
 	str, ok := payload.(string)
 	if ok {
-		fmt.Printf("Safe assertion: %s\n", str)
+		fmt.Printf("Safe assertion: %s\\n", str)
 	} else {
 		fmt.Println("Payload is not a string!")
 	}
 
 	// 2. Type Switch (Go's typeof/instanceof pattern)
-	fmt.Println("\n--- Type Switch Inspections ---")
+	fmt.Println("\\n--- Type Switch Inspections ---")
 	inspectValue(42)
 	inspectValue("Go Backend")
 	inspectValue([]string{"Redis", "Postgres", "Kafka"})
@@ -1375,14 +1375,14 @@ func (s OrderStatus) String() string {
 
 func main() {
 	current := StatusProcessing
-	fmt.Printf("Order state: %s (Raw integer: %d)\n", current, current)
+	fmt.Printf("Order state: %s (Raw integer: %d)\\n", current, current)
 
 	if current == StatusProcessing {
 		fmt.Println("Order is currently packed in warehouse.")
 	}
 
 	current = StatusShipped
-	fmt.Printf("Updated state: %s (Raw integer: %d)\n", current, current)
+	fmt.Printf("Updated state: %s (Raw integer: %d)\\n", current, current)
 }`
       },
 
@@ -1427,9 +1427,9 @@ func main() {
 	}
 
 	// Promoted fields accessed directly
-	fmt.Printf("Direct field access: %s (%s)\n", admin.Name, admin.Email)
-	fmt.Printf("Admin custom method: %s\n", admin.Display())
-	fmt.Printf("Original inner method: %s\n", admin.User.Display())
+	fmt.Printf("Direct field access: %s (%s)\\n", admin.Name, admin.Email)
+	fmt.Printf("Admin custom method: %s\\n", admin.Display())
+	fmt.Printf("Original inner method: %s\\n", admin.User.Display())
 }`
       },
 
@@ -1452,7 +1452,7 @@ func safeDivision(a, b int) (result int, err error) {
 		}
 	}()
 
-	fmt.Printf("Attempting division: %d / %d\n", a, b)
+	fmt.Printf("Attempting division: %d / %d\\n", a, b)
 	return a / b, nil
 }
 
@@ -1465,12 +1465,12 @@ func main() {
 		fmt.Println("Main function body executing...")
 	}()
 
-	fmt.Println("\n--- 2. Panic and Recover ---")
+	fmt.Println("\\n--- 2. Panic and Recover ---")
 	res, err := safeDivision(10, 0)
 	if err != nil {
-		fmt.Printf("Recovered cleanly: %v\n", err)
+		fmt.Printf("Recovered cleanly: %v\\n", err)
 	} else {
-		fmt.Printf("Result: %d\n", res)
+		fmt.Printf("Result: %d\\n", res)
 	}
 }`
       },
@@ -1525,7 +1525,7 @@ func main() {
 	cache := NewSimpleCache[string, int]()
 	cache.Set("active_users", 850)
 	if v, ok := cache.Get("active_users"); ok {
-		fmt.Printf("Cache hit: %d\n", v)
+		fmt.Printf("Cache hit: %d\\n", v)
 	}
 }`
       },
@@ -1545,7 +1545,7 @@ func main() {
 import "fmt"
 
 func inspectSlice(name string, s []int) {
-	fmt.Printf("%-12s -> len: %d, cap: %d, ptr: %p, data: %v\n", name, len(s), cap(s), s, s)
+	fmt.Printf("%-12s -> len: %d, cap: %d, ptr: %p, data: %v\\n", name, len(s), cap(s), s, s)
 }
 
 func main() {
@@ -1568,7 +1568,7 @@ func main() {
 	inspectSlice("sub[1:3]", sub)
 
 	sub[0] = 999 // Mutating sub mutates the underlying slice s!
-	fmt.Printf("Original after sub mutation: %v (Shared memory view!)\n", s)
+	fmt.Printf("Original after sub mutation: %v (Shared memory view!)\\n", s)
 }`
       },
 
@@ -1596,7 +1596,7 @@ func main() {
 	for k, v := range scores {
 		fmt.Printf("%s: %d  ", k, v)
 	}
-	fmt.Println("\n--- Iteration 2 (Notice the randomized order!) ---")
+	fmt.Println("\\n--- Iteration 2 (Notice the randomized order!) ---")
 	for k, v := range scores {
 		fmt.Printf("%s: %d  ", k, v)
 	}
@@ -1604,7 +1604,7 @@ func main() {
 
 	// Safe read check with comma-ok idiom
 	val, exists := scores["Zoe"]
-	fmt.Printf("\nLooking up 'Zoe': val=%d, exists=%t\n", val, exists)
+	fmt.Printf("\\nLooking up 'Zoe': val=%d, exists=%t\\n", val, exists)
 
 	// Zero-memory Set emulation using struct{} (0 bytes allocated per value)
 	seenIPs := make(map[string]struct{})
@@ -1650,11 +1650,11 @@ func main() {
 	var opt OptimizedUser
 
 	fmt.Println("=== Struct Memory Alignment in Go ===")
-	fmt.Printf("InefficientUser size: %d bytes (due to alignment gaps)\n", unsafe.Sizeof(ineff))
-	fmt.Printf("OptimizedUser size:   %d bytes (same data, packed!)\n", unsafe.Sizeof(opt))
+	fmt.Printf("InefficientUser size: %d bytes (due to alignment gaps)\\n", unsafe.Sizeof(ineff))
+	fmt.Printf("OptimizedUser size:   %d bytes (same data, packed!)\\n", unsafe.Sizeof(opt))
 
 	saved := float64(unsafe.Sizeof(ineff)-unsafe.Sizeof(opt)) / float64(unsafe.Sizeof(ineff)) * 100
-	fmt.Printf("Memory reduction: %.1f%% across in-memory datasets!\n", saved)
+	fmt.Printf("Memory reduction: %.1f%% across in-memory datasets!\\n", saved)
 }`
       },
 
@@ -1708,11 +1708,11 @@ func main() {
 	queue.Enqueue("Job #2: Process Video")
 	queue.Enqueue("Job #3: Generate PDF")
 
-	fmt.Printf("Initial Queue size: %d\n", queue.Len())
+	fmt.Printf("Initial Queue size: %d\\n", queue.Len())
 
 	for queue.Len() > 0 {
 		job, _ := queue.Dequeue()
-		fmt.Printf("Dequeued: %s (Remaining: %d)\n", job, queue.Len())
+		fmt.Printf("Dequeued: %s (Remaining: %d)\\n", job, queue.Len())
 	}
 }`
       },
@@ -1774,7 +1774,7 @@ func main() {
 	fmt.Println("--- Processing Tasks by Priority Order ---")
 	for pq.Len() > 0 {
 		task := heap.Pop(pq).(*Task)
-		fmt.Printf("[%3d Priority] %s\n", task.priority, task.name)
+		fmt.Printf("[%3d Priority] %s\\n", task.priority, task.name)
 	}
 }`
       },
@@ -1819,7 +1819,7 @@ func main() {
 		msg := formatLogMessage("INFO", fmt.Sprintf("Processing request #%d without heap churn", i))
 		fmt.Println(msg)
 	}
-	fmt.Println("\nsync.Pool prevents garbage collection pauses under high concurrency.")
+	fmt.Println("\\nsync.Pool prevents garbage collection pauses under high concurrency.")
 }`
       },
 
@@ -1864,17 +1864,17 @@ func ProcessWithdrawal(acc *Account, amount int) error {
 
 func main() {
 	acc := &Account{ID: "ACC-902", Balance: 500, IsActive: true}
-	fmt.Printf("Initial account: %+v\n", acc)
+	fmt.Printf("Initial account: %+v\\n", acc)
 
 	err := ProcessWithdrawal(acc, 200)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error: %v\\n", err)
 	} else {
-		fmt.Printf("Withdrawal succeeded! New balance: %d\n", acc.Balance)
+		fmt.Printf("Withdrawal succeeded! New balance: %d\\n", acc.Balance)
 	}
 
 	// Clarity: No hidden proxies, no magic decorators, no implicit monkey patching
-	fmt.Println("\nGo Philosophy: 'Clear is better than clever.'")
+	fmt.Println("\\nGo Philosophy: 'Clear is better than clever.'")
 	fmt.Println(strings.Repeat("-", 45))
 }`
       },
@@ -1910,13 +1910,13 @@ func Slugify(s string) string {
 func main() {
 	invoiceNumber := "428"
 	padded := LeftPad(invoiceNumber, 8, '0')
-	fmt.Printf("Padded Invoice: %s (Standard Library only)\n", padded)
+	fmt.Printf("Padded Invoice: %s (Standard Library only)\\n", padded)
 
 	title := "Go For Node Developers Masterclass"
 	slug := Slugify(title)
-	fmt.Printf("Slug: %s\n", slug)
+	fmt.Printf("Slug: %s\\n", slug)
 
-	fmt.Println("\nZero external dependencies. No supply chain vulnerability.")
+	fmt.Println("\\nZero external dependencies. No supply chain vulnerability.")
 }`
       },
 
@@ -1957,15 +1957,15 @@ func main() {
 	count, err := inv.GetCount("JS-BOOK")
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
-			fmt.Printf("Handled missing item cleanly: %v\n", err)
+			fmt.Printf("Handled missing item cleanly: %v\\n", err)
 		} else {
-			fmt.Printf("Unexpected error: %v\n", err)
+			fmt.Printf("Unexpected error: %v\\n", err)
 		}
 	} else {
-		fmt.Printf("Found item count: %d\n", count)
+		fmt.Printf("Found item count: %d\\n", count)
 	}
 
-	fmt.Println("\nGo Philosophy: Errors are values to inspect, not exceptions to throw.")
+	fmt.Println("\\nGo Philosophy: Errors are values to inspect, not exceptions to throw.")
 }`
       },
 
@@ -2011,10 +2011,10 @@ func main() {
 	close(jobs)
 
 	for res := range results {
-		fmt.Printf("Result #%d: %s (Processed: %t)\n", res.ID, res.Payload, res.Processed)
+		fmt.Printf("Result #%d: %s (Processed: %t)\\n", res.ID, res.Payload, res.Processed)
 	}
 
-	fmt.Println("\nGo Proverb: 'Don't communicate by sharing memory; share memory by communicating.'")
+	fmt.Println("\\nGo Proverb: 'Don't communicate by sharing memory; share memory by communicating.'")
 	time.Sleep(10 * time.Millisecond)
 }`
       },
@@ -2057,14 +2057,14 @@ func main() {
 	var counter SafeCounter
 	counter.Inc()
 	counter.Inc()
-	fmt.Printf("SafeCounter zero-value initialized value: %d\n", counter.Value())
+	fmt.Printf("SafeCounter zero-value initialized value: %d\\n", counter.Value())
 
 	// strings.Builder is another standard library zero-value wonder
 	var sb strings.Builder
 	sb.WriteString("Zero ")
 	sb.WriteString("Value ")
 	sb.WriteString("Useful!")
-	fmt.Printf("strings.Builder output: %s\n", sb.String())
+	fmt.Printf("strings.Builder output: %s\\n", sb.String())
 }`
       },
       // ==========================================
@@ -2104,8 +2104,8 @@ func main() {
 	target := 9
 	result := twoSum(nums, target)
 
-	fmt.Printf("Input: nums = %v, target = %d\n", nums, target)
-	fmt.Printf("Output Indices: %v (Values: %d + %d = %d)\n",
+	fmt.Printf("Input: nums = %v, target = %d\\n", nums, target)
+	fmt.Printf("Output Indices: %v (Values: %d + %d = %d)\\n",
 		result, nums[result[0]], nums[result[1]], target)
 }`
       },
@@ -2150,7 +2150,7 @@ func isValid(s string) bool {
 func main() {
 	testCases := []string{"()[]{}", "([)]", "{[]}", "(("}
 	for _, tc := range testCases {
-		fmt.Printf("isValid(%q) = %t\n", tc, isValid(tc))
+		fmt.Printf("isValid(%q) = %t\\n", tc, isValid(tc))
 	}
 }`
       },
@@ -2255,10 +2255,10 @@ func maxProfit(prices []int) int {
 
 func main() {
 	prices1 := []int{7, 1, 5, 3, 6, 4}
-	fmt.Printf("Prices: %v -> Max Profit: %d (Buy at 1, Sell at 6)\n", prices1, maxProfit(prices1))
+	fmt.Printf("Prices: %v -> Max Profit: %d (Buy at 1, Sell at 6)\\n", prices1, maxProfit(prices1))
 
 	prices2 := []int{7, 6, 4, 3, 1}
-	fmt.Printf("Prices: %v -> Max Profit: %d (No profitable transaction)\n", prices2, maxProfit(prices2))
+	fmt.Printf("Prices: %v -> Max Profit: %d (No profitable transaction)\\n", prices2, maxProfit(prices2))
 }`
       },
 
@@ -2313,7 +2313,7 @@ func main() {
 	}
 
 	for _, tc := range tests {
-		fmt.Printf("isPalindrome(%q) = %t\n", tc, isPalindrome(tc))
+		fmt.Printf("isPalindrome(%q) = %t\\n", tc, isPalindrome(tc))
 	}
 }`
       },
@@ -2406,9 +2406,9 @@ func maxSubArray(nums []int) int {
 
 func main() {
 	nums1 := []int{-2, 1, -3, 4, -1, 2, 1, -5, 4}
-	fmt.Printf("nums: %v -> Max Subarray Sum: %d (Subarray: [4, -1, 2, 1])\n", nums1, maxSubArray(nums1))
+	fmt.Printf("nums: %v -> Max Subarray Sum: %d (Subarray: [4, -1, 2, 1])\\n", nums1, maxSubArray(nums1))
 
 	nums2 := []int{5, 4, -1, 7, 8}
-	fmt.Printf("nums: %v -> Max Subarray Sum: %d\n", nums2, maxSubArray(nums2))
+	fmt.Printf("nums: %v -> Max Subarray Sum: %d\\n", nums2, maxSubArray(nums2))
 }`
       }};

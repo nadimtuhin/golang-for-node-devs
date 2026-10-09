@@ -2,10 +2,14 @@ import { test, expect } from '@playwright/test';
 
 const routes = [
   { path: '/', titleExpected: /Go for Node\.js/i, navName: 'Studio' },
+  { path: '/ai', titleExpected: /AI|LLM/i, navName: 'AI & LLMs' },
+  { path: '/ai-agents', titleExpected: /AI|Agent/i, navName: 'AI & Agents' },
   { path: '/microservice', titleExpected: /Microservice/i, navName: 'Microservice' },
+  { path: '/testing', titleExpected: /Testing/i, navName: 'Testing' },
   { path: '/docker', titleExpected: /Docker/i, navName: 'Docker' },
   { path: '/leetcode', titleExpected: /LeetCode/i, navName: 'LeetCode' },
   { path: '/go-mod-vs-npm', titleExpected: /go\.mod/i, navName: 'go.mod vs npm' },
+  { path: '/go-vs-rust', titleExpected: /Go vs Rust/i, navName: 'Go vs Rust' },
   { path: '/philosophy', titleExpected: /Philosophy/i, navName: 'Philosophy' },
   { path: '/interviews', titleExpected: /Interview/i, navName: 'Interviews' },
   { path: '/pitfalls', titleExpected: /Pitfalls/i, navName: 'Pitfalls' },

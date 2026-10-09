@@ -37,6 +37,7 @@ Built with **Astro 5** for lightning-fast zero-JS static generation, modular com
   - Comprehensive comparison against 200MB+ Node.js container bloat.
 - **🧩 LeetCode Easy in Go:** Classic data structures and algorithms (Two Sum, Valid Parentheses, Merge Lists, Buy/Sell Stock, Palindrome, Reverse Linked List, Kadane's Max Subarray) solved with zero-allocation Go patterns vs JS objects.
 - **📦 Dependency Deep-Dive:** `go.mod` & `go.sum` vs `package.json` & `package-lock.json` (why Go has no centralized registry or 500MB `node_modules`).
+- **🦀 Go vs Rust: Pragmatic Systems Guide:** Exhaustive technical breakdown of Tricolor GC vs Borrow Checker, built-in CSP vs Tokio async, 11-dimension evaluation matrix, side-by-side code comparisons (Go vs Rust vs TypeScript), interactive architecture decision engine, and real-world hybrid architectures (Discord, Cloudflare, Figma).
 - **🧠 Go Philosophy & Zen of Go:** The 10 Go Proverbs analyzed for JS developers, plus a detailed breakdown of *"What Go Deliberately Left Out (and WHY)"*.
 - **🎯 Senior Backend Interview Q&A:** High-frequency interview questions with mental models, deep technical explanations, and pro-tips (Escape Analysis, Nil Interface traps, Tri-color GC vs V8, Goroutine leaks).
 - **⚠️ Known Pitfalls & Footguns:** The top 8 gotchas where JS intuition fails (loop variable closure captures, sub-slice memory retention, concurrent map read/write crashes, `defer` inside loops).
