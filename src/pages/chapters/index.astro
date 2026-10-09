@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
+import Sidebar from '../../components/Sidebar.astro';
 import { chaptersData } from '../../data/chapters';
 
 // Group chapters by part
@@ -41,8 +42,11 @@ const architectureGuides = [
 >
   <Header />
 
-  <main id="main-content" class="curriculum-main-scroll" role="main">
-    <div class="curriculum-container">
+  <!-- GitBook Book Reader Shell -->
+  <div id="viewStudio" class="studio-container gitbook-container">
+    <Sidebar />
+    <main id="main-content" class="curriculum-main-scroll gitbook-main-scroll" role="main" aria-label="Curriculum and Chapters Directory">
+      <div class="curriculum-container">
       <!-- Hero Header -->
     <section class="curriculum-hero" aria-labelledby="curriculum-heading">
       <div class="hero-badge">📖 The Interactive Book</div>
@@ -127,6 +131,62 @@ const architectureGuides = [
     </section>
     </div>
   </main>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const studio = document.getElementById('viewStudio');
+      if (studio) {
+        studio.classList.toggle('sidebar-collapsed');
+      }
+    }
+
+    function filterLessons(query) {
+      const q = query.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+      let visibleCount = 0;
+      const items = document.querySelectorAll('.chapter-nav-item');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const matches = text.includes(q);
+        item.style.display = matches ? 'flex' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      document.querySelectorAll('.sidebar-part-label').forEach(label => {
+        let sibling = label.nextElementSibling;
+        let anyVisible = false;
+        while (sibling && sibling.classList.contains('chapter-nav-item')) {
+          if (sibling.style.display !== 'none') anyVisible = true;
+          sibling = sibling.nextElementSibling;
+        }
+        label.style.display = anyVisible ? 'block' : 'none';
+      });
+
+      const badge = document.getElementById('sidebarCountBadge');
+      if (badge) badge.innerText = q ? `${visibleCount} Found` : '56 Lessons';
+    }
+
+    function clearLessonSearch() {
+      const input = document.getElementById('lessonSearchInput');
+      if (input) {
+        input.value = '';
+        filterLessons('');
+        input.focus();
+      }
+    }
+
+    function selectChapter(key) {
+      window.location.href = '/chapter/' + key;
+    }
+
+    window.toggleSidebar = toggleSidebar;
+    window.filterLessons = filterLessons;
+    window.clearLessonSearch = clearLessonSearch;
+    window.selectChapter = selectChapter;
+  </script>
 </Layout>
 
 <style>

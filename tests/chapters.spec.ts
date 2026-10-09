@@ -141,9 +141,20 @@ test.describe('Canonical Chapter Dynamic Route (/chapter/[id])', () => {
     await expect(statusTag).toContainText(/Exit 0/);
   });
 
-  test('should navigate sequential chapters and update canonical URL', async ({ page }) => {
+  test('should navigate sequential chapters, support top/bottom pager, and scroll to top', async ({ page }) => {
     await page.goto('/chapter/basic_vars');
 
+    const topNextBtn = page.locator('#btnTopNextLesson');
+    const topPrevBtn = page.locator('#btnTopPrevLesson');
+    await expect(topNextBtn).toBeVisible();
+    await expect(topPrevBtn).toBeVisible();
+
+    const mainContent = page.locator('#main-content');
+    await mainContent.evaluate(el => { el.scrollTop = 400; });
+    const initialScrollY = await mainContent.evaluate(el => el.scrollTop);
+    expect(initialScrollY).toBeGreaterThan(0);
+
+    // Click Next Lesson (bottom button)
     const nextBtn = page.locator('#btnNextLesson');
     await expect(nextBtn).toBeVisible();
     await nextBtn.click();
@@ -151,12 +162,18 @@ test.describe('Canonical Chapter Dynamic Route (/chapter/[id])', () => {
     await expect(page).toHaveURL(/\/chapter\/basic_funcs/);
     await expect(page.locator('#detailTitle')).toContainText('Functions & Multiple Return Values');
 
-    const prevBtn = page.locator('#btnPrevLesson');
-    await expect(prevBtn).toBeVisible();
-    await prevBtn.click();
+    // Should have scrolled to top
+    const scrolledTop = await mainContent.evaluate(el => el.scrollTop);
+    expect(scrolledTop).toBe(0);
+
+    // Scroll down and click top Prev button
+    await mainContent.evaluate(el => { el.scrollTop = 350; });
+    await topPrevBtn.click();
 
     await expect(page).toHaveURL(/\/chapter\/basic_vars/);
     await expect(page.locator('#detailTitle')).toContainText('Variables, := & Zero Values');
+    const resetScroll = await mainContent.evaluate(el => el.scrollTop);
+    expect(resetScroll).toBe(0);
   });
 
   test('should filter chapters list in sidebar on canonical route', async ({ page }) => {

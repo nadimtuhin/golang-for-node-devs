@@ -48,7 +48,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Functions & Multiple Return Values",
         desc: "In JS, functions can only return a single value (so developers wrap { data, error } in objects). Go natively supports returning multiple values, forming the basis of all Go error handling.",
-        nodeCode: "function divide(a, b) { if (b === 0) return { res: null, err: 'err' }; return { res: a/b, err: null }; }",
+        nodeCode: "// Returning multiple values in Node.js requires object or array wrapping\nfunction divide(dividend, divisor) {\n  if (divisor === 0) {\n    return { result: null, error: new Error('division by zero') };\n  }\n  return { result: dividend / divisor, error: null };\n}\n\nconst { result, error } = divide(10, 2);\nif (error) {\n  console.error('Failed:', error.message);\n} else {\n  console.log('Result:', result);\n}",
         why: "Multiple returns eliminate object wrapping allocations and allow the blank identifier '_' to ignore unneeded return values.",
         code: `package main
 
@@ -427,7 +427,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "Express Middleware vs Handler Wrappers",
         desc: "Express middleware like (req, res, next) => { ... next() } translates to standard wrapper functions in Go (decorator pattern).",
-        nodeCode: "app.use((req, res, next) => { console.log(req.method); next(); })",
+        nodeCode: "import express from 'express';\nconst app = express();\n\n// Express logging & timing middleware\napp.use((req, res, next) => {\n  const start = Date.now();\n  console.log(`--> ${req.method} ${req.url}`);\n  \n  res.on('finish', () => {\n    const duration = Date.now() - start;\n    console.log(`<-- ${res.statusCode} (${duration}ms)`);\n  });\n\n  next();\n});",
         why: "Go doesn't mutate request objects behind the scenes like Express does. Middleware simply wraps the http.HandlerFunc interface cleanly.",
         code: `package main
 
@@ -823,7 +823,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Objects & Set vs Go map[K]V",
         desc: "In JS, you use {} or new Map() for key-value pairs and new Set() for unique collections. In Go, maps handle dictionaries, and map[T]struct{} handles memory-efficient Sets.",
-        nodeCode: "const map = new Map(); const set = new Set(['user1', 'user2']);",
+        nodeCode: "// Hash maps and sets in JavaScript\nconst userSessions = new Map();\nuserSessions.set('usr_101', { name: 'Alice', active: true });\nuserSessions.set('usr_102', { name: 'Bob', active: false });\n\nconsole.log(userSessions.get('usr_101'));\nconsole.log('Exists:', userSessions.has('usr_102'));\n\n// Unique set of user IDs\nconst activeUserIds = new Set(['usr_101', 'usr_102']);\nactiveUserIds.add('usr_101'); // Duplicate ignored\nconsole.log('Total active:', activeUserIds.size);",
         why: "A Go struct{} (empty struct) takes literally 0 bytes of RAM! map[string]struct{} creates the most memory-efficient Set possible.",
         code: `package main
 
@@ -1304,7 +1304,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Type Assertions & Type Switches",
         desc: "In JS, you use 'typeof x' or 'x instanceof Clazz' on dynamic variables. In Go, when dealing with 'any' (interface{}), you use type assertion 'v.(T)' or type switch 'switch v := x.(type)'.",
-        nodeCode: "if (typeof val === 'string') { val.toUpperCase(); }",
+        nodeCode: "// Type narrowing in TypeScript / JavaScript\nfunction processValue(val) {\n  if (typeof val === 'string') {\n    // Narrowed to string\n    return val.toUpperCase();\n  } else if (typeof val === 'number') {\n    // Narrowed to number\n    return val.toFixed(2);\n  }\n  return String(val);\n}\n\nconsole.log(processValue('gopher'));\nconsole.log(processValue(42.3456));",
         why: "Type assertions enforce runtime safety while retaining static compiler guarantees. The comma-ok idiom prevents runtime panics.",
         code: `package main
 
@@ -1348,7 +1348,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Enums with iota Pattern",
         desc: "TypeScript uses 'enum Status { Pending, Shipped }' or union strings. Go has no enum keyword; instead, it uses typed integer constants with 'iota' and the Stringer interface.",
-        nodeCode: "enum OrderStatus { Pending = 'PENDING', Shipped = 'SHIPPED' }",
+        nodeCode: "// Enums or frozen object dictionaries in TypeScript/Node.js\nconst OrderStatus = Object.freeze({\n  Pending: 'PENDING',\n  Processing: 'PROCESSING',\n  Shipped: 'SHIPPED',\n  Delivered: 'DELIVERED',\n});\n\nfunction handleOrder(status) {\n  switch (status) {\n    case OrderStatus.Pending:\n      return 'Waiting for payment';\n    case OrderStatus.Shipped:\n      return 'Order on its way';\n    default:\n      return 'Unknown status';\n  }\n}",
         why: "iota creates lightweight, type-safe integer enums with zero memory overhead, while String() provides clean JSON/log stringification.",
         code: `package main
 
@@ -1438,7 +1438,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Defer, Panic & Recover",
         desc: "In JS, cleanups use 'try { ... } finally { close() }'. In Go, 'defer' schedules cleanups to run immediately when the function returns (LIFO order). 'panic' is reserved for unrecoverable errors.",
-        nodeCode: "try { doWork(); } finally { db.close(); }",
+        nodeCode: "// Resource cleanup in Node.js using try/finally\nasync function processReport(dbClient) {\n  try {\n    await dbClient.connect();\n    console.log('Processing critical transaction...');\n    throw new Error('Simulated database write error');\n  } catch (err) {\n    console.error('Caught exception:', err.message);\n  } finally {\n    // Cleanup runs no matter what\n    await dbClient.close();\n    console.log('Database connection cleanly closed.');\n  }\n}",
         why: "Defer keeps cleanup logic adjacent to resource allocation (e.g., file opens, mutex locks), preventing memory and descriptor leaks.",
         code: `package main
 
@@ -1831,7 +1831,7 @@ func main() {
         part: "Part 6: Go Philosophy",
         title: "\"Clear is Better Than Clever\"",
         desc: "Go values simple, linear, readable code over clever metaprogramming tricks, monkey-patching, and cryptic one-liners. Any engineer should be able to read and debug the code without a mental simulator.",
-        nodeCode: "const res = obj?.[fn()]?.() ?? fallback; // Highly condensed syntax",
+        nodeCode: "// Highly condensed syntax in modern JavaScript\nconst result = user?.profile?.contact?.getEmail?.() ?? 'default@example.com';\n\n// Nested ternary and dense chaining can obscure failure modes\nconst accessLevel = isAdmin ? 3 : isEditor ? 2 : isGuest ? 1 : 0;\nconsole.log({ result, accessLevel });",
         why: "Code is read 10x more often than it is written. Explicit code avoids production surprises.",
         code: `package main
 
@@ -1884,7 +1884,7 @@ func main() {
         part: "Part 6: Go Philosophy",
         title: "\"A Little Copying > A Little Dependency\"",
         desc: "In Node.js, developers frequently pull in npm modules for single utility functions (like left-pad). In Go, writing or copying 10 lines of standard library code is preferred over adding a 3rd-party dependency.",
-        nodeCode: "import leftPad from 'left-pad'; // External dependency for 11 lines",
+        nodeCode: "// Over-reliance on tiny micro-packages in npm ecosystem\n// npm dependency for 11 lines of code:\nimport leftPad from 'left-pad';\n\nconst formattedId = leftPad('42', 6, '0');\nconsole.log('Padded ID:', formattedId); // \"000042\"",
         why: "Eliminates supply chain attacks, breaking updates, and the 500MB node_modules folder.",
         code: `package main
 
@@ -1925,7 +1925,7 @@ func main() {
         part: "Part 6: Go Philosophy",
         title: "\"Errors are Values\" (No Exceptions)",
         desc: "In JS, 'throw' bypasses control flow and creates invisible failure paths. In Go, errors are first-class values returned alongside results. You inspect, wrap, and count errors using regular code.",
-        nodeCode: "try { doSomething(); } catch (e) { ... } // Hidden jump",
+        nodeCode: "// Exceptions (try/catch) create hidden non-local jump paths\ntry {\n  const user = authenticateUser(token);\n  const data = fetchUserData(user.id);\n  saveToDisk(data);\n} catch (err) {\n  // Catch block catches any error from any step without explicit trace\n  console.error('Unexpected runtime failure:', err.message);\n}",
         why: "Treating errors as values keeps call stacks predictable and ensures every failure mode is handled explicitly.",
         code: `package main
 
@@ -1974,7 +1974,7 @@ func main() {
         part: "Part 6: Go Philosophy",
         title: "\"Share Memory by Communicating\"",
         desc: "Instead of having multiple threads lock and mutate shared variables in memory, goroutines communicate by passing data ownership over channels. Only one goroutine owns the data at any time.",
-        nodeCode: "const sab = new SharedArrayBuffer(1024); Atomics.add(sab, 0, 1);",
+        nodeCode: "// Shared memory in Node.js requires SharedArrayBuffer + Atomics\nconst buffer = new SharedArrayBuffer(1024);\nconst sharedInts = new Int32Array(buffer);\n\n// Thread-safe atomic increment across Worker threads\nAtomics.add(sharedInts, 0, 1);\nconsole.log('Worker count:', Atomics.load(sharedInts, 0));",
         why: "Prevents data races and deadlocks by design without heavy mutex contention.",
         code: `package main
 
@@ -2024,7 +2024,7 @@ func main() {
         part: "Part 6: Go Philosophy",
         title: "\"Make the Zero Value Useful\"",
         desc: "In JS, uninitialized fields are undefined and throw TypeErrors. In Go, well-designed structs are completely valid and ready to use in their zero state without calling a constructor.",
-        nodeCode: "let map; map.set('key', 1); // TypeError: Cannot read properties of undefined",
+        nodeCode: "// In JS, uninitialized references throw runtime TypeError\nlet userMap;\n\ntry {\n  // TypeError: Cannot read properties of undefined (reading \"set\")\n  userMap.set('admin', true);\n} catch (err) {\n  console.error('Runtime crash:', err.message);\n}",
         why: "Zero values eliminate initialization boilerplate and runtime nil crashes.",
         code: `package main
 

@@ -63,13 +63,25 @@ test.describe('Interactive Studio Functional Tests', () => {
     await expect(nonMatchingItem).toBeVisible();
   });
 
-  test('should navigate sequential lessons with next and previous buttons', async ({ page }) => {
+  test('should navigate sequential lessons with next and previous buttons and scroll to top', async ({ page }) => {
     await page.goto('/?chapter=basic_vars');
 
     const title = page.locator('#detailTitle');
     await expect(title).toContainText('Variables, := & Zero Values');
 
-    // Click Next Lesson
+    // Both top and bottom next/prev buttons should be visible
+    const topNextBtn = page.locator('#btnTopNextLesson');
+    const topPrevBtn = page.locator('#btnTopPrevLesson');
+    await expect(topNextBtn).toBeVisible();
+    await expect(topPrevBtn).toBeVisible();
+
+    // Scroll down 400px to simulate reading
+    const mainContent = page.locator('#main-content');
+    await mainContent.evaluate(el => { el.scrollTop = 400; });
+    const scrolledY = await mainContent.evaluate(el => el.scrollTop);
+    expect(scrolledY).toBeGreaterThan(0);
+
+    // Click Next Lesson (bottom button)
     const nextBtn = page.locator('#btnNextLesson');
     await expect(nextBtn).toBeVisible();
     await nextBtn.click();
@@ -78,13 +90,18 @@ test.describe('Interactive Studio Functional Tests', () => {
     await expect(page).toHaveURL(/((\/\?chapter=)|(\/chapter\/))basic_funcs/);
     await expect(title).toContainText('Functions & Multiple Return Values');
 
-    // Click Prev Lesson
-    const prevBtn = page.locator('#btnPrevLesson');
-    await expect(prevBtn).toBeVisible();
-    await prevBtn.click();
+    // Should have scrolled back to top
+    const topY = await mainContent.evaluate(el => el.scrollTop);
+    expect(topY).toBe(0);
+
+    // Scroll down again and navigate via top prev button
+    await mainContent.evaluate(el => { el.scrollTop = 300; });
+    await topPrevBtn.click();
 
     await expect(page).toHaveURL(/((\/\?chapter=)|(\/chapter\/))basic_vars/);
     await expect(title).toContainText('Variables, := & Zero Values');
+    const resetY = await mainContent.evaluate(el => el.scrollTop);
+    expect(resetY).toBe(0);
   });
 
   test('should trigger copy actions without errors and update status pill', async ({ page }) => {

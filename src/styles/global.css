@@ -485,7 +485,55 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   margin-bottom: 0.25rem;
+}
+
+.gitbook-top-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gitbook-top-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.gitbook-top-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.24rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.25;
+}
+
+.gitbook-top-btn:hover:not(:disabled) {
+  background: #f0f9ff;
+  color: #007D9C;
+  border-color: #00ADD8;
+}
+
+.gitbook-top-btn:focus-visible {
+  outline: 2px solid #00ADD8;
+  outline-offset: 1px;
+}
+
+.gitbook-top-btn:disabled,
+.gitbook-top-btn.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .gitbook-chapter-id {
@@ -928,16 +976,44 @@ header {
 }
 
 .node-code {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  background: var(--go-navy);
+  font-family: var(--font-mono, 'JetBrains Mono', 'Fira Code', monospace);
+  font-size: 0.85rem;
+  background: #0f172a;
   color: #f8fafc;
-  padding: 0.65rem 0.75rem;
+  padding: 1rem 1.25rem;
   border-radius: var(--radius-sm);
   overflow-x: auto;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: normal;
+  border: 1px solid #1e293b;
+  tab-size: 2;
+}
+
+.node-code code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+/* JavaScript / TypeScript Syntax Highlighting Tokens */
+.tok-comment { color: #94a3b8; font-style: italic; }
+.tok-string { color: #34d399; }
+.tok-keyword { color: #c084fc; font-weight: 600; }
+.tok-builtin { color: #38bdf8; }
+.tok-number { color: #fbbf24; }
+.tok-func { color: #60a5fa; }
+
+.node-file-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  font-family: var(--font-mono, monospace);
+  background: #f1f5f9;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
 }
 
 .go-why-box {

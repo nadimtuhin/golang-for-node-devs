@@ -92,6 +92,71 @@ import { chaptersData } from '../data/chapters';
     }
 
     // Previous / Next Lesson Navigation
+    function scrollToTop() {
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.scrollTop = 0;
+        if (typeof mainContent.scrollTo === 'function') {
+          mainContent.scrollTo(0, 0);
+        }
+      }
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+
+    function updateNavButtons(key) {
+      const keys = Object.keys(chaptersData);
+      const currIdx = keys.indexOf(key);
+      const hasPrev = currIdx > 0;
+      const hasNext = currIdx !== -1 && currIdx < keys.length - 1;
+
+      // Top navigation buttons
+      const topPrev = document.getElementById('btnTopPrevLesson');
+      if (topPrev) {
+        topPrev.disabled = !hasPrev;
+        topPrev.classList.toggle('disabled', !hasPrev);
+        if (hasPrev) {
+          topPrev.setAttribute('title', `Previous: ${chaptersData[keys[currIdx - 1]].title}`);
+        } else {
+          topPrev.removeAttribute('title');
+        }
+      }
+
+      const topNext = document.getElementById('btnTopNextLesson');
+      if (topNext) {
+        topNext.disabled = !hasNext;
+        topNext.classList.toggle('disabled', !hasNext);
+        if (hasNext) {
+          topNext.setAttribute('title', `Next: ${chaptersData[keys[currIdx + 1]].title}`);
+        } else {
+          topNext.removeAttribute('title');
+        }
+      }
+
+      // Bottom navigation buttons
+      const prevBtn = document.getElementById('btnPrevLesson');
+      if (prevBtn) {
+        prevBtn.disabled = !hasPrev;
+        prevBtn.classList.toggle('disabled', !hasPrev);
+        const prevLabel = prevBtn.querySelector('.pager-label');
+        if (prevLabel) {
+          prevLabel.textContent = hasPrev ? chaptersData[keys[currIdx - 1]].title : 'Previous Chapter';
+        }
+      }
+
+      const nextBtn = document.getElementById('btnNextLesson');
+      if (nextBtn) {
+        nextBtn.disabled = !hasNext;
+        nextBtn.classList.toggle('disabled', !hasNext);
+        const nextLabel = nextBtn.querySelector('.pager-label');
+        if (nextLabel) {
+          nextLabel.textContent = hasNext ? chaptersData[keys[currIdx + 1]].title : 'Next Chapter';
+        }
+      }
+    }
+
+    // Previous / Next Lesson Navigation
     function navigateLesson(direction) {
       const keys = Object.keys(chaptersData);
       const currentIndex = keys.indexOf(activeKey);
@@ -100,11 +165,37 @@ import { chaptersData } from '../data/chapters';
       const nextIndex = currentIndex + direction;
       if (nextIndex >= 0 && nextIndex < keys.length) {
         selectChapter(keys[nextIndex]);
+        scrollToTop();
       }
     }
 
+    function highlightJS(code) {
+      if (!code) return '';
+      const tokenRegex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\.|[^`])*`|"(?:\\.|[^"\\])*"|\x27(?:\\.|[^\x27\\])*\x27)|(\b(?:const|let|var|function|return|if|else|switch|case|break|for|while|class|constructor|this|import|export|from|require|async|await|try|catch|throw|new|typeof|interface|type|extends|implements|yield|default|super)\b)|(\b(?:true|false|null|undefined|NaN|Promise|Map|Set|Buffer|Array|Object|JSON|console|process|Error|Math)\b)|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_$][a-zA-Z0-9_$]*(?=\s*\())|([&<>])/g;
+      return code.replace(tokenRegex, (match, comment, str, kw, builtin, num, fn, escapeChar) => {
+        if (escapeChar) {
+          if (escapeChar === '&') return '&amp;';
+          if (escapeChar === '<') return '&lt;';
+          if (escapeChar === '>') return '&gt;';
+        }
+        if (comment) {
+          const escaped = comment.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<span class="tok-comment">${escaped}</span>`;
+        }
+        if (str) {
+          const escaped = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<span class="tok-string">${escaped}</span>`;
+        }
+        if (kw) return `<span class="tok-keyword">${kw}</span>`;
+        if (builtin) return `<span class="tok-builtin">${builtin}</span>`;
+        if (num) return `<span class="tok-number">${num}</span>`;
+        if (fn) return `<span class="tok-func">${fn}</span>`;
+        return match;
+      });
+    }
+
     function copyNodeSnippet() {
-      const code = document.getElementById('detailNodeCode').innerText;
+      const code = (chaptersData[activeKey] && chaptersData[activeKey].nodeCode) || document.getElementById('detailNodeCode').innerText;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(code).catch(() => {});
       }
@@ -170,7 +261,12 @@ import { chaptersData } from '../data/chapters';
       document.getElementById('detailId').innerText = '#' + data.num;
       document.getElementById('detailTitle').innerText = data.title;
       document.getElementById('detailDesc').innerText = data.desc;
-      document.getElementById('detailNodeCode').innerText = data.nodeCode;
+      
+      const nodeEl = document.getElementById('detailNodeCode');
+      if (nodeEl) {
+        nodeEl.innerHTML = `<code>${highlightJS(data.nodeCode)}</code>`;
+      }
+
       document.getElementById('detailGoWhy').innerText = data.why;
 
       document.getElementById('editorCurrentFile').innerText = `📄 main.go — ${data.title}`;
@@ -183,6 +279,9 @@ import { chaptersData } from '../data/chapters';
       c.className = 'console-body';
       c.textContent = '// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!';
       
+      updateNavButtons(key);
+      scrollToTop();
+
       // Update browser URL to clean /chapter/:id path
       if (history.replaceState) {
         const newurl = '/chapter/' + key;
