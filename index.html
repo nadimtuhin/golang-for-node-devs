@@ -619,12 +619,14 @@
     <div class="brand">
       <span>🟢 ➔ 🐹</span>
       <span>Go Backend Masterclass</span>
-      <span class="badge">TomDoesTech Companion + 49 Lessons & Deep Dives</span>
+      <span class="badge">Production Ready • 56+ Lessons & Microservices</span>
     </div>
     
-        <div class="top-links">
+            <div class="top-links">
       <button class="tab-toggle active" id="btnPlayground" onclick="switchMainView('studio')">Interactive Studio</button>
-      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Video Project Explorer</button>
+      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Microservice Architecture</button>
+      <button class="tab-toggle" id="btnDocker" onclick="switchMainView('docker')">🐳 Production Docker</button>
+      <button class="tab-toggle" id="btnLeetcode" onclick="switchMainView('leetcode')">🧩 LeetCode in Go</button>
       <button class="tab-toggle" id="btnModExplain" onclick="switchMainView('modExplain')">go.mod vs package.json</button>
       <button class="tab-toggle" id="btnPhilosophy" onclick="switchMainView('philosophy')">🧠 Philosophy & Zen</button>
       <button class="tab-toggle" id="btnInterviews" onclick="switchMainView('interviews')">🎯 Interview Q&A</button>
@@ -638,9 +640,9 @@
     
     <!-- COLUMN 1: SIDEBAR -->
     <nav class="chapters-sidebar" id="chaptersList">
-      <div class="sidebar-header">Chapters Directory (49 Lessons Total)</div>
+      <div class="sidebar-header">Chapters Directory (56 Lessons Total)</div>
 
-      <div class="sidebar-part-label">Featured: TomDoesTech Video Project</div>
+      <div class="sidebar-part-label">Featured: Fullstack Microservice (Fiber + Mongo)</div>
       <div class="chapter-nav-item active" onclick="selectChapter('fiber_api')">
         <span class="chapter-num">⭐</span>
         <span>Express vs Fiber (Video Project)</span>
@@ -851,6 +853,35 @@
         <span class="chapter-num">P5</span>
         <span>"Make the Zero Value Useful"</span>
       </div>
+      <div class="sidebar-part-label">Part 7: LeetCode Easy in Go (JS vs Go)</div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_two_sum')">
+        <span class="chapter-num">LC1</span>
+        <span>Two Sum (#1)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_parentheses')">
+        <span class="chapter-num">LC20</span>
+        <span>Valid Parentheses (#20)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_merge_lists')">
+        <span class="chapter-num">LC21</span>
+        <span>Merge Two Sorted Lists (#21)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_buy_sell_stock')">
+        <span class="chapter-num">LC121</span>
+        <span>Best Time to Buy/Sell (#121)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_palindrome')">
+        <span class="chapter-num">LC125</span>
+        <span>Valid Palindrome (#125)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_reverse_linked_list')">
+        <span class="chapter-num">LC206</span>
+        <span>Reverse Linked List (#206)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_max_subarray')">
+        <span class="chapter-num">LC53</span>
+        <span>Maximum Subarray (Kadane)</span>
+      </div>
     </nav>
 
     <!-- COLUMN 2: LESSON DETAIL PANEL -->
@@ -862,11 +893,11 @@
 
       <h2 class="lesson-title" id="detailTitle">Express vs Fiber (Video Project)</h2>
       <p class="lesson-desc" id="detailDesc">
-        In TomDoesTech's video, Express.js is rebuilt using Go Fiber (github.com/gofiber/fiber/v2). Fiber is inspired directly by Express: app.Get(), app.Post(), and c.JSON() feel identical to Node!
+        Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.
       </p>
 
       <div class="node-box">
-        <div class="node-tag">TomDoesTech Node.js Code</div>
+        <div class="node-tag">Express.js (Node.js) Production Service</div>
         <div class="node-code" id="detailNodeCode">app.post('/api/products', createProduct); app.get('/api/products', getProducts);</div>
       </div>
 
@@ -912,7 +943,7 @@
   <div id="viewRepoExplorer" class="view-container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
       <div>
-        <h2 style="font-size: 1.5rem; color: #0f172a;">📂 TomDoesTech/golang-for-node-devs Codebase</h2>
+        <h2 style="font-size: 1.5rem; color: #0f172a;">📂 Real-World Microservice: Express vs Go Fiber Architecture</h2>
         <p style="color: #64748b; font-size: 0.9rem;">
           Direct side-by-side comparison of the source code from the official GitHub repository.
         </p>
@@ -2058,6 +2089,256 @@ bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
     </div>
   </div>
 
+  
+  <!-- VIEW: PROPER GO DOCKER IMAGES FOR PRODUCTION -->
+  <div id="viewDocker" class="view-container">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #0284c7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🐳 Production Docker for Go (The Node.js Contrast)
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        Why Go Docker images are legendary: Single static binaries, zero runtime, sub-15MB container images, and no 500MB <code>node_modules</code> security vulnerabilities.
+      </p>
+    </div>
+
+    <!-- Comparison Table: Node vs Go Docker -->
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+      <h3 style="font-size: 1.15rem; color: #0f172a; margin-bottom: 1rem;">⚖️ Docker Image Comparison: Node.js vs Go</h3>
+      <table class="rosetta-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Metric / Feature</th>
+            <th style="width: 35%;">Node.js Docker Container</th>
+            <th style="width: 40%;">Go Docker Container (Distroless / Scratch)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Final Image Size</strong></td>
+            <td>180 MB – 1.2 GB (Base OS + Node + node_modules)</td>
+            <td><strong>5 MB – 18 MB</strong> (Single static compiled binary)</td>
+          </tr>
+          <tr>
+            <td><strong>Runtime Requirements</strong></td>
+            <td>Node.js engine, V8, libuv, npm dependencies</td>
+            <td><strong>Zero runtime.</strong> Direct Linux kernel ELF binary.</td>
+          </tr>
+          <tr>
+            <td><strong>Base Image</strong></td>
+            <td><code>node:20-alpine</code> or <code>node:20-slim</code></td>
+            <td><code>gcr.io/distroless/static</code> or <code>scratch</code></td>
+          </tr>
+          <tr>
+            <td><strong>Attack Surface & CVEs</strong></td>
+            <td>Hundreds of npm packages & C++ runtime CVEs</td>
+            <td><strong>Zero package manager, zero shell, zero CVEs.</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Cold Start Memory</strong></td>
+            <td>~50 MB – 120 MB RAM at idle</td>
+            <td><strong>~5 MB – 15 MB RAM</strong> at idle</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Template 1: Production Distroless (Recommended) -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">🏆 1. Gold Standard: Google Distroless Multi-Stage Dockerfile</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        Recommended for enterprise production. Runs as a non-root user (UID 65532), includes official CA certificates for outbound HTTPS calls, and tzdata for timezones.
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># --- Stage 1: Build the Static Binary ---
+FROM golang:1.23-alpine AS builder
+
+# Install ca-certificates and git in builder if needed
+RUN apk --no-cache add ca-certificates git
+
+WORKDIR /app
+
+# Cache dependencies layer
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build ultra-compact, stripped static Linux binary
+# CGO_ENABLED=0  -> Pure Go network resolver, no libc dependency
+# -ldflags="-s -w" -> Strip debugging symbols & DWARF tables (35% size reduction)
+# -trimpath      -> Remove local filepath metadata from binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -ldflags="-s -w -X main.Version=1.0.0"     -trimpath     -o /app/server ./cmd/main.go
+
+# --- Stage 2: Final Minimal Runtime (< 15MB) ---
+FROM gcr.io/distroless/static-debian12:nonroot
+
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/server /app/server
+
+# Expose HTTP port
+EXPOSE 8080
+
+# Run as non-root user (UID 65532 built into distroless)
+USER nonroot:nonroot
+
+ENTRYPOINT ["/app/server"]</pre>
+    </div>
+
+    <!-- Template 2: Scratch Dockerfile -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">⚡ 2. Ultra-Minimal: Scratch Dockerfile (~6 MB Total Image)</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        The smallest conceivable container image. <code>FROM scratch</code> has <strong>zero files</strong>; we copy CA certs from the alpine builder so outbound HTTPS webhooks and database TLS work.
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># Builder stage
+FROM golang:1.23-alpine AS builder
+RUN apk --no-cache add ca-certificates
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server .
+
+# Final stage: completely empty scratch container
+FROM scratch
+
+# Copy SSL certificates for outbound HTTPS calls
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Copy binary
+COPY --from=builder /app/server /server
+
+EXPOSE 8080
+ENTRYPOINT ["/server"]</pre>
+    </div>
+
+    <!-- Essential .dockerignore -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">📄 3. Production .dockerignore Best Practice</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        Prevents copying local test binaries, git history, or documentation into the Docker build context:
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.85rem;">.git
+.gitignore
+*.md
+.DS_Store
+*.log
+docker-compose*.yml
+test/
+tmp/
+vendor/</pre>
+    </div>
+  </div>
+
+  <!-- VIEW: LEETCODE EASY IN GO -->
+  <div id="viewLeetcode" class="view-container">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🧩 LeetCode Easy Problem Solutions in Go (JS vs Go)
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        Classic algorithms and data structure problems with direct comparisons between how JavaScript developers solve them and how idiomatic Go handles memory, pointers, and runes.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.25rem;">
+      
+      <!-- LC 1 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #1. Two Sum (Hash Map)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> <code>new Map()</code>, <code>map.has(target - num)</code>.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> <code>make(map[int]int, len(nums))</code> preallocation, comma-ok lookup <code>if idx, ok := seen[comp]; ok</code>.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(N) Space • 0 Allocations</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_two_sum')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 20 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #20. Valid Parentheses (Slice Stack)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> <code>const stack = []</code> with <code>push()</code> and <code>pop()</code>.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> <code>stack := make([]rune, 0, len(s))</code>, pop via <code>stack[:len(stack)-1]</code>.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(N) Space • Reslicing Stack</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_valid_parentheses')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 21 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #21. Merge Two Sorted Lists (Linked List)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> <code>new ListNode(0)</code> dummy head, object references.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> <code>dummy := &ListNode{}</code> struct pointer, direct pointer chaining.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N + M) Time • O(1) Space • Pointer Flipping</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_merge_lists')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 121 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #121. Best Time to Buy/Sell Stock (Greedy)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> <code>Math.min()</code> and <code>Math.max()</code> inside loop.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> Simple linear if-conditions avoiding math library function call overhead.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(1) Space • Single Pass</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_buy_sell_stock')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 125 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #125. Valid Palindrome (Runes & Two Pointers)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> Regex replace <code>replace(/[^a-z0-9]/g, '')</code>, reverse and join.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> Two-pointer scan over <code>[]rune</code> with <code>unicode.IsLetter</code> and <code>unicode.ToLower</code>.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(1) Extra Space • Zero Regex Overhead</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_valid_palindrome')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 206 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #206. Reverse Linked List (Pointers)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> <code>let prev = null, curr = head</code> pointer swapping.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> In-place pointer reversal <code>nextTemp := curr.Next; curr.Next = prev; prev = curr; curr = nextTemp</code>.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(1) Space • Memory Pointer Flipping</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_reverse_linked_list')">🚀 Run in Studio Playground</button>
+      </div>
+
+      <!-- LC 53 -->
+      <div class="deepdive-box" style="margin-bottom: 0;">
+        <div class="deepdive-title">🟢 #53. Maximum Subarray (Kadane's Algorithm)</div>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
+          <strong>JS Approach:</strong> Dynamic programming tracking max ending at current index.
+        </p>
+        <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+          <strong>Go Approach:</strong> Single-pass loop tracking <code>currentSum</code> and <code>maxSum</code> with zero slice reallocations.
+        </p>
+        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(1) Space • Optimal DP</div>
+        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('lc_max_subarray')">🚀 Run in Studio Playground</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- CodeMirror Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js"></script>
@@ -2305,7 +2586,7 @@ func main() {
         num: "⭐",
         part: "Featured: Video Project",
         title: "Express vs Fiber (Video Project)",
-        desc: "In TomDoesTech's video, Express.js is rebuilt using Go Fiber (github.com/gofiber/fiber/v2). Fiber is inspired directly by Express: app.Get(), app.Post(), and c.JSON() feel identical to Node!",
+        desc: "Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.",
         nodeCode: "app.post('/api/products', createProduct); app.get('/api/products', getProducts);",
         why: "Fiber is built on Fasthttp, the fastest HTTP engine in Go. It keeps Express-style routing while executing at 10x-20x the throughput of Node with minimal memory!",
         code: `package main
@@ -2318,7 +2599,7 @@ import (
 	"time"
 )
 
-// In TomDoesTech's video, this Product struct uses multi-tags:
+// In this production microservice, the Product struct uses multi-tags:
 // json:"_id" bson:"_id" validate:"required"
 type Product struct {
 	ID        string    \`json:"_id"\`
@@ -2357,7 +2638,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Println("=== TomDoesTech Express vs Fiber Comparison ===")
+	fmt.Println("=== Express vs Fiber Production Microservice Comparison ===")
 	fmt.Println("Node: app.get('/api/products', getProducts)")
 	fmt.Println("Go:   app.Get('/api/products', handlers.GetAllProducts)\\n")
 
@@ -2387,7 +2668,7 @@ import (
 	"time"
 )
 
-// Replicating internal/db/db.go from TomDoesTech's video:
+// Production Mongo singleton pattern with sync.Once (internal/db/db.go):
 type MongoClient struct {
 	URI       string
 	Database  string
@@ -4121,6 +4402,351 @@ func main() {
 	sb.WriteString("Useful!")
 	fmt.Printf("strings.Builder output: %s\n", sb.String())
 }`
+      },
+      // ==========================================
+      // PART 7: LEETCODE EASY IN GO (JS VS GO)
+      // ==========================================
+      lc_two_sum: {
+        num: "LC1",
+        part: "Part 7: LeetCode in Go",
+        title: "Two Sum (#1) — Hash Map Lookup",
+        desc: "Find indices of two numbers that add up to target. In JS, developers use 'new Map()' or a plain object. In Go, pre-allocating 'make(map[int]int, len(nums))' and the comma-ok idiom solves this in O(N) time and O(N) space with zero memory allocations.",
+        nodeCode: "const seen = new Map();\nfor (let i = 0; i < nums.length; i++) {\n  const comp = target - nums[i];\n  if (seen.has(comp)) return [seen.get(comp), i];\n  seen.set(nums[i], i);\n}",
+        why: "Demonstrates Go map lookups with comma-ok (if idx, ok := seen[comp]; ok), slice index manipulation, and preallocating map capacity to avoid rehashing.",
+        code: `package main
+
+import "fmt"
+
+// twoSum returns indices of the two numbers such that they add up to target
+func twoSum(nums []int, target int) []int {
+	// Preallocate map capacity to avoid expensive hash table bucket resizing
+	seen := make(map[int]int, len(nums))
+
+	for i, num := range nums {
+		complement := target - num
+
+		// Go's idiomatic comma-ok map lookup
+		if prevIdx, ok := seen[complement]; ok {
+			return []int{prevIdx, i}
+		}
+
+		seen[num] = i
+	}
+	return nil
+}
+
+func main() {
+	nums := []int{2, 7, 11, 15}
+	target := 9
+	result := twoSum(nums, target)
+
+	fmt.Printf("Input: nums = %v, target = %d\n", nums, target)
+	fmt.Printf("Output Indices: %v (Values: %d + %d = %d)\n",
+		result, nums[result[0]], nums[result[1]], target)
+}`
+      },
+
+      lc_valid_parentheses: {
+        num: "LC20",
+        part: "Part 7: LeetCode in Go",
+        title: "Valid Parentheses (#20) — Slice Stack",
+        desc: "Determine if string parentheses '()[]{}' are valid. In JS, Array.push() and Array.pop() act as a stack. In Go, we use a slice of runes '[]rune' with sub-slicing stack[:len(stack)-1] for an ultra-fast, zero-overhead LIFO stack.",
+        nodeCode: "const stack = [];\nfor (const char of s) {\n  if (map[char]) stack.push(char);\n  else if (stack.pop() !== match[char]) return false;\n}\nreturn stack.length === 0;",
+        why: "Teaches how Go slices naturally represent stacks without needing specialized container classes or npm packages.",
+        code: `package main
+
+import "fmt"
+
+func isValid(s string) bool {
+	// Stack implemented via slice of runes with pre-allocated capacity
+	stack := make([]rune, 0, len(s))
+	bracketMap := map[rune]rune{
+		')': '(',
+		'}': '{',
+		']': '[',
+	}
+
+	for _, ch := range s {
+		// If it's a closing bracket, check top of stack
+		if openExpected, isClosing := bracketMap[ch]; isClosing {
+			if len(stack) == 0 || stack[len(stack)-1] != openExpected {
+				return false
+			}
+			// Pop from stack by reslicing (O(1) operation)
+			stack = stack[:len(stack)-1]
+		} else {
+			// Push opening bracket
+			stack = append(stack, ch)
+		}
+	}
+
+	return len(stack) == 0
+}
+
+func main() {
+	testCases := []string{"()[]{}", "([)]", "{[]}", "(("}
+	for _, tc := range testCases {
+		fmt.Printf("isValid(%q) = %t\n", tc, isValid(tc))
+	}
+}`
+      },
+
+      lc_merge_lists: {
+        num: "LC21",
+        part: "Part 7: LeetCode in Go",
+        title: "Merge Two Sorted Lists (#21) — Dummy Pointers",
+        desc: "Merge two sorted linked lists into one sorted list. In JS, nodes are objects with 'val' and 'next'. In Go, we use pointers to structs (*ListNode) and a dummy head node to eliminate special-case code for the list head.",
+        nodeCode: "let dummy = new ListNode(0);\nlet tail = dummy;\nwhile (l1 && l2) {\n  if (l1.val <= l2.val) { tail.next = l1; l1 = l1.next; }\n  else { tail.next = l2; l2 = l2.next; }\n  tail = tail.next;\n}",
+        why: "Classic demonstration of Go pointer ergonomics: *ListNode struct pointers, referencing fields directly without arrow syntax (l1.Val, not l1->Val).",
+        code: `package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+	// Dummy head node on stack; avoids checking if head is nil
+	dummy := &ListNode{}
+	tail := dummy
+
+	for l1 != nil && l2 != nil {
+		if l1.Val <= l2.Val {
+			tail.Next = l1
+			l1 = l1.Next
+		} else {
+			tail.Next = l2
+			l2 = l2.Next
+		}
+		tail = tail.Next
+	}
+
+	// Attach remaining nodes in one pointer assignment
+	if l1 != nil {
+		tail.Next = l1
+	} else {
+		tail.Next = l2
+	}
+
+	return dummy.Next
+}
+
+func printList(node *ListNode) {
+	for node != nil {
+		fmt.Printf("%d -> ", node.Val)
+		node = node.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	// l1: 1 -> 2 -> 4
+	l1 := &ListNode{1, &ListNode{2, &ListNode{4, nil}}}
+	// l2: 1 -> 3 -> 4
+	l2 := &ListNode{1, &ListNode{3, &ListNode{4, nil}}}
+
+	fmt.Print("List 1: ")
+	printList(l1)
+	fmt.Print("List 2: ")
+	printList(l2)
+
+	merged := mergeTwoLists(l1, l2)
+	fmt.Print("Merged: ")
+	printList(merged)
+}`
+      },
+
+      lc_buy_sell_stock: {
+        num: "LC121",
+        part: "Part 7: LeetCode in Go",
+        title: "Best Time to Buy/Sell Stock (#121) — Greedy One-Pass",
+        desc: "Maximize profit by choosing a single day to buy and a later day to sell. Solved in a single O(N) pass and O(1) space by tracking minPrice and calculating profit on the fly.",
+        nodeCode: "let minPrice = Infinity; let maxProfit = 0;\nfor (const p of prices) {\n  minPrice = Math.min(minPrice, p);\n  maxProfit = Math.max(maxProfit, p - minPrice);\n}",
+        why: "Shows idiomatic clean procedural Go: no external math functions needed, straightforward if-statements execute faster than function call overhead.",
+        code: `package main
+
+import "fmt"
+
+func maxProfit(prices []int) int {
+	if len(prices) == 0 {
+		return 0
+	}
+
+	minPrice := prices[0]
+	maxProf := 0
+
+	// Single pass O(N) time, O(1) memory
+	for _, price := range prices[1:] {
+		if price < minPrice {
+			minPrice = price
+		} else if profit := price - minPrice; profit > maxProf {
+			maxProf = profit
+		}
+	}
+
+	return maxProf
+}
+
+func main() {
+	prices1 := []int{7, 1, 5, 3, 6, 4}
+	fmt.Printf("Prices: %v -> Max Profit: %d (Buy at 1, Sell at 6)\n", prices1, maxProfit(prices1))
+
+	prices2 := []int{7, 6, 4, 3, 1}
+	fmt.Printf("Prices: %v -> Max Profit: %d (No profitable transaction)\n", prices2, maxProfit(prices2))
+}`
+      },
+
+      lc_valid_palindrome: {
+        num: "LC125",
+        part: "Part 7: LeetCode in Go",
+        title: "Valid Palindrome (#125) — In-Place Runes & Two Pointers",
+        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers over runes avoids string allocations completely.",
+        nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
+        why: "In Node, regex replace creates heavy string copies. In Go, unicode.IsLetter and unicode.ToLower over []rune achieves zero intermediate heap allocation.",
+        code: `package main
+
+import (
+	"fmt"
+	"unicode"
+)
+
+func isPalindrome(s string) bool {
+	runes := []rune(s)
+	left, right := 0, len(runes)-1
+
+	for left < right {
+		// Skip non-alphanumeric characters from left
+		for left < right && !isAlphaNumeric(runes[left]) {
+			left++
+		}
+		// Skip non-alphanumeric characters from right
+		for left < right && !isAlphaNumeric(runes[right]) {
+			right--
+		}
+
+		// Compare case-insensitively
+		if unicode.ToLower(runes[left]) != unicode.ToLower(runes[right]) {
+			return false
+		}
+		left++
+		right--
+	}
+
+	return true
+}
+
+func isAlphaNumeric(r rune) bool {
+	return unicode.IsLetter(r) || unicode.IsDigit(r)
+}
+
+func main() {
+	tests := []string{
+		"A man, a plan, a canal: Panama",
+		"race a car",
+		"Was it a car or a cat I saw?",
+	}
+
+	for _, tc := range tests {
+		fmt.Printf("isPalindrome(%q) = %t\n", tc, isPalindrome(tc))
+	}
+}`
+      },
+
+      lc_reverse_linked_list: {
+        num: "LC206",
+        part: "Part 7: LeetCode in Go",
+        title: "Reverse Linked List (#206) — Pointer Flipping",
+        desc: "Reverse a singly linked list in-place. Pointers are flipped one node at a time in O(N) time and O(1) space.",
+        nodeCode: "let prev = null, curr = head;\nwhile (curr) {\n  let next = curr.next;\n  curr.next = prev;\n  prev = curr;\n  curr = next;\n}\nreturn prev;",
+        why: "Pointer manipulation in Go is clean and safe: zero pointer arithmetic bugs (unlike C/C++) while preserving native CPU pointer performance.",
+        code: `package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func reverseList(head *ListNode) *ListNode {
+	var prev *ListNode = nil
+	curr := head
+
+	for curr != nil {
+		nextTemp := curr.Next // Save next pointer
+		curr.Next = prev      // Reverse pointer direction
+		prev = curr           // Advance prev pointer
+		curr = nextTemp       // Advance curr pointer
+	}
+
+	return prev
+}
+
+func printList(node *ListNode) {
+	for node != nil {
+		fmt.Printf("%d -> ", node.Val)
+		node = node.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	// 1 -> 2 -> 3 -> 4 -> 5
+	head := &ListNode{1, &ListNode{2, &ListNode{3, &ListNode{4, &ListNode{5, nil}}}}}
+
+	fmt.Print("Original: ")
+	printList(head)
+
+	reversed := reverseList(head)
+	fmt.Print("Reversed: ")
+	printList(reversed)
+}`
+      },
+
+      lc_max_subarray: {
+        num: "LC53",
+        part: "Part 7: LeetCode in Go",
+        title: "Maximum Subarray (#53) — Kadane's Algorithm",
+        desc: "Find the contiguous subarray with the largest sum. Kadane's dynamic programming algorithm tracks currentSum and maxSum in O(N) time and O(1) space.",
+        nodeCode: "let maxSum = nums[0], current = nums[0];\nfor (let i = 1; i < nums.length; i++) {\n  current = Math.max(nums[i], current + nums[i]);\n  maxSum = Math.max(maxSum, current);\n}\nreturn maxSum;",
+        why: "Demonstrates high-performance single-pass dynamic programming without slice reallocations.",
+        code: `package main
+
+import "fmt"
+
+func maxSubArray(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	maxSum := nums[0]
+	currentSum := nums[0]
+
+	for _, n := range nums[1:] {
+		// If currentSum is negative, start fresh from current number
+		if currentSum < 0 {
+			currentSum = n
+		} else {
+			currentSum += n
+		}
+
+		if currentSum > maxSum {
+			maxSum = currentSum
+		}
+	}
+
+	return maxSum
+}
+
+func main() {
+	nums1 := []int{-2, 1, -3, 4, -1, 2, 1, -5, 4}
+	fmt.Printf("nums: %v -> Max Subarray Sum: %d (Subarray: [4, -1, 2, 1])\n", nums1, maxSubArray(nums1))
+
+	nums2 := []int{5, 4, -1, 7, 8}
+	fmt.Printf("nums: %v -> Max Subarray Sum: %d\n", nums2, maxSubArray(nums2))
+}`
       }};
 
     let activeKey = 'basic_vars';
@@ -4168,10 +4794,12 @@ func main() {
     }
 
     function switchMainView(viewName) {
-      const views = ['studio', 'repoExplorer', 'modExplain', 'philosophy', 'interviews', 'pitfalls', 'troubleshooting', 'cheatsheet'];
+      const views = ['studio', 'repoExplorer', 'docker', 'leetcode', 'modExplain', 'philosophy', 'interviews', 'pitfalls', 'troubleshooting', 'cheatsheet'];
       const btnMap = {
         studio: 'btnPlayground',
         repoExplorer: 'btnRepoExplorer',
+        docker: 'btnDocker',
+        leetcode: 'btnLeetcode',
         modExplain: 'btnModExplain',
         philosophy: 'btnPhilosophy',
         interviews: 'btnInterviews',
@@ -4182,6 +4810,8 @@ func main() {
       const viewMap = {
         studio: 'viewStudio',
         repoExplorer: 'viewRepoExplorer',
+        docker: 'viewDocker',
+        leetcode: 'viewLeetcode',
         modExplain: 'viewModExplain',
         philosophy: 'viewPhilosophy',
         interviews: 'viewInterviews',
