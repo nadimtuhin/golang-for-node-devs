@@ -4,7 +4,15 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![Node.js Compatibility](https://img.shields.io/badge/Node.js-Mental%20Model-5FA04E?style=flat&logo=node.js)](https://nodejs.org)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=flat&logo=vercel)](https://golang-for-node-devs.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 🌐 Live Interactive Studio
+
+> **Try it live in your browser right now:**  
+> 👉 [**https://golang-for-node-devs.vercel.app**](https://golang-for-node-devs.vercel.app)
 
 ---
 
