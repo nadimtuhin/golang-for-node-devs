@@ -1,0 +1,22 @@
+# Robots.txt for Go for Node.js Developers Masterclass
+User-agent: *
+Allow: /
+
+# Canonical XML Sitemap
+Sitemap: https://golang-for-node-devs.vercel.app/sitemap.xml
+
+# LLM & AI Search Engine Friendly Crawlers (AEO / GEO)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /

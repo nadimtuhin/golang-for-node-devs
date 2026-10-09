@@ -415,9 +415,10 @@ const { chapterKey, chapter } = Astro.props;
       } catch (e) {}
 
       const urlParams = new URLSearchParams(window.location.search);
-      const requestedChapter = urlParams.get('chapter') || initialKey;
-      if (requestedChapter && chaptersData[requestedChapter]) {
-        selectChapter(requestedChapter);
+      const queryChapter = urlParams.get('chapter');
+      const targetChapter = queryChapter || initialKey || 'basic_vars';
+      if (chaptersData[targetChapter]) {
+        selectChapter(targetChapter);
       } else {
         selectChapter('basic_vars');
       }

@@ -1,0 +1,35 @@
+# Go for Node.js Developers Masterclass Studio
+> Interactive Go learning platform, architectural guides, and rosetta stone for Node.js and TypeScript developers transitioning to Golang.
+
+## Website Overview
+- URL: https://golang-for-node-devs.vercel.app/
+- Title: Go for Node.js Developers Masterclass Studio
+- Description: Interactive Go learning platform featuring a live Go Playground compiler, 56 progressive chapters, 13 production architecture deep dives, Go vs Rust systems analysis, AI agent orchestration, and Docker deployment strategies.
+
+## Target Audience
+- Node.js, TypeScript, and JavaScript backend developers learning Go.
+- Systems engineers transitioning from the Libuv event loop to the Go GMP scheduler.
+- Fullstack developers building high-performance microservices, streaming LLM gateways, and Kubernetes tooling.
+
+## Primary Architectural Topics & Guides
+1. Go vs Node.js Rosetta Cheatsheet: https://golang-for-node-devs.vercel.app/cheatsheet
+2. Dependency Management (go.mod vs package.json & MVS): https://golang-for-node-devs.vercel.app/go-mod-vs-npm
+3. Unit & Integration Testing in Go (Testcontainers, miniredis, httptest): https://golang-for-node-devs.vercel.app/testing
+4. Go in the AI Era (LLM Gateways, Ollama, Weaviate): https://golang-for-node-devs.vercel.app/ai
+5. AI Agents & LangChainGo (Parallel tool calling, MCP servers): https://golang-for-node-devs.vercel.app/ai-agents
+6. Go vs Rust Systems Engineering Guide: https://golang-for-node-devs.vercel.app/go-vs-rust
+7. Production Go Docker Packaging (Distroless & scratch <15MB): https://golang-for-node-devs.vercel.app/docker
+8. Senior Backend Go Interview Questions (GMP, Tricolor GC, Escape analysis): https://golang-for-node-devs.vercel.app/interviews
+9. Go Compilation Pipeline & Air Hot Reloading: https://golang-for-node-devs.vercel.app/troubleshooting
+10. Fullstack Microservice Architecture (Express vs Go Fiber): https://golang-for-node-devs.vercel.app/microservice
+11. The Go Philosophy & Zen of Go: https://golang-for-node-devs.vercel.app/philosophy
+12. Common Go Pitfalls & Memory Footguns: https://golang-for-node-devs.vercel.app/pitfalls
+13. LeetCode Easy Solutions in Go (Zero-allocation idioms): https://golang-for-node-devs.vercel.app/leetcode
+14. Curriculum & Chapters Directory: https://golang-for-node-devs.vercel.app/chapters
+
+## Technical Highlights
+- 56 Interactive Lessons with live compilation via official Go Playground API.
+- Zero-allocation data structures vs V8 dynamic objects.
+- CSP concurrency (Goroutines and Channels) vs Single-threaded Event Loop.
+- Minimal Version Selection (MVS) algorithm vs npm SemVer ranges.
+- Tricolor Concurrent Mark-and-Sweep GC (<1ms pauses) vs V8 Generational GC.
