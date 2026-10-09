@@ -1,0 +1,256 @@
+---
+// Sidebar Component
+---
+<nav class="chapters-sidebar" id="chaptersList">
+      <div class="sidebar-header-box">
+        <div class="sidebar-title-row">
+          <span class="sidebar-title">Lessons Directory</span>
+          <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
+        </div>
+        <div class="sidebar-search-box">
+          <input type="text" id="lessonSearchInput" placeholder="Filter lessons (e.g. map, docker, mutex)..." oninput="filterLessons(this.value)">
+          <button id="clearSearchBtn" class="clear-search-btn" onclick="clearLessonSearch()" style="display:none;">✕</button>
+        </div>
+      </div>
+
+      <div class="sidebar-part-label">Featured: Fullstack Microservice (Fiber + Mongo)</div>
+      <div class="chapter-nav-item active" onclick="selectChapter('fiber_api')">
+        <span class="chapter-num">⭐</span>
+        <span>Express vs Fiber (Video Project)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('mongo_singleton')">
+        <span class="chapter-num">⭐</span>
+        <span>MongoDB Client & sync.Once</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 0: Go Language Fundamentals</div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_vars')">
+        <span class="chapter-num">B1</span>
+        <span>Variables, := & Zero Values</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_funcs')">
+        <span class="chapter-num">B2</span>
+        <span>Functions & Multiple Returns</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_structs')">
+        <span class="chapter-num">B3</span>
+        <span>Structs & Receiver Methods</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_interfaces')">
+        <span class="chapter-num">B4</span>
+        <span>Interfaces & Duck Typing</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_flow')">
+        <span class="chapter-num">B5</span>
+        <span>Loops, If & Switch Expressions</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_packages')">
+        <span class="chapter-num">B6</span>
+        <span>Packages & Capital Exports</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_pointers')">
+        <span class="chapter-num">B7</span>
+        <span>Pointers & Pass-By-Value</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_type_assertions')">
+        <span class="chapter-num">B8</span>
+        <span>Type Assertions & Type Switches</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_enums')">
+        <span class="chapter-num">B9</span>
+        <span>Enums with iota Pattern</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_embedding')">
+        <span class="chapter-num">B10</span>
+        <span>Struct Embedding (Composition)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_defer_panic')">
+        <span class="chapter-num">B11</span>
+        <span>Defer, Panic & Recover</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('basic_generics')">
+        <span class="chapter-num">B12</span>
+        <span>Generics in Go (Type Params)</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 1: Web APIs & Networking</div>
+      <div class="chapter-nav-item" onclick="selectChapter('http_api')">
+        <span class="chapter-num">01</span>
+        <span>Express API vs net/http</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('middleware')">
+        <span class="chapter-num">02</span>
+        <span>Express Middleware</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('http_client')">
+        <span class="chapter-num">03</span>
+        <span>axios / fetch Client</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('json')">
+        <span class="chapter-num">04</span>
+        <span>JSON & Struct Tags</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('fs_io')">
+        <span class="chapter-num">05</span>
+        <span>fs Streams vs io.Reader</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('env_vars')">
+        <span class="chapter-num">06</span>
+        <span>process.env & Config</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 2: Data Structures & Algorithms</div>
+      <div class="chapter-nav-item" onclick="selectChapter('slice_map')">
+        <span class="chapter-num">07</span>
+        <span>Array.map() in Go</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('slice_filter')">
+        <span class="chapter-num">08</span>
+        <span>Array.filter() in Go</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('slice_reduce')">
+        <span class="chapter-num">09</span>
+        <span>Array.reduce() in Go</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('slice_sort')">
+        <span class="chapter-num">10</span>
+        <span>Array.sort() (slices.Sort)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('slice_ops')">
+        <span class="chapter-num">11</span>
+        <span>push/pop/splice vs append</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('data_types')">
+        <span class="chapter-num">12</span>
+        <span>Primitive Types (int64, runes)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('maps_sets')">
+        <span class="chapter-num">13</span>
+        <span>Objects & Set vs map[K]V</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('pointers')">
+        <span class="chapter-num">14</span>
+        <span>Pointers (*T & &T) Demystified</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_slice_internals')">
+        <span class="chapter-num">DS1</span>
+        <span>Slice Header: Len, Cap & Ptr</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_map_internals')">
+        <span class="chapter-num">DS2</span>
+        <span>Map Buckets & Random Order</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_struct_memory')">
+        <span class="chapter-num">DS3</span>
+        <span>Struct Alignment & Padding</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_stacks_queues')">
+        <span class="chapter-num">DS4</span>
+        <span>FIFO Queue (No shift() O(N))</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_priority_queue')">
+        <span class="chapter-num">DS5</span>
+        <span>Priority Queue (container/heap)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('ds_sync_pool')">
+        <span class="chapter-num">DS6</span>
+        <span>Zero-Alloc Pool (sync.Pool)</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 3: Databases & ORMs</div>
+      <div class="chapter-nav-item" onclick="selectChapter('db_pool')">
+        <span class="chapter-num">15</span>
+        <span>pg.Pool vs database/sql</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('db_queries')">
+        <span class="chapter-num">16</span>
+        <span>Query Types: Exec, Row, Rows</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('db_tx')">
+        <span class="chapter-num">17</span>
+        <span>ACID Transactions (db.BeginTx)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('orm_patterns')">
+        <span class="chapter-num">18</span>
+        <span>Prisma/TypeORM vs GORM & sqlc</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 4: Queues & BullMQ</div>
+      <div class="chapter-nav-item" onclick="selectChapter('bullmq_basic')">
+        <span class="chapter-num">19</span>
+        <span>BullMQ vs Go Channel Queue</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('bullmq_retries')">
+        <span class="chapter-num">20</span>
+        <span>BullMQ Retries & Dead-Letter</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 5: Concurrency, Async & Errors</div>
+      <div class="chapter-nav-item" onclick="selectChapter('promise_all')">
+        <span class="chapter-num">21</span>
+        <span>Promise.all vs WaitGroup</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('promise_race')">
+        <span class="chapter-num">22</span>
+        <span>Promise.race vs select</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('abort_controller')">
+        <span class="chapter-num">23</span>
+        <span>AbortController vs context</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('error_wrapping')">
+        <span class="chapter-num">24</span>
+        <span>Error Wrapping & errors.Is</span>
+      </div>
+
+      <div class="sidebar-part-label">Part 6: Go Philosophy & The Zen of Go</div>
+      <div class="chapter-nav-item" onclick="selectChapter('philo_clear_over_clever')">
+        <span class="chapter-num">P1</span>
+        <span>"Clear is Better Than Clever"</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('philo_little_copying')">
+        <span class="chapter-num">P2</span>
+        <span>"A Little Copying > Dependency"</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('philo_errors_values')">
+        <span class="chapter-num">P3</span>
+        <span>"Errors are Values" (No Exceptions)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('philo_share_memory')">
+        <span class="chapter-num">P4</span>
+        <span>"Share Memory by Communicating"</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('philo_zero_value')">
+        <span class="chapter-num">P5</span>
+        <span>"Make the Zero Value Useful"</span>
+      </div>
+      <div class="sidebar-part-label">Part 7: LeetCode Easy in Go (JS vs Go)</div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_two_sum')">
+        <span class="chapter-num">LC1</span>
+        <span>Two Sum (#1)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_parentheses')">
+        <span class="chapter-num">LC20</span>
+        <span>Valid Parentheses (#20)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_merge_lists')">
+        <span class="chapter-num">LC21</span>
+        <span>Merge Two Sorted Lists (#21)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_buy_sell_stock')">
+        <span class="chapter-num">LC121</span>
+        <span>Best Time to Buy/Sell (#121)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_valid_palindrome')">
+        <span class="chapter-num">LC125</span>
+        <span>Valid Palindrome (#125)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_reverse_linked_list')">
+        <span class="chapter-num">LC206</span>
+        <span>Reverse Linked List (#206)</span>
+      </div>
+      <div class="chapter-nav-item" onclick="selectChapter('lc_max_subarray')">
+        <span class="chapter-num">LC53</span>
+        <span>Maximum Subarray (Kadane)</span>
+      </div>
+    </nav>

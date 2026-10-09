@@ -1,0 +1,27 @@
+---
+// Header Component
+---
+<header>
+    <a href="#" class="brand" onclick="switchMainView('studio')">
+      <span>🟢 ➔ 🐹</span>
+      <span>Go Backend Studio</span>
+      <span class="badge">56 Lessons & Demos</span>
+    </a>
+    
+    <nav class="header-nav-scroll">
+      <button class="tab-toggle active" id="btnPlayground" onclick="switchMainView('studio')">⚡ Studio</button>
+      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Microservice</button>
+      <button class="tab-toggle" id="btnDocker" onclick="switchMainView('docker')">🐳 Docker</button>
+      <button class="tab-toggle" id="btnLeetcode" onclick="switchMainView('leetcode')">🧩 LeetCode</button>
+      <button class="tab-toggle" id="btnModExplain" onclick="switchMainView('modExplain')">📦 go.mod vs npm</button>
+      <button class="tab-toggle" id="btnPhilosophy" onclick="switchMainView('philosophy')">🧠 Philosophy</button>
+      <button class="tab-toggle" id="btnInterviews" onclick="switchMainView('interviews')">🎯 Interviews</button>
+      <button class="tab-toggle" id="btnPitfalls" onclick="switchMainView('pitfalls')">⚠️ Pitfalls</button>
+      <button class="tab-toggle" id="btnTroubleshooting" onclick="switchMainView('troubleshooting')">🛠️ Diagnostics</button>
+      <button class="tab-toggle" id="btnCheatsheet" onclick="switchMainView('cheatsheet')">📖 Rosetta</button>
+    </nav>
+
+    <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
+      <span>GitHub ★</span>
+    </a>
+  </header>

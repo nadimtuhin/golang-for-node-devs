@@ -1,0 +1,212 @@
+<div id="viewInterviews" class="view-container">
+    <div class="view-inner-content">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🎯 Go vs Node.js Backend Interview Mastery
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        The most frequent and critical interview questions asked by senior engineering teams when evaluating developers transitioning from Node.js/TypeScript to Go.
+      </p>
+    </div>
+
+    <!-- Visual Architecture Diagram 1: Concurrency Models -->
+    <div class="diagram-card">
+      <div class="diagram-title">📊 Architectural Mental Model: Node.js Event Loop vs Go M:N Scheduler</div>
+      <div class="diagram-subtitle">How concurrency actually executes under the hood in both runtimes:</div>
+      <div class="diagram-svg-container">
+        <svg viewBox="0 0 850 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" style="font-family: system-ui, sans-serif;">
+          <!-- Node.js side -->
+          <rect x="20" y="20" width="380" height="220" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+          <text x="40" y="48" font-size="16" font-weight="bold" fill="#166534">🟢 Node.js Concurrency (Single-Thread Event Loop)</text>
+          
+          <rect x="40" y="70" width="160" height="40" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+          <text x="50" y="95" font-size="12" font-weight="bold" fill="#15803d">V8 Call Stack (1 Thread)</text>
+          
+          <path d="M 200 90 L 240 90" stroke="#15803d" stroke-width="2" marker-end="url(#arrow)"/>
+          
+          <rect x="240" y="70" width="140" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="252" y="95" font-size="12" font-weight="bold" fill="#b45309">libuv Event Loop</text>
+          
+          <rect x="40" y="130" width="340" height="90" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="50" y="152" font-size="11" font-weight="bold" fill="#475569">libuv Worker Threadpool (Default 4 OS Threads)</text>
+          <text x="50" y="172" font-size="11" fill="#64748b">• Handles disk I/O (fs), crypto, dns</text>
+          <text x="50" y="190" font-size="11" fill="#64748b">• CPU work blocks the main thread completely</text>
+          <text x="50" y="208" font-size="11" fill="#b91c1c">⚠️ Heavy computation starves all incoming HTTP requests!</text>
+
+          <!-- Go side -->
+          <rect x="440" y="20" width="390" height="220" rx="10" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="2"/>
+          <text x="460" y="48" font-size="16" font-weight="bold" fill="#0369a1">🐹 Go Concurrency (M:N Work-Stealing Scheduler)</text>
+
+          <!-- Goroutines -->
+          <rect x="460" y="70" width="110" height="50" rx="6" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5"/>
+          <text x="470" y="92" font-size="11" font-weight="bold" fill="#0369a1">Goroutines (G)</text>
+          <text x="470" y="108" font-size="10" fill="#0369a1">100k+ (2KB each)</text>
+
+          <path d="M 570 95 L 595 95" stroke="#0284c7" stroke-width="2"/>
+
+          <!-- Logical Processors -->
+          <rect x="595" y="70" width="105" height="50" rx="6" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5"/>
+          <text x="605" y="92" font-size="11" font-weight="bold" fill="#854d0e">Processors (P)</text>
+          <text x="605" y="108" font-size="10" fill="#854d0e">GOMAXPROCS</text>
+
+          <path d="M 700 95 L 725 95" stroke="#0284c7" stroke-width="2"/>
+
+          <!-- OS Threads -->
+          <rect x="725" y="70" width="90" height="50" rx="6" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="735" y="92" font-size="11" font-weight="bold" fill="#166534">Threads (M)</text>
+          <text x="735" y="108" font-size="10" fill="#166534">Kernel cores</text>
+
+          <rect x="460" y="130" width="355" height="90" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="470" y="152" font-size="11" font-weight="bold" fill="#475569">Go Runtime Work-Stealing Scheduler</text>
+          <text x="470" y="172" font-size="11" fill="#64748b">• Preemptive scheduling (Go 1.14+ non-cooperative signals)</text>
+          <text x="470" y="190" font-size="11" fill="#64748b">• Idle threads steal work from busy processor queues</text>
+          <text x="470" y="208" font-size="11" fill="#15803d">✓ True parallel CPU computation across all cores simultaneously!</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Interview Question 1 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q1: How does Go's Concurrency model differ fundamentally from Node.js?</span>
+        <span class="qa-badge high">Most Frequent</span>
+      </div>
+      <div class="qa-body">
+        <div class="qa-mental-model">
+          <strong>Node.js mental model:</strong> Single-threaded JavaScript execution engine with an asynchronous event loop. Good for I/O bound tasks; fatal for CPU-heavy tasks without Worker Threads.
+        </div>
+        <p><strong>Go Architecture:</strong> Go uses the <strong>M:N Scheduler</strong> (M OS threads multiplexed across N Goroutines via P logical processors). Goroutines start with only <strong>2 KB of stack space</strong> (compared to 1-2 MB for OS threads or Node Worker threads) and grow dynamically.</p>
+        <p>Go supports true hardware parallelism across all CPU cores automatically. If a Goroutine blocks on a network syscall or channel, the Go runtime detaches the OS thread and runs another Goroutine instantly (cooperative and preemptive work-stealing).</p>
+        <div class="qa-pro-tip">
+          <strong>Interview Pro-Tip:</strong> Mention that since Go 1.14, Go has <em>asynchronous preemption</em> using OS signals (SIGURG). Even a tight infinite loop (<code>for {}</code>) without function calls will NOT lock up a CPU core indefinitely.
+        </div>
+        <div style="margin-top: 1rem;">
+          <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('promise_all')">🚀 Try Concurrency in Studio (Ch 21)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview Question 2 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q2: What is the "Nil Interface" trap in Go and why does it trip up JavaScript devs?</span>
+        <span class="qa-badge high">Classic Gotcha</span>
+      </div>
+      <div class="qa-body">
+        <div class="qa-mental-model">
+          <strong>Node.js mental model:</strong> In JS, if <code>val === null</code>, then <code>Boolean(val)</code> is always <code>false</code>. In Go, an interface can hold a nil pointer and yet <code>interface != nil</code> evaluates to <strong>true</strong>!
+        </div>
+        <p>An interface value in Go is represented under the hood as a two-word tuple: <code>(type, value)</code>.</p>
+        <ul>
+          <li>An interface is only equal to <code>nil</code> if <strong>both</strong> its type and its value are <code>nil</code>.</li>
+          <li>If you return a typed pointer that happens to be <code>nil</code> (e.g. <code>var err *MyCustomError = nil</code>) as an <code>error</code> interface, the interface's type is <code>*MyCustomError</code>, so <code>err != nil</code> is <strong>TRUE</strong>!</li>
+        </ul>
+        <pre style="background:#1e293b; color:#e2e8f0; padding:0.75rem; border-radius:6px; font-size:0.85rem; margin:0.75rem 0;">func GetUser() error {
+    var customErr *NotFoundError = nil
+    return customErr // BUG: returns interface(*NotFoundError, nil)
+}
+
+func main() {
+    if err := GetUser(); err != nil {
+        // THIS CODE RUNS even though customErr was nil!
+        fmt.Println("Error occurred!")
+    }
+}</pre>
+        <div class="qa-pro-tip">
+          <strong>Interview Pro-Tip:</strong> Always return explicit <code>nil</code> rather than a typed nil pointer when implementing error returns: <code>return nil</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview Question 3 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q3: What is the difference between an Array and a Slice? How does Capacity growth work?</span>
+        <span class="qa-badge medium">Fundamental</span>
+      </div>
+      <div class="qa-body">
+        <div class="qa-mental-model">
+          <strong>Node.js mental model:</strong> JS only has <code>Array</code>, which is an auto-resizing dynamic object on the V8 heap.
+        </div>
+        <p>In Go:</p>
+        <ul>
+          <li><strong>Array (<code>[5]int</code>):</strong> Fixed size, part of the type signature. Passed entirely by value (copies all elements when passed to a function).</li>
+          <li><strong>Slice (<code>[]int</code>):</strong> A lightweight 24-byte header containing:
+            <ol>
+              <li><code>Data uintptr</code> (pointer to the underlying array)</li>
+              <li><code>Len int</code> (number of accessible elements)</li>
+              <li><code>Cap int</code> (total capacity of underlying buffer)</li>
+            </ol>
+          </li>
+        </ul>
+        <p><strong>Growth Algorithm:</strong> When appending beyond capacity, Go doubles capacity up to 256 elements; beyond 256, it transitions smoothly to growing by ~25% to minimize memory waste.</p>
+        <div style="margin-top: 1rem;">
+          <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('ds_slice_internals')">🚀 Explore Slice Headers in Studio (DS1)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview Question 4 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q4: How does Go's Garbage Collector differ from Node.js (V8)?</span>
+        <span class="qa-badge concept">Systems Architecture</span>
+      </div>
+      <div class="qa-body">
+        <p><strong>V8 (Node.js):</strong> Uses a Generational Garbage Collector (Scavenger for young generation + Mark-Sweep-Compact for old generation). Optimized for dynamic scripting languages where millions of short-lived objects are born in functions. Can experience stop-the-world pauses under heavy memory churn.</p>
+        <p><strong>Go Runtime:</strong> Uses a <strong>Concurrent Tri-Color Mark-and-Sweep Garbage Collector</strong> without generational collection or object moving/compaction.</p>
+        <ul>
+          <li><strong>Sub-millisecond latency:</strong> Go prioritizes predictable low latency over absolute throughput. GC pauses are typically &lt; 0.5 ms.</li>
+          <li><strong>Escape Analysis:</strong> Because Go puts the vast majority of local variables and small structs on the <strong>stack</strong>, they are freed instantly upon function return without GC involvement!</li>
+          <li><strong>Tuning:</strong> Controlled primarily by <code>GOGC</code> (default 100% target ratio) and <code>GOMEMLIMIT</code> (Go 1.19+ soft memory ceiling to prevent OOM kills in Docker/Kubernetes).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Interview Question 5 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q5: What is Escape Analysis and why is it crucial for Go performance?</span>
+        <span class="qa-badge medium">Performance</span>
+      </div>
+      <div class="qa-body">
+        <p><strong>Escape Analysis</strong> is the Go compiler's static analysis step that determines whether a variable can be safely allocated on the fast <strong>Stack</strong> or must "escape" to the <strong>Heap</strong>.</p>
+        <ul>
+          <li><strong>Stack allocation:</strong> Ultra-fast (moving stack pointer), zero GC overhead.</li>
+          <li><strong>Heap allocation:</strong> Requires runtime memory allocator and GC tracing.</li>
+        </ul>
+        <p><strong>Common reasons variables escape to heap:</strong></p>
+        <ol>
+          <li>Returning a pointer to a local variable from a function.</li>
+          <li>Passing values into interface parameters (e.g., <code>fmt.Println(x)</code> takes <code>...any</code>, forcing <code>x</code> to escape).</li>
+          <li>Allocating slices with dynamic sizes that cannot be resolved at compile time.</li>
+        </ol>
+        <div class="qa-pro-tip">
+          <strong>Interview Pro-Tip:</strong> You can inspect the compiler's escape analysis decisions in terminal via: <code>go build -gcflags="-m -m"</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview Question 6 -->
+    <div class="qa-card">
+      <div class="qa-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
+        <span>Q6: How do you identify and prevent Goroutine Leaks in production?</span>
+        <span class="qa-badge high">Production Reliability</span>
+      </div>
+      <div class="qa-body">
+        <p>A Goroutine leak occurs when a Goroutine is spawned but remains blocked forever (waiting on a channel that is never written to, or reading from a socket without a timeout). Because Goroutines are never garbage-collected while alive, memory grows monotonically until the pod OOM crashes.</p>
+        <p><strong>Prevention Strategies:</strong></p>
+        <ul>
+          <li>Always pass a cancellable <code>context.Context</code> to long-running or async goroutines.</li>
+          <li>Use buffered channels when you know the number of workers, or use a <code>select</code> with <code>ctx.Done()</code>.</li>
+          <li>Monitor total goroutine count in Prometheus using <code>runtime.NumGoroutine()</code>.</li>
+          <li>Attach <code>net/http/pprof</code> to inspect live goroutine stack dumps via <code>/debug/pprof/goroutine?debug=1</code>.</li>
+        </ul>
+        <div style="margin-top: 1rem;">
+          <button class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem;" onclick="jumpToChapter('abort_controller')">🚀 Try Context Cancellation in Studio (Ch 23)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 7: KNOWN PITFALLS & FOOTGUNS -->

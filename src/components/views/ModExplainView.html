@@ -1,0 +1,31 @@
+<div id="viewModExplain" class="view-container">
+    <div class="view-inner-content">
+    <h2 style="font-size: 1.5rem; margin-bottom: 0.4rem; color: #0f172a;">📦 Dependency Management: Go Modules vs npm</h2>
+    <p style="color: #64748b; margin-bottom: 1.5rem;">How <code>go.mod</code> and <code>go.sum</code> replace <code>package.json</code>, <code>package-lock.json</code>, and the <code>node_modules</code> folder.</p>
+
+    <div class="deepdive-box">
+      <div class="deepdive-title">📄 1. <code>package.json</code> vs <code>go.mod</code></div>
+      <p style="color: #475569; margin-bottom: 0.75rem;">
+        In Node, <code>package.json</code> lists package names and semantic version ranges registered on npmjs.org.
+      </p>
+      <p style="color: #475569; margin-bottom: 0.75rem;">
+        In Go, <strong>there is NO centralized npm registry</strong>. <code>go.mod</code> declares dependencies using direct Git repository paths (e.g., <code>github.com/gofiber/fiber/v2</code>).
+      </p>
+    </div>
+
+    <div class="deepdive-box">
+      <div class="deepdive-title">🔒 2. <code>package-lock.json</code> vs <code>go.sum</code> (Cryptographic Security)</div>
+      <p style="color: #475569;">
+        <code>go.sum</code> is a cryptographic SHA-256 ledger. If a package author deletes their repo or force-pushes a malicious change to a Git tag (supply chain attack), the Go compiler detects the mismatch and aborts the build.
+      </p>
+    </div>
+
+    <div class="deepdive-box">
+      <div class="deepdive-title">🗑️ 3. Where is <code>node_modules</code>?</div>
+      <p style="color: #475569;">
+        Go never creates a local dependency folder in your project. Dependencies are downloaded once globally to <code>$GOPATH/pkg/mod/</code> and shared across all projects.
+      </p>
+    </div>
+  </div>
+
+  <!-- VIEW: CHEATSHEET -->

@@ -1,0 +1,40 @@
+<div id="viewCheatsheet" class="view-container">
+    <div class="view-inner-content">
+    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #0f172a;">⚡ Node.js ➔ Go Backend Rosetta Stone</h2>
+    <p style="color: #64748b; margin-bottom: 1.5rem;">Direct code mappings for arrays, types, databases, queues, and concurrency.</p>
+
+    <table class="diff-table">
+      <thead>
+        <tr>
+          <th>JavaScript / Node Concept</th>
+          <th>Go Equivalent</th>
+          <th>Why Go is Different</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>arr.map(fn)</code></td>
+          <td><code>for i, v := range arr</code> or Generic <code>Map[T, R]()</code></td>
+          <td>Pre-allocating slice capacity eliminates GC allocations.</td>
+        </tr>
+        <tr>
+          <td><code>arr.filter(fn)</code></td>
+          <td><code>for _, v := range arr { if fn(v) append }</code></td>
+          <td>Explicit and transparent with zero hidden function wrapper overhead.</td>
+        </tr>
+        <tr>
+          <td><code>arr.sort((a,b) => a - b)</code></td>
+          <td><code>slices.Sort(arr)</code> or <code>slices.SortFunc()</code></td>
+          <td>Built-in pdqsort (pattern-defeating quicksort), ultra fast.</td>
+        </tr>
+        <tr>
+          <td><code>new Set([1, 2, 2])</code></td>
+          <td><code>map[T]struct{}</code> (empty struct set)</td>
+          <td>Empty struct <code>struct{}</code> occupies zero bytes in memory.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+  <!-- VIEW 5: GO PHILOSOPHY & ZEN OF GO -->

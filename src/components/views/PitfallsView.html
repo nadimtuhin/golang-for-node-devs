@@ -1,0 +1,218 @@
+<div id="viewPitfalls" class="view-container">
+    <div class="view-inner-content">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #c2410c; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        ⚠️ Known Pitfalls & Footguns (For Node.js Devs)
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        Common traps where JavaScript intuition leads to silent bugs, race conditions, memory leaks, or unrecoverable panics in Go.
+      </p>
+    </div>
+
+    <!-- Visual Diagram 2: Memory Layout & Padding -->
+    <div class="diagram-card">
+      <div class="diagram-title">📐 Memory Footprint: JS Object Graph vs Go Contiguous Memory Layout</div>
+      <div class="diagram-subtitle">Why Go structs take 10x less RAM and produce zero garbage collector pointer fragmentation:</div>
+      <div class="diagram-svg-container">
+        <svg viewBox="0 0 850 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg" style="font-family: system-ui, sans-serif;">
+          <!-- Node JS Object Box -->
+          <rect x="20" y="20" width="380" height="160" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/>
+          <text x="35" y="45" font-size="14" font-weight="bold" fill="#991b1b">JavaScript Object: { id: 101, active: true }</text>
+          
+          <rect x="35" y="60" width="120" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+          <text x="45" y="80" font-size="11" fill="#475569">V8 Hidden Class Ptr</text>
+          
+          <rect x="165" y="60" width="110" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+          <text x="175" y="80" font-size="11" fill="#475569">Property Store Ptr</text>
+          
+          <rect x="285" y="60" width="100" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+          <text x="295" y="80" font-size="11" fill="#475569">Elements Store</text>
+
+          <text x="35" y="115" font-size="11" fill="#64748b">• Each field is boxed; numbers stored as double / pointer</text>
+          <text x="35" y="135" font-size="11" fill="#64748b">• 1 million objects = ~64 MB heap + GC pointer graph</text>
+          <text x="35" y="155" font-size="11" font-weight="bold" fill="#b91c1c">❌ High pointer chasing & CPU cache misses</text>
+
+          <!-- Go Struct Box -->
+          <rect x="440" y="20" width="390" height="160" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+          <text x="455" y="45" font-size="14" font-weight="bold" fill="#166534">Go Struct: struct { ID int64; Active bool }</text>
+
+          <rect x="455" y="65" width="180" height="35" rx="4" fill="#bbf7d0" stroke="#16a34a" stroke-width="1.5"/>
+          <text x="470" y="87" font-size="12" font-weight="bold" fill="#15803d">ID: 8 bytes (int64)</text>
+
+          <rect x="635" y="65" width="60" height="35" rx="4" fill="#fed7aa" stroke="#ea580c" stroke-width="1.5"/>
+          <text x="640" y="87" font-size="11" font-weight="bold" fill="#9a3412">Active: 1B</text>
+
+          <rect x="695" y="65" width="110" height="35" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <text x="705" y="87" font-size="11" fill="#64748b">7B Padding</text>
+
+          <text x="455" y="125" font-size="11" fill="#166534">• Contiguous 16-byte memory block; zero pointers!</text>
+          <text x="455" y="145" font-size="11" fill="#166534">• 1 million items in []User = exactly 16 MB flat slice</text>
+          <text x="455" y="165" font-size="11" font-weight="bold" fill="#15803d">✓ L1/L2 cache prefetching friendly; 0 GC pointers to scan!</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Pitfall 1: Loop Variable Capture in Goroutines -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 1: Loop Variable Capture in Goroutines</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        In older Go (pre-1.22) and many concurrent patterns, closures in goroutines capture the reference of the loop variable, not its value at iteration time!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: All goroutines print the LAST item</div>
+items := []string{"a", "b", "c"}
+for _, v := range items {
+    go func() {
+        fmt.Println(v) // Captures single pointer!
+    }()
+}
+// Outputs: "c", "c", "c"
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Pass variable as explicit argument</div>
+items := []string{"a", "b", "c"}
+for _, v := range items {
+    go func(val string) {
+        fmt.Println(val) // Copied by value!
+    }(v)
+}
+// Outputs: "a", "b", "c" (unordered)
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 2: Slice Re-slicing Giant Memory Retention -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 2: Sub-Slicing Retaining Giant Underlying Array</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        Sub-slicing shares the original array. If you slice 5 bytes from a 50MB file buffer and keep the slice, the entire 50MB array cannot be garbage collected!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: Retains 50 MB in RAM forever</div>
+func getHeader() []byte {
+    bigFile := read50MBFile() // 50MB buffer
+    return bigFile[:10]       // Pointer to 50MB!
+}
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Copy into newly allocated slice</div>
+func getHeader() []byte {
+    bigFile := read50MBFile()
+    header := make([]byte, 10)
+    copy(header, bigFile[:10]) // Independent array!
+    return header              // bigFile is garbage collected
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 3: Concurrent Map Read/Write Crash -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 3: Concurrent Map Mutation Crashes the Process</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        In JS, single-threading prevents race condition panics. In Go, multiple goroutines writing/reading a map concurrently will throw <code>fatal error: concurrent map read and map write</code> which CANNOT be caught by <code>recover()</code>!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: Fatal unrecoverable process crash</div>
+m := make(map[string]int)
+go func() { m["a"] = 1 }()
+go func() { _ = m["a"] }()
+// CRASH: fatal error: concurrent map access
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Protect with sync.RWMutex</div>
+type SafeMap struct {
+    sync.RWMutex
+    data map[string]int
+}
+// Read:  mu.RLock(); val := data[k]; mu.RUnlock()
+// Write: mu.Lock();  data[k] = v;  mu.Unlock()
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 4: Defer Inside a Long Loop -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 4: Defer inside Long Loops Leaks File Descriptors</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        <code>defer</code> does NOT run at the end of a loop iteration; it runs when the surrounding <strong>function</strong> returns! Putting defer inside a loop of 10,000 files will keep all 10,000 file descriptors open simultaneously.
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: "too many open files" OS crash</div>
+for _, filename := range files {
+    f, _ := os.Open(filename)
+    defer f.Close() // Will NOT close until main() ends!
+}
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Wrap in helper function or close manually</div>
+for _, filename := range files {
+    func(name string) {
+        f, _ := os.Open(name)
+        defer f.Close() // Closes when this anonymous func exits!
+    }(filename)
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 5: Variable Shadowing with := -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 5: Accidental Variable Shadowing with :=</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        Using <code>:=</code> inside an <code>if</code> block creates a new block-scoped variable, shadowing the outer variable and leaving it unchanged.
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: client remains nil outside if block</div>
+var client *HttpClient
+if env == "prod" {
+    client, err := NewProdClient() // SHADOWS client!
+}
+// client is still nil here!
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Declare err separately, use = for client</div>
+var client *HttpClient
+var err error
+if env == "prod" {
+    client, err = NewProdClient() // Assigns to outer client
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 6: Unexported Struct Fields in JSON -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 6: Lowercase (Unexported) Fields Silent JSON Null</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        In Go, lowercase struct fields are package-private. The <code>encoding/json</code> package is in another package, so it cannot see unexported fields and silently ignores them!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: Serializes to empty "{}"</div>
+type User struct {
+    name  string // Lowercase: Unexported!
+    email string // Lowercase: Unexported!
+}
+bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
+// Result: "{}"
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Capitalize fields and use struct tags</div>
+type User struct {
+    Name  string `json:"name"`
+    Email string `json:"email"`
+}
+bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
+// Result: '{"name":"Tom","email":"t@t.com"}'
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 8: TROUBLESHOOTING & DEBUGGING WORKFLOWS -->

@@ -1,0 +1,143 @@
+<div id="viewDocker" class="view-container">
+    <div class="view-inner-content">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #0284c7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🐳 Production Docker for Go (The Node.js Contrast)
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        Why Go Docker images are legendary: Single static binaries, zero runtime, sub-15MB container images, and no 500MB <code>node_modules</code> security vulnerabilities.
+      </p>
+    </div>
+
+    <!-- Comparison Table: Node vs Go Docker -->
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+      <h3 style="font-size: 1.15rem; color: #0f172a; margin-bottom: 1rem;">⚖️ Docker Image Comparison: Node.js vs Go</h3>
+      <table class="rosetta-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Metric / Feature</th>
+            <th style="width: 35%;">Node.js Docker Container</th>
+            <th style="width: 40%;">Go Docker Container (Distroless / Scratch)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Final Image Size</strong></td>
+            <td>180 MB – 1.2 GB (Base OS + Node + node_modules)</td>
+            <td><strong>5 MB – 18 MB</strong> (Single static compiled binary)</td>
+          </tr>
+          <tr>
+            <td><strong>Runtime Requirements</strong></td>
+            <td>Node.js engine, V8, libuv, npm dependencies</td>
+            <td><strong>Zero runtime.</strong> Direct Linux kernel ELF binary.</td>
+          </tr>
+          <tr>
+            <td><strong>Base Image</strong></td>
+            <td><code>node:20-alpine</code> or <code>node:20-slim</code></td>
+            <td><code>gcr.io/distroless/static</code> or <code>scratch</code></td>
+          </tr>
+          <tr>
+            <td><strong>Attack Surface & CVEs</strong></td>
+            <td>Hundreds of npm packages & C++ runtime CVEs</td>
+            <td><strong>Zero package manager, zero shell, zero CVEs.</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Cold Start Memory</strong></td>
+            <td>~50 MB – 120 MB RAM at idle</td>
+            <td><strong>~5 MB – 15 MB RAM</strong> at idle</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Template 1: Production Distroless (Recommended) -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">🏆 1. Gold Standard: Google Distroless Multi-Stage Dockerfile</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        Recommended for enterprise production. Runs as a non-root user (UID 65532), includes official CA certificates for outbound HTTPS calls, and tzdata for timezones.
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># --- Stage 1: Build the Static Binary ---
+FROM golang:1.23-alpine AS builder
+
+# Install ca-certificates and git in builder if needed
+RUN apk --no-cache add ca-certificates git
+
+WORKDIR /app
+
+# Cache dependencies layer
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build ultra-compact, stripped static Linux binary
+# CGO_ENABLED=0  -> Pure Go network resolver, no libc dependency
+# -ldflags="-s -w" -> Strip debugging symbols & DWARF tables (35% size reduction)
+# -trimpath      -> Remove local filepath metadata from binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -ldflags="-s -w -X main.Version=1.0.0"     -trimpath     -o /app/server ./cmd/main.go
+
+# --- Stage 2: Final Minimal Runtime (< 15MB) ---
+FROM gcr.io/distroless/static-debian12:nonroot
+
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/server /app/server
+
+# Expose HTTP port
+EXPOSE 8080
+
+# Run as non-root user (UID 65532 built into distroless)
+USER nonroot:nonroot
+
+ENTRYPOINT ["/app/server"]</pre>
+    </div>
+
+    <!-- Template 2: Scratch Dockerfile -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">⚡ 2. Ultra-Minimal: Scratch Dockerfile (~6 MB Total Image)</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        The smallest conceivable container image. <code>FROM scratch</code> has <strong>zero files</strong>; we copy CA certs from the alpine builder so outbound HTTPS webhooks and database TLS work.
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># Builder stage
+FROM golang:1.23-alpine AS builder
+RUN apk --no-cache add ca-certificates
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server .
+
+# Final stage: completely empty scratch container
+FROM scratch
+
+# Copy SSL certificates for outbound HTTPS calls
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Copy binary
+COPY --from=builder /app/server /server
+
+EXPOSE 8080
+ENTRYPOINT ["/server"]</pre>
+    </div>
+
+    <!-- Essential .dockerignore -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">📄 3. Production .dockerignore Best Practice</div>
+      <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
+        Prevents copying local test binaries, git history, or documentation into the Docker build context:
+      </p>
+      <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.85rem;">.git
+.gitignore
+*.md
+.DS_Store
+*.log
+docker-compose*.yml
+test/
+tmp/
+vendor/</pre>
+    </div>
+  </div>
+
+  <!-- VIEW: LEETCODE EASY IN GO -->

@@ -1,0 +1,338 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Sidebar from '../components/Sidebar.astro';
+import LessonDetail from '../components/LessonDetail.astro';
+import Playground from '../components/Playground.astro';
+
+// Views
+import RepoExplorer from '../components/views/RepoExplorer.astro';
+import DockerView from '../components/views/DockerView.astro';
+import LeetcodeView from '../components/views/LeetcodeView.astro';
+import ModExplainView from '../components/views/ModExplainView.astro';
+import PhilosophyView from '../components/views/PhilosophyView.astro';
+import InterviewsView from '../components/views/InterviewsView.astro';
+import PitfallsView from '../components/views/PitfallsView.astro';
+import TroubleshootingView from '../components/views/TroubleshootingView.astro';
+import CheatsheetView from '../components/views/CheatsheetView.astro';
+
+import { chaptersData } from '../data/chapters';
+---
+
+<Layout>
+  <Header />
+
+  <!-- Studio View (3 Columns) -->
+  <div id="viewStudio" class="studio-container">
+    <Sidebar />
+    <LessonDetail />
+    <Playground />
+  </div>
+
+  <!-- Documentation & Deep-Dive Views -->
+  <RepoExplorer />
+  <DockerView />
+  <LeetcodeView />
+  <ModExplainView />
+  <PhilosophyView />
+  <InterviewsView />
+  <PitfallsView />
+  <TroubleshootingView />
+  <CheatsheetView />
+
+  <!-- Client-side Interactive Engine -->
+  <script define:vars={{ chaptersData }}>
+    // Injected chaptersData
+    window.chaptersData = chaptersData;
+    let activeKey = 'basic_vars';
+
+    const editor = CodeMirror.fromTextArea(document.getElementById('codeArea'), {
+      lineNumbers: true,
+      mode: 'go',
+      theme: 'eclipse',
+      tabSize: 4,
+      indentUnit: 4,
+      lineWrapping: true,
+      viewportMargin: Infinity
+    });
+
+    
+    // Search & Filter Lessons
+    function filterLessons(query) {
+      const q = query.toLowerCase().trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+      let visibleCount = 0;
+      const items = document.querySelectorAll('.chapter-nav-item');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const matches = text.includes(q);
+        item.style.display = matches ? 'flex' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      // Show/hide category headers if all children are hidden
+      document.querySelectorAll('.sidebar-part-label').forEach(label => {
+        let sibling = label.nextElementSibling;
+        let anyVisible = false;
+        while (sibling && sibling.classList.contains('chapter-nav-item')) {
+          if (sibling.style.display !== 'none') anyVisible = true;
+          sibling = sibling.nextElementSibling;
+        }
+        label.style.display = anyVisible ? 'block' : 'none';
+      });
+
+      const badge = document.getElementById('sidebarCountBadge');
+      if (badge) badge.innerText = q ? `${visibleCount} Found` : '56 Lessons';
+    }
+
+    function clearLessonSearch() {
+      const input = document.getElementById('lessonSearchInput');
+      if (input) {
+        input.value = '';
+        filterLessons('');
+        input.focus();
+      }
+    }
+
+    // Previous / Next Lesson Navigation
+    function navigateLesson(direction) {
+      const keys = Object.keys(chaptersData);
+      const currentIndex = keys.indexOf(activeKey);
+      if (currentIndex === -1) return;
+
+      const nextIndex = currentIndex + direction;
+      if (nextIndex >= 0 && nextIndex < keys.length) {
+        selectChapter(keys[nextIndex]);
+      }
+    }
+
+    function copyNodeSnippet() {
+      const code = document.getElementById('detailNodeCode').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Copied Node.js snippet!');
+      });
+    }
+
+    function copyEditorCode() {
+      const code = editor.getValue();
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Copied Go code!');
+      });
+    }
+
+    function resetEditorCode() {
+      if (chaptersData[activeKey]) {
+        editor.setValue(chaptersData[activeKey].code);
+      }
+    }
+
+    function clearConsole() {
+      document.getElementById('consoleArea').innerText = '';
+      updateStatus('Ready', 'ready');
+    }
+
+    function copyConsoleOutput() {
+      const out = document.getElementById('consoleArea').innerText;
+      navigator.clipboard.writeText(out).then(() => {
+        alert('Copied console output!');
+      });
+    }
+
+    // Keyboard Shortcuts: Cmd+Enter / Ctrl+Enter to execute Go code
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        executeGoCode();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('lessonSearchInput');
+        if (searchInput) searchInput.focus();
+      }
+    });
+
+
+    function selectChapter(key) {
+      if (!chaptersData[key]) return;
+      activeKey = key;
+      const data = chaptersData[key];
+
+      document.querySelectorAll('.chapter-nav-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('onclick').includes(key));
+      });
+
+      document.getElementById('detailPartTag').innerText = data.part;
+      document.getElementById('detailId').innerText = '#' + data.num;
+      document.getElementById('detailTitle').innerText = data.title;
+      document.getElementById('detailDesc').innerText = data.desc;
+      document.getElementById('detailNodeCode').innerText = data.nodeCode;
+      document.getElementById('detailGoWhy').innerText = data.why;
+
+      document.getElementById('editorCurrentFile').innerText = `📄 main.go — ${data.title}`;
+      editor.setValue(data.code);
+
+      updateStatus('Ready', 'ready');
+      const c = document.getElementById('consoleArea');
+      c.className = 'console-body';
+      c.textContent = '// Click "Run Go Code" to execute ' + data.title + '!';
+    }
+
+    function resetCurrentLessonCode() {
+      if (chaptersData[activeKey]) {
+        editor.setValue(chaptersData[activeKey].code);
+        updateStatus('Code Reset', 'ready');
+      }
+    }
+
+    function switchMainView(viewName) {
+      const views = ['studio', 'repoExplorer', 'docker', 'leetcode', 'modExplain', 'philosophy', 'interviews', 'pitfalls', 'troubleshooting', 'cheatsheet'];
+      const btnMap = {
+        studio: 'btnPlayground',
+        repoExplorer: 'btnRepoExplorer',
+        docker: 'btnDocker',
+        leetcode: 'btnLeetcode',
+        modExplain: 'btnModExplain',
+        philosophy: 'btnPhilosophy',
+        interviews: 'btnInterviews',
+        pitfalls: 'btnPitfalls',
+        troubleshooting: 'btnTroubleshooting',
+        cheatsheet: 'btnCheatsheet'
+      };
+      const viewMap = {
+        studio: 'viewStudio',
+        repoExplorer: 'viewRepoExplorer',
+        docker: 'viewDocker',
+        leetcode: 'viewLeetcode',
+        modExplain: 'viewModExplain',
+        philosophy: 'viewPhilosophy',
+        interviews: 'viewInterviews',
+        pitfalls: 'viewPitfalls',
+        troubleshooting: 'viewTroubleshooting',
+        cheatsheet: 'viewCheatsheet'
+      };
+
+      views.forEach(v => {
+        const btn = document.getElementById(btnMap[v]);
+        if (btn) btn.classList.toggle('active', v === viewName);
+
+        const el = document.getElementById(viewMap[v]);
+        if (el) {
+          if (v === 'studio') {
+            el.style.display = (v === viewName) ? 'flex' : 'none';
+          } else {
+            el.classList.toggle('active', v === viewName);
+            el.style.display = (v === viewName) ? 'block' : 'none';
+          }
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function jumpToChapter(key) {
+      switchMainView('studio');
+      selectChapter(key);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateStatus(text, type) {
+      const statusTag = document.getElementById('statusTag');
+      const statusDot = document.getElementById('statusDot');
+      if (statusTag) {
+        statusTag.innerText = text;
+        statusTag.className = 'status-pill ' + (type || 'ready');
+      }
+      if (statusDot) {
+        statusDot.className = 'status-dot ' + (type === 'error' ? 'error' : (type === 'running' ? 'compiling' : ''));
+      }
+    }
+
+    async function executeGoCode() {
+      const code = editor.getValue();
+      const consoleArea = document.getElementById('consoleArea');
+      const runBtn = document.getElementById('runBtn');
+      const statusDot = document.getElementById('statusDot');
+      const statusTag = document.getElementById('statusTag');
+      const statusLatency = document.getElementById('statusLatency');
+
+      if (runBtn) runBtn.disabled = true;
+      if (statusDot) statusDot.className = 'status-dot compiling';
+      if (statusTag) {
+        statusTag.className = 'status-pill running';
+        statusTag.innerText = 'Compiling...';
+      }
+      if (statusLatency) statusLatency.innerText = '';
+
+      consoleArea.className = 'console-body';
+      consoleArea.textContent = '⏳ Compiling and executing on Go Playground...';
+
+      const startTime = performance.now();
+
+      try {
+        const params = new URLSearchParams();
+        params.append('version', '2');
+        params.append('body', code);
+
+        const response = await fetch('https://play.golang.org/compile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+
+        if (!response.ok) {
+          throw new Error(`Compiler returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.Errors) {
+          consoleArea.className = 'console-body is-error';
+          consoleArea.textContent = '❌ Compile Error:\n\n' + data.Errors;
+          if (statusDot) statusDot.className = 'status-dot error';
+          if (statusTag) {
+            statusTag.className = 'status-pill error';
+            statusTag.innerText = 'Error';
+          }
+        } else {
+          let outputText = '';
+          if (data.Events && data.Events.length > 0) {
+            outputText = data.Events.map(e => e.Message).join('');
+          } else {
+            outputText = '✓ Program completed with code 0 (no stdout output).';
+          }
+          consoleArea.className = 'console-body';
+          consoleArea.textContent = outputText;
+          if (statusDot) statusDot.className = 'status-dot';
+          if (statusTag) {
+            statusTag.className = 'status-pill ready';
+            statusTag.innerText = `Exit 0 • ${elapsed}ms`;
+          }
+        }
+      } catch (err) {
+        const elapsed = Math.round(performance.now() - startTime);
+        if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
+        consoleArea.className = 'console-body is-error';
+        consoleArea.textContent = '⚠️ Request Failed:\n' + err.message;
+        if (statusDot) statusDot.className = 'status-dot error';
+        if (statusTag) {
+          statusTag.className = 'status-pill error';
+          statusTag.innerText = 'Failed';
+        }
+      } finally {
+        if (runBtn) runBtn.disabled = false;
+      }
+    }
+
+    // Initialize initial lesson on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      selectChapter('basic_vars');
+    });
+  
+  </script>
+</Layout>

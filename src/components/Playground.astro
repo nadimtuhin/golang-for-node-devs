@@ -1,0 +1,42 @@
+---
+// Playground Component
+---
+<main class="playground-column">
+      <div class="editor-toolbar">
+        <div class="editor-tab-group">
+          <div class="macos-dots">
+            <span class="macos-dot dot-red"></span>
+            <span class="macos-dot dot-yellow"></span>
+            <span class="macos-dot dot-green"></span>
+          </div>
+          <div class="editor-tab" id="editorCurrentFile">📄 main.go</div>
+        </div>
+        <div class="editor-actions">
+          <button class="tool-btn" onclick="copyEditorCode()">📋 Copy</button>
+          <button class="tool-btn" onclick="resetEditorCode()">↺ Reset</button>
+          <button id="runBtn" class="btn-run" onclick="executeGoCode()">
+            <span>▶</span>
+            <span>Run Code</span>
+            <span style="font-size:0.7rem; opacity:0.85; font-weight:normal;">(⌘+⏎)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-container">
+        <textarea id="codeArea"></textarea>
+      </div>
+
+      <div class="console-panel">
+        <div class="console-header">
+          <span>Terminal Output (play.golang.org)</span>
+          <div class="console-status-group">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusLatency" style="font-size:0.7rem; color:#64748b; font-family:monospace;"></span>
+            <span id="statusTag" class="status-pill ready">Ready</span>
+            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="clearConsole()">✕ Clear</button>
+            <button class="copy-snippet-btn" style="color:#94a3b8;" onclick="copyConsoleOutput()">📋 Copy</button>
+          </div>
+        </div>
+        <div id="consoleArea" class="console-body">// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!</div>
+      </div>
+    </main>

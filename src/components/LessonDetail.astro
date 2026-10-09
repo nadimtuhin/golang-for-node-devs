@@ -1,0 +1,31 @@
+---
+// Lesson Detail Component
+---
+<aside class="lesson-detail-panel" id="detailPanel">
+      <div class="detail-badge-row">
+        <span class="part-tag" id="detailPartTag">Featured: Video Project</span>
+        <span style="font-size: 0.75rem; color: #94a3b8; font-family: 'Fira Code', monospace;" id="detailId">⭐ Video</span>
+      </div>
+
+      <h2 class="lesson-title" id="detailTitle">Express vs Fiber (Video Project)</h2>
+      <p class="lesson-desc" id="detailDesc">
+        Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.
+      </p>
+
+      <div class="node-box">
+        <div class="node-tag">Express.js (Node.js) Production Service</div>
+        <div class="node-code" id="detailNodeCode">app.post('/api/products', createProduct); app.get('/api/products', getProducts);</div>
+      </div>
+
+      <div class="go-why-box">
+        <div class="go-why-title">Why Fiber for Node Developers?</div>
+        <div id="detailGoWhy">
+          Fiber is built on Fasthttp, the fastest HTTP engine in Go. It keeps Express-style routing while executing at 10x-20x the throughput of Node with minimal memory!
+        </div>
+      </div>
+
+      <button class="load-to-editor-btn" onclick="resetCurrentLessonCode()">
+        <span>↺</span>
+        <span>Reset Snippet in Playground</span>
+      </button>
+    </aside>

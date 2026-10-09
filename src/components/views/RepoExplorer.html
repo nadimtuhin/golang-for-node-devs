@@ -1,0 +1,398 @@
+<div id="viewRepoExplorer" class="view-container">
+    <div class="view-inner-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <div>
+        <h2 style="font-size: 1.5rem; color: #0f172a;">📂 Real-World Microservice: Express vs Go Fiber Architecture</h2>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Direct side-by-side comparison of the source code from the official GitHub repository.
+        </p>
+      </div>
+      <a href="https://github.com/TomDoesTech/golang-for-node-devs" target="_blank" style="background: #0f172a; color: #fff; padding: 0.45rem 0.9rem; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 700;">
+        View on GitHub ↗
+      </a>
+    </div>
+
+    <!-- File 1: Server Entrypoint -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">1. Server Entrypoint: <code>js/main.js</code> vs <code>cmd/main.go</code></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <div style="font-weight: 700; color: var(--node-green); font-size: 0.8rem; margin-bottom: 0.35rem;">Node.js Express (js/main.js)</div>
+          <pre class="code-block">const express = require("express");
+const { connectToDB } = require("./db");
+const { createProduct, getProducts } = require("./products");
+
+const app = express();
+
+app.use(express.json());
+
+app.post("/api/products", createProduct);
+
+app.get("/api/products", getProducts);
+
+async function main() {
+  app.listen(4000, () =&gt; {
+    console.log("App listening at http://localhost:4000");
+  });
+
+  await connectToDB();
+
+  console.log("Ready for work");
+}
+
+/*
+ * In Go we won't need to execute main
+ */
+main();
+</pre>
+        </div>
+        <div>
+          <div style="font-weight: 700; color: var(--go-cyan); font-size: 0.8rem; margin-bottom: 0.35rem;">Go Fiber (cmd/main.go)</div>
+          <pre class="code-block">package main
+
+import (
+	"fmt"
+	"log"
+
+	"example.com/tomdoestech/internal/handlers"
+	"github.com/gofiber/fiber/v2"
+)
+
+func healthcheck(c *fiber.Ctx) error {
+	return c.SendString("OK")
+}
+
+func main() {
+
+	app := fiber.New()
+
+	app.Use("/api", func(c *fiber.Ctx) error {
+		fmt.Println("Hello from middleware")
+		return c.Next()
+	})
+
+	app.Get("/healthcheck", healthcheck)
+
+	app.Post("/api/products", handlers.CreateProduct)
+	app.Get("/api/products", handlers.GetAllProducts)
+
+	fmt.Println("Hello world")
+
+	log.Fatal(app.Listen(":3000"))
+
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- File 2: DB Connection -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">2. Database Connection: <code>js/db/index.js</code> vs <code>internal/db/db.go</code></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <div style="font-weight: 700; color: var(--node-green); font-size: 0.8rem; margin-bottom: 0.35rem;">Node.js MongoDB (js/db/index.js)</div>
+          <pre class="code-block">const { MongoClient } = require("mongodb");
+
+const URI = "mongodb://localhost:27017";
+
+const databaseStr = "products-api";
+
+const collections = {
+  products: "products",
+};
+
+const client = new MongoClient(`${URI}`);
+
+async function connectToDB() {
+  try {
+    await client.connect();
+    console.log("Database connected");
+  } catch {
+    await client.close();
+    console.error("Could not connect to database");
+    process.exit(1);
+  }
+}
+
+const database = client.db(databaseStr);
+
+module.exports = {
+  database,
+  collections,
+  connectToDB,
+};
+</pre>
+        </div>
+        <div>
+          <div style="font-weight: 700; color: var(--go-cyan); font-size: 0.8rem; margin-bottom: 0.35rem;">Go MongoDB + sync.Once (internal/db/db.go)</div>
+          <pre class="code-block">package db
+
+import (
+	"context"
+	"sync"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+var clientInstance *mongo.Client
+
+var mongoOnce sync.Once
+
+var clientInstanceError error
+
+type Collection string
+
+const (
+	ProductsCollection Collection = "products"
+)
+
+const (
+	url      = "mongodb://localhost:27017"
+	Database = "products-api"
+)
+
+func GetMongoClient() (*mongo.Client, error) {
+	mongoOnce.Do(func() {
+		clientOptions := options.Client().ApplyURI(url)
+
+		client, err := mongo.Connect(context.TODO(), clientOptions)
+
+		clientInstance = client
+
+		clientInstanceError = err
+	})
+
+	return clientInstance, clientInstanceError
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- File 3: Product Handlers -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">3. Handlers & Validation: <code>js/products/index.js</code> vs <code>internal/handlers/products.go</code></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <div style="font-weight: 700; color: var(--node-green); font-size: 0.8rem; margin-bottom: 0.35rem;">Node.js Handlers (js/products/index.js)</div>
+          <pre class="code-block">const { database, collections } = require("../db");
+
+async function createProduct(req, res) {
+  const collection = database.collection(collections.products);
+
+  const doc = {
+    title: req.body.title,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const result = await collection.insertOne(doc);
+
+  return res.send(result);
+}
+
+async function getProducts(req, res) {
+  const collection = database.collection(collections.products);
+
+  const cur = collection.find({});
+
+  let products = [];
+
+  await cur.forEach((p) =&gt; {
+    products.push(p);
+  });
+
+  return res.send(products);
+}
+
+module.exports = {
+  createProduct,
+  getProducts,
+};
+</pre>
+        </div>
+        <div>
+          <div style="font-weight: 700; color: var(--go-cyan); font-size: 0.8rem; margin-bottom: 0.35rem;">Go Fiber Handler + Validator (internal/handlers/products.go)</div>
+          <pre class="code-block" style="max-height: 400px; overflow-y: auto;">package handlers
+
+import (
+	"context"
+	"time"
+
+	"example.com/tomdoestech/internal/db"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Product struct {
+	ID        primitive.ObjectID `json:"_id" bson:"_id" validate:"required"`
+	CreatedAt time.Time          `json:"createdAt" bson:"created_at" validate:"required"`
+	UpdatedAt time.Time          `json:"updatedAt" bson:"updated_at" validate:"required"`
+	Title     string             `json:"title" bson:"title" validate:"required,min=12"`
+}
+
+type ErrorResponse struct {
+	FailedField string
+	Tag         string
+	Value       string
+}
+
+func ValidateProductStruct(p Product) []*ErrorResponse {
+	var errors []*ErrorResponse
+	validate := validator.New()
+	err := validate.Struct(p)
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element ErrorResponse
+			element.FailedField = err.StructNamespace()
+			element.Tag = err.Tag()
+			element.Value = err.Param()
+			errors = append(errors, &element)
+
+		}
+	}
+	return errors
+}
+
+func CreateProduct(c *fiber.Ctx) error {
+	product := Product{
+		ID:        primitive.NewObjectID(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := c.BodyParser(&product); err != nil {
+		return err
+	}
+
+	// Could also be broken down to be
+	// err := c.BodyParser(&product)
+
+	// if err != nil {
+	// 	return err
+	// }
+
+	errors := ValidateProductStruct(product)
+
+	if errors != nil {
+		return c.JSON(errors)
+	}
+
+	client, err := db.GetMongoClient()
+
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(db.Database).Collection(string(db.ProductsCollection))
+
+	_, err = collection.InsertOne(context.TODO(), product)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(product)
+
+}
+
+func GetAllProducts(c *fiber.Ctx) error {
+	client, err := db.GetMongoClient()
+
+	var products []*Product
+
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(db.Database).Collection(string(db.ProductsCollection))
+
+	cur, err := collection.Find(context.TODO(), bson.D{
+		primitive.E{},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	for cur.Next(context.TODO()) {
+		var p Product
+		err := cur.Decode(&p)
+
+		if err != nil {
+			return err
+		}
+
+		products = append(products, &p)
+
+	}
+
+	return c.JSON(products)
+
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- File 4: Package config -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">4. Dependencies: <code>js/package.json</code> vs <code>go.mod</code></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <div style="font-weight: 700; color: var(--node-green); font-size: 0.8rem; margin-bottom: 0.35rem;">npm package.json</div>
+          <pre class="code-block">{
+  "name": "js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Tom Nagle",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.2",
+    "mongodb": "^4.2.2"
+  }
+}
+</pre>
+        </div>
+        <div>
+          <div style="font-weight: 700; color: var(--go-cyan); font-size: 0.8rem; margin-bottom: 0.35rem;">go.mod</div>
+          <pre class="code-block">module example.com/tomdoestech
+
+go 1.17
+
+require (
+	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.10.0 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/gofiber/fiber/v2 v2.24.0 // indirect
+	github.com/golang/snappy v0.0.3 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasthttp v1.31.0 // indirect
+	github.com/valyala/tcplisten v1.0.0 // indirect
+	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
+	github.com/xdg-go/scram v1.0.2 // indirect
+	github.com/xdg-go/stringprep v1.0.2 // indirect
+	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	go.mongodb.org/mongo-driver v1.8.1 // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/text v0.3.6 // indirect
+)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: GO.MOD vs PACKAGE.JSON -->

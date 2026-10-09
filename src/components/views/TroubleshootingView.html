@@ -1,0 +1,116 @@
+<div id="viewTroubleshooting" class="view-container">
+    <div class="view-inner-content">
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <h2 style="font-size: 1.6rem; color: #0284c7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        🛠️ Go Troubleshooting & Diagnostic Workflows
+      </h2>
+      <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5;">
+        Step-by-step developer playbook for solving deadlocks, data races, compiler complaints, and production bottlenecks.
+      </p>
+    </div>
+
+    <!-- Troubleshooting Guide 1: Deadlocks -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">🚨 1. Diagnosing: "fatal error: all goroutines are asleep - deadlock!"</div>
+      <p style="color: #475569; margin-bottom: 0.75rem;">
+        This runtime error occurs when every single goroutine is waiting on a channel or lock, and no active goroutine is left to wake them up.
+      </p>
+      <div style="background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:6px; font-size:0.85rem; margin-bottom:0.75rem; font-family:monospace;">
+        # Step-by-step diagnostic checklist:<br>
+        1. Did you send to an unbuffered channel without a receiver already waiting?<br>
+        &nbsp;&nbsp;&nbsp;ch := make(chan int) // Unbuffered<br>
+        &nbsp;&nbsp;&nbsp;ch &lt;- 1 // BLOCKS MAIN GOROUTINE FOREVER -> DEADLOCK!<br>
+        &nbsp;&nbsp;&nbsp;Fix: use buffered make(chan int, 1) or send from separate goroutine.<br><br>
+        2. Did you forget to close a channel that a "for range" loop is reading from?<br>
+        &nbsp;&nbsp;&nbsp;Fix: call close(ch) when writer is finished.<br><br>
+        3. Did sync.WaitGroup.Wait() get called without wg.Done() being executed?<br>
+        &nbsp;&nbsp;&nbsp;Fix: always write "defer wg.Done()" inside the worker goroutine.
+      </div>
+    </div>
+
+    <!-- Troubleshooting Guide 2: Data Races -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">🏎️ 2. Hunting Data Races with the Go Race Detector (-race)</div>
+      <p style="color: #475569; margin-bottom: 0.75rem;">
+        Go includes an integrated <strong>ThreadSanitizer</strong> race detector. Never deploy multi-goroutine code without running tests under <code>-race</code>.
+      </p>
+      <div style="background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:6px; font-size:0.85rem; margin-bottom:0.75rem; font-family:monospace;">
+        # Run tests with race detection:<br>
+        go test -race ./...<br><br>
+        # Run local development server with race detector enabled:<br>
+        go run -race cmd/main.go<br><br>
+        # Typical Output Anatomy:<br>
+        WARNING: DATA RACE<br>
+        Read at 0x00c0000a2040 by goroutine 7:<br>
+        &nbsp;&nbsp;main.worker() /app/main.go:24<br>
+        Previous write at 0x00c0000a2040 by goroutine 6:<br>
+        &nbsp;&nbsp;main.dispatch() /app/main.go:12
+      </div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        <strong>Resolution:</strong> Synchronize access using <code>sync.Mutex</code>, <code>sync.RWMutex</code>, atomic primitives (<code>sync/atomic</code>), or channel ownership transfer.
+      </p>
+    </div>
+
+    <!-- Troubleshooting Guide 3: Profiling with pprof -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">📈 3. Profiling CPU, Memory & Goroutines with net/http/pprof</div>
+      <p style="color: #475569; margin-bottom: 0.75rem;">
+        To diagnose memory leaks or CPU bottlenecks in production, expose the standard <code>pprof</code> HTTP endpoints:
+      </p>
+      <div style="background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:6px; font-size:0.85rem; margin-bottom:0.75rem; font-family:monospace;">
+        // In your main.go or server setup:<br>
+        import _ "net/http/pprof"<br>
+        go func() {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;log.Println(http.ListenAndServe("localhost:6060", nil))<br>
+        }()<br><br>
+        # Inspect live goroutine stack traces in terminal:<br>
+        curl http://localhost:6060/debug/pprof/goroutine?debug=1<br><br>
+        # Capture 30-second CPU profile and analyze with interactive UI:<br>
+        go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30
+      </div>
+    </div>
+
+    <!-- Troubleshooting Guide 4: Common Compiler Errors Dictionary -->
+    <div class="deepdive-box">
+      <div class="deepdive-title">📖 4. Common Go Compiler Errors Quick Reference</div>
+      <table class="rosetta-table" style="background:#ffffff; margin-top:0.75rem;">
+        <thead>
+          <tr>
+            <th style="width: 35%;">Compiler Error</th>
+            <th style="width: 35%;">Root Cause</th>
+            <th style="width: 30%;">Instant Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>"imported and not used"</code></td>
+            <td>Go treats unused imports as build-breaking errors to prevent binary bloat.</td>
+            <td>Remove the import or prefix with <code>_ "pkg"</code> for side-effects.</td>
+          </tr>
+          <tr>
+            <td><code>cannot use x (type int) as type int64</code></td>
+            <td>Go has no implicit type casting between numeric types.</td>
+            <td>Cast explicitly: <code>int64(x)</code>.</td>
+          </tr>
+          <tr>
+            <td><code>cannot assign to struct field in map</code></td>
+            <td>Map elements are not addressable in memory.</td>
+            <td>Store pointer in map (<code>map[string]*User</code>) or reassign the whole struct.</td>
+          </tr>
+          <tr>
+            <td><code>no new variables on left side of :=</code></td>
+            <td>All variables on the left of <code>:=</code> already exist in current scope.</td>
+            <td>Use assignment operator <code>=</code> instead of <code>:=</code>.</td>
+          </tr>
+          <tr>
+            <td><code>undefined: MyFunction</code></td>
+            <td>Function is either not imported, unexported (lowercase), or in a different file in package.</td>
+            <td>Capitalize first letter to export, or run <code>go run .</code> instead of <code>go run main.go</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  
+  <!-- VIEW: PROPER GO DOCKER IMAGES FOR PRODUCTION -->
