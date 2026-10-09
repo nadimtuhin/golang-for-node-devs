@@ -92,8 +92,8 @@ test.describe('Run Code Execution Functional Tests', () => {
       await expect(studioLink).toBeVisible();
       await studioLink.click();
 
-      // Ensure we navigated to studio with chapter parameter
-      await expect(page).toHaveURL(new RegExp(`\\/\\?chapter=${expectedChapter}`));
+      // Ensure we navigated to studio with chapter parameter or canonical path
+      await expect(page).toHaveURL(new RegExp(`(/chapter/|\\/\\?chapter=)${expectedChapter}`));
 
       const runBtn = page.locator('#runBtn');
       const consoleArea = page.locator('#consoleArea');

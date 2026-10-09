@@ -75,7 +75,7 @@ test.describe('Interactive Studio Functional Tests', () => {
     await nextBtn.click();
 
     // URL should update to next chapter
-    await expect(page).toHaveURL(/\/\?chapter=basic_funcs/);
+    await expect(page).toHaveURL(/((\/\?chapter=)|(\/chapter\/))basic_funcs/);
     await expect(title).toContainText('Functions & Multiple Return Values');
 
     // Click Prev Lesson
@@ -83,7 +83,7 @@ test.describe('Interactive Studio Functional Tests', () => {
     await expect(prevBtn).toBeVisible();
     await prevBtn.click();
 
-    await expect(page).toHaveURL(/\/\?chapter=basic_vars/);
+    await expect(page).toHaveURL(/((\/\?chapter=)|(\/chapter\/))basic_vars/);
     await expect(title).toContainText('Variables, := & Zero Values');
   });
 

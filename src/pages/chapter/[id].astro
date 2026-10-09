@@ -1,28 +1,40 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Sidebar from '../components/Sidebar.astro';
-import LessonDetail from '../components/LessonDetail.astro';
-import Playground from '../components/Playground.astro';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import LessonDetail from '../../components/LessonDetail.astro';
+import Playground from '../../components/Playground.astro';
 
-import { chaptersData } from '../data/chapters';
+import { chaptersData } from '../../data/chapters';
+
+export function getStaticPaths() {
+  return Object.keys(chaptersData).map(key => ({
+    params: { id: key },
+    props: { chapterKey: key, chapter: chaptersData[key] }
+  }));
+}
+
+const { chapterKey, chapter } = Astro.props;
 ---
 
-<Layout title="Interactive Studio — Go for Node.js Developers Masterclass">
+<Layout 
+  title={`${chapter.title} — Go for Node.js Developers Masterclass`}
+  description={`Learn Go ${chapter.title} with Node.js comparisons, live compiler playground, and idiomatic Go mental models.`}
+>
   <Header />
 
   <!-- Studio View (3 Columns) -->
   <div id="viewStudio" class="studio-container">
     <Sidebar />
-    <LessonDetail />
-    <Playground />
+    <LessonDetail chapterKey={chapterKey} />
+    <Playground chapterKey={chapterKey} />
   </div>
 
   <!-- Client-side Interactive Engine -->
-  <script define:vars={{ chaptersData }}>
+  <script define:vars={{ chaptersData, initialKey: chapterKey }}>
     window.chaptersData = chaptersData;
 
-    let activeKey = 'basic_vars';
+    let activeKey = initialKey || 'basic_vars';
     let editor = null;
 
     function initEditor() {
@@ -108,7 +120,7 @@ import { chaptersData } from '../data/chapters';
     }
 
     function resetEditorCode() {
-      if (chaptersData[activeKey]) {
+      if (editor && chaptersData[activeKey]) {
         editor.setValue(chaptersData[activeKey].code);
         updateStatus('Code Reset', 'ready');
         setTimeout(() => updateStatus('Ready', 'ready'), 1500);
@@ -169,10 +181,10 @@ import { chaptersData } from '../data/chapters';
       c.className = 'console-body';
       c.textContent = '// Hit "Run Code" (or ⌘+Enter) to compile and execute on Go Playground!';
       
-      // Update browser URL to clean /chapter/:id path
-      if (history.replaceState) {
+      // Update browser URL to clean /chapter/key path
+      if (history.pushState) {
         const newurl = '/chapter/' + key;
-        window.history.replaceState({path:newurl},'',newurl);
+        window.history.replaceState({ path: newurl }, '', newurl);
       }
     }
 
@@ -269,11 +281,10 @@ import { chaptersData } from '../data/chapters';
       }
     }
 
-    // Initialize initial lesson on page load (support ?chapter=... URL param)
     function initStudio() {
       initEditor();
       const urlParams = new URLSearchParams(window.location.search);
-      const requestedChapter = urlParams.get('chapter');
+      const requestedChapter = urlParams.get('chapter') || initialKey;
       if (requestedChapter && chaptersData[requestedChapter]) {
         selectChapter(requestedChapter);
       } else {
@@ -287,7 +298,7 @@ import { chaptersData } from '../data/chapters';
       initStudio();
     }
 
-    // Make selectChapter available on window for onclick attributes
+    // Make functions available on window
     window.selectChapter = selectChapter;
     window.filterLessons = filterLessons;
     window.clearLessonSearch = clearLessonSearch;

@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const routes = [
   { path: '/', titleExpected: /Go for Node\.js/i, navName: 'Studio' },
+  { path: '/chapters', titleExpected: /Curriculum|Chapters/i, navName: 'Chapters' },
+  { path: '/chapter/basic_flow', titleExpected: /Go for Node\.js/i, navName: 'Studio' },
   { path: '/ai', titleExpected: /AI|LLM/i, navName: 'AI & LLMs' },
   { path: '/ai-agents', titleExpected: /AI|Agent/i, navName: 'AI & Agents' },
   { path: '/microservice', titleExpected: /Microservice/i, navName: 'Microservice' },
@@ -45,4 +47,20 @@ test.describe('Multi-page Routes & Navigation', () => {
       await expect(activeLink).toContainText(route.navName);
     });
   }
+
+  test('guides dropdown menu opens on click and contains all 13 architecture guides', async ({ page }) => {
+    await page.goto('/');
+
+    const dropdownBtn = page.locator('#guidesDropdownBtn');
+    await expect(dropdownBtn).toBeVisible();
+
+    // Click dropdown button
+    await dropdownBtn.click();
+
+    const dropdownMenu = page.locator('#guidesDropdownMenu');
+    await expect(dropdownMenu).toBeVisible();
+
+    const menuItems = dropdownMenu.locator('a[role="menuitem"]');
+    await expect(menuItems).toHaveCount(13);
+  });
 });

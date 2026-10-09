@@ -1,15 +1,21 @@
 ---
 // Lesson Detail Component
+interface Props {
+  chapterKey?: string;
+}
+const { chapterKey = 'basic_vars' } = Astro.props;
+import { chaptersData } from '../data/chapters';
+const chapter = chaptersData[chapterKey] || chaptersData['basic_vars'];
 ---
 <aside class="lesson-detail-panel" id="detailPanel" role="complementary" aria-labelledby="detailTitle">
   <div class="detail-badge-row">
-    <span class="part-tag" id="detailPartTag">Part 0: Language Basics</span>
-    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; font-family: var(--font-mono, monospace);" id="detailId">#B1</span>
+    <span class="part-tag" id="detailPartTag">{chapter.part}</span>
+    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; font-family: var(--font-mono, monospace);" id="detailId">#{chapter.num}</span>
   </div>
 
-  <h1 class="lesson-title" id="detailTitle">Variables, := & Zero Values</h1>
+  <h1 class="lesson-title" id="detailTitle">{chapter.title}</h1>
   <p class="lesson-desc" id="detailDesc">
-    In JS, variables can start undefined and change types at runtime. In Go, every variable has a static type and a default 'Zero Value' (0, "", false, or nil). The := operator automatically infers types.
+    {chapter.desc}
   </p>
 
   <div class="card-box node-box" role="region" aria-label="Node.js Code Comparison">
@@ -17,13 +23,13 @@
       <span class="node-tag">🟢 Node.js Equivalent</span>
       <button id="copyNodeBtn" class="copy-snippet-btn" onclick="copyNodeSnippet()" aria-label="Copy Node.js snippet to clipboard">📋 Copy</button>
     </div>
-    <div class="node-code" id="detailNodeCode" tabindex="0" role="textbox" aria-readonly="true" aria-label="Node.js code example">let name = 'Gopher'; let count = 0; let active = false;</div>
+    <div class="node-code" id="detailNodeCode" tabindex="0" role="textbox" aria-readonly="true" aria-label="Node.js code example">{chapter.nodeCode}</div>
   </div>
 
   <div class="card-box go-why-box" role="region" aria-label="Go Mental Model Rationale">
     <div class="go-why-title"><span aria-hidden="true">💡</span> The Go Mental Model</div>
     <p class="go-why-desc" id="detailGoWhy">
-      Zero values eliminate 'Cannot read properties of undefined' crashes. Variables in Go are never in an uninitialized state.
+      {chapter.why}
     </p>
   </div>
 

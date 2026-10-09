@@ -295,6 +295,117 @@ header {
   outline-offset: 2px;
 }
 
+/* Header Dropdown Menu */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-trigger {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: var(--text-body);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dropdown-trigger:hover,
+.nav-dropdown-wrapper.is-open .dropdown-trigger {
+  background: #f1f5f9;
+  color: var(--go-dark-cyan);
+  border-color: var(--go-blue);
+}
+
+.dropdown-chevron {
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.nav-dropdown-wrapper.is-open .dropdown-chevron,
+.nav-dropdown-wrapper:hover .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px -5px rgba(11, 37, 69, 0.15), 0 8px 10px -6px rgba(11, 37, 69, 0.1);
+  padding: 0.65rem;
+  z-index: 1000;
+  display: none;
+}
+
+.nav-dropdown-wrapper.is-open .dropdown-menu,
+.nav-dropdown-wrapper:hover .dropdown-menu,
+.nav-dropdown-wrapper:focus-within .dropdown-menu {
+  display: block;
+}
+
+.dropdown-header {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  color: var(--go-dark-cyan);
+  padding: 0.25rem 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0.4rem;
+}
+
+.dropdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus-visible {
+  background: #f1f5f9;
+  color: var(--go-dark-cyan);
+  outline: none;
+}
+
+.dropdown-item.active-dropdown-item {
+  background: #e0f2fe;
+  color: var(--go-dark-cyan);
+  font-weight: 700;
+}
+
+.guide-item-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.guide-item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .github-link-btn {
   background: #f8fafc;
   border: 1px solid var(--border-dark);

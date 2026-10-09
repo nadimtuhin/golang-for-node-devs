@@ -1,5 +1,11 @@
 ---
 // Playground Component
+interface Props {
+  chapterKey?: string;
+}
+const { chapterKey = 'basic_vars' } = Astro.props;
+import { chaptersData } from '../data/chapters';
+const chapter = chaptersData[chapterKey] || chaptersData['basic_vars'];
 ---
 <main class="playground-column" id="main-content" role="main" aria-label="Interactive Go Code Playground">
   <div class="editor-toolbar" role="toolbar" aria-label="Code Editor Toolbar">
@@ -9,7 +15,7 @@
         <span class="macos-dot dot-yellow"></span>
         <span class="macos-dot dot-green"></span>
       </div>
-      <div class="editor-tab" id="editorCurrentFile" aria-label="Active file: main.go">📄 main.go</div>
+      <div class="editor-tab" id="editorCurrentFile" aria-label={`Active file: main.go — ${chapter.title}`}>📄 main.go — {chapter.title}</div>
     </div>
     <div class="editor-actions">
       <button id="copyBtn" class="tool-btn" onclick="copyEditorCode()" aria-label="Copy Go code to clipboard">📋 Copy</button>
@@ -23,7 +29,7 @@
   </div>
 
   <div class="editor-container" aria-label="CodeMirror Go Editor">
-    <textarea id="codeArea" aria-label="Go Source Code Editor"></textarea>
+    <textarea id="codeArea" aria-label="Go Source Code Editor">{chapter.code}</textarea>
   </div>
 
   <div class="console-panel" role="region" aria-label="Terminal Execution Output">

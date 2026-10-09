@@ -1,5 +1,26 @@
 ---
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const isStudio = pathname === '/' || pathname.startsWith('/chapter/');
+const isChapters = pathname === '/chapters';
+
+const guideLinks = [
+  { href: '/testing', icon: '🧪', label: 'Testing' },
+  { href: '/ai', icon: '🤖', label: 'AI & LLMs' },
+  { href: '/ai-agents', icon: '🦾', label: 'AI & Agents' },
+  { href: '/go-vs-rust', icon: '🦀', label: 'Go vs Rust' },
+  { href: '/docker', icon: '🐳', label: 'Docker' },
+  { href: '/interviews', icon: '🎯', label: 'Interviews' },
+  { href: '/go-mod-vs-npm', icon: '📦', label: 'go.mod vs npm' },
+  { href: '/troubleshooting', icon: '🛠️', label: 'Diagnostics' },
+  { href: '/microservice', icon: '📂', label: 'Microservice' },
+  { href: '/philosophy', icon: '🧠', label: 'Philosophy' },
+  { href: '/pitfalls', icon: '⚠️', label: 'Pitfalls' },
+  { href: '/leetcode', icon: '🧩', label: 'LeetCode' },
+  { href: '/cheatsheet', icon: '📖', label: 'Rosetta' },
+];
+
+const currentGuide = guideLinks.find(g => pathname === g.href);
 ---
 
 <header role="banner">
@@ -10,23 +31,83 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
   </a>
   
   <nav class="header-nav-scroll" role="navigation" aria-label="Site Navigation">
-    <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`} aria-current={pathname === '/' ? 'page' : undefined}>⚡ Studio</a>
-    <a href="/ai" class={`tab-toggle ${pathname === '/ai' ? 'active' : ''}`} aria-current={pathname === '/ai' ? 'page' : undefined}>🤖 AI & LLMs</a>
-    <a href="/ai-agents" class={`tab-toggle ${pathname === '/ai-agents' ? 'active' : ''}`} aria-current={pathname === '/ai-agents' ? 'page' : undefined}>🦾 AI & Agents</a>
-    <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`} aria-current={pathname === '/microservice' ? 'page' : undefined}>📂 Microservice</a>
-    <a href="/testing" class={`tab-toggle ${pathname === '/testing' ? 'active' : ''}`} aria-current={pathname === '/testing' ? 'page' : undefined}>🧪 Testing</a>
-    <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`} aria-current={pathname === '/docker' ? 'page' : undefined}>🐳 Docker</a>
-    <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`} aria-current={pathname === '/leetcode' ? 'page' : undefined}>🧩 LeetCode</a>
-    <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`} aria-current={pathname === '/go-mod-vs-npm' ? 'page' : undefined}>📦 go.mod vs npm</a>
-    <a href="/go-vs-rust" class={`tab-toggle ${pathname === '/go-vs-rust' ? 'active' : ''}`} aria-current={pathname === '/go-vs-rust' ? 'page' : undefined}>🦀 Go vs Rust</a>
-    <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`} aria-current={pathname === '/philosophy' ? 'page' : undefined}>🧠 Philosophy</a>
-    <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`} aria-current={pathname === '/interviews' ? 'page' : undefined}>🎯 Interviews</a>
-    <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`} aria-current={pathname === '/pitfalls' ? 'page' : undefined}>⚠️ Pitfalls</a>
-    <a href="/troubleshooting" class={`tab-toggle ${pathname === '/troubleshooting' ? 'active' : ''}`} aria-current={pathname === '/troubleshooting' ? 'page' : undefined}>🛠️ Diagnostics</a>
-    <a href="/cheatsheet" class={`tab-toggle ${pathname === '/cheatsheet' ? 'active' : ''}`} aria-current={pathname === '/cheatsheet' ? 'page' : undefined}>📖 Rosetta</a>
+    <a href="/" class={`tab-toggle ${isStudio ? 'active' : ''}`} aria-current={isStudio ? 'page' : undefined}>⚡ Studio</a>
+    <a href="/chapters" class={`tab-toggle ${isChapters ? 'active' : ''}`} aria-current={isChapters ? 'page' : undefined}>📚 Chapters</a>
+
+    {currentGuide && (
+      <a href={currentGuide.href} class="tab-toggle active" aria-current="page">
+        <span>{currentGuide.icon} {currentGuide.label}</span>
+      </a>
+    )}
+
+    <div class="nav-dropdown-wrapper">
+      <button 
+        type="button" 
+        class="tab-toggle dropdown-trigger" 
+        id="guidesDropdownBtn"
+        aria-haspopup="true" 
+        aria-expanded="false"
+        aria-controls="guidesDropdownMenu"
+        aria-label="Toggle architecture guides and deep dives menu"
+      >
+        <span>📖 {currentGuide ? 'All Guides' : 'Guides'}</span>
+        <span class="dropdown-chevron" aria-hidden="true">▾</span>
+      </button>
+
+      <div id="guidesDropdownMenu" class="dropdown-menu" role="menu" aria-labelledby="guidesDropdownBtn">
+        <div class="dropdown-header">13 Architecture Deep Dives</div>
+        <div class="dropdown-grid">
+          {guideLinks.map(guide => (
+            <a 
+              href={guide.href} 
+              class={`dropdown-item ${pathname === guide.href ? 'active-dropdown-item' : ''}`}
+              role="menuitem"
+            >
+              <span class="guide-item-icon">{guide.icon}</span>
+              <span class="guide-item-label">{guide.label}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
   </nav>
 
   <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" rel="noopener noreferrer" class="github-link-btn" aria-label="View Golang for Node Developers repository on GitHub (opens in a new tab)">
     <span>GitHub ★</span>
   </a>
 </header>
+
+<script>
+  const wrapper = document.querySelector('.nav-dropdown-wrapper');
+  const trigger = document.getElementById('guidesDropdownBtn');
+  const menu = document.getElementById('guidesDropdownMenu');
+
+  if (wrapper && trigger && menu) {
+    function toggleDropdown(open?: boolean) {
+      if (!wrapper || !trigger) return;
+      const isCurrentlyOpen = wrapper.classList.contains('is-open');
+      const shouldOpen = open !== undefined ? open : !isCurrentlyOpen;
+      
+      wrapper.classList.toggle('is-open', shouldOpen);
+      trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target as Node)) {
+        toggleDropdown(false);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && wrapper.classList.contains('is-open')) {
+        toggleDropdown(false);
+        trigger.focus();
+      }
+    });
+  }
+</script>
