@@ -15,7 +15,7 @@ export const chaptersData: Record<string, Chapter> = {
         part: "Part 0: Language Basics",
         title: "Variables, := & Zero Values",
         desc: "In JS, variables can start undefined and change types at runtime. In Go, every variable has a static type and a default 'Zero Value' (0, \"\", false, or nil). The := operator automatically infers types.",
-        nodeCode: "let name = 'Gopher'; let count = 0; let active = false;",
+        nodeCode: "// Dynamic typing with mutable vs const declarations\nlet name = 'Gopher';\nlet count = 0;\nlet isActive = false;\n\n// Variables can accidentally mutate types at runtime:\n// count = 'now a string'; // Valid in JS, runtime hazard!\nconsole.log({ name, count, isActive });",
         why: "Zero values eliminate 'Cannot read properties of undefined' crashes. Variables in Go are never in an uninitialized state.",
         code: `package main
 
@@ -92,7 +92,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Structs & Receiver Methods (No 'this')",
         desc: "Go does NOT have ES6 classes or prototype chains. You define data structures using 'struct' and attach methods using explicit 'receiver' parameters, eliminating all JS 'this' binding bugs.",
-        nodeCode: "class User { constructor(name) { this.name = name; } greet() { return 'Hi ' + this.name; } }",
+        nodeCode: "// ES6 Class with dynamic instance fields & prototype methods\nclass User {\n  constructor(name, language, yearsExp) {\n    this.name = name;\n    this.language = language;\n    this.yearsExp = yearsExp;\n  }\n\n  // Method bound to the instance prototype\n  greet() {\n    return `Hi, I'm ${this.name}, coding ${this.language}!`;\n  }\n\n  // Beware: passing this method as a callback loses 'this'!\n  levelUp() {\n    this.yearsExp += 1;\n  }\n}\n\nconst dev = new User('Alice', 'TypeScript', 5);\nconsole.log(dev.greet());",
         why: "In JS, losing 'this' context in callbacks or arrow functions is a chronic source of bugs. In Go, the receiver (d Developer) is passed explicitly as an argument.",
         code: `package main
 
@@ -132,7 +132,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Interfaces & Implicit Duck Typing",
         desc: "In TypeScript, you write 'implements MyInterface'. In Go, interfaces are satisfied IMPLICITLY: if a struct has the required methods, it automatically implements the interface with zero boilerplate.",
-        nodeCode: "interface Greeter { greet(): string; } class Bot implements Greeter { ... }",
+        nodeCode: "// TypeScript interface with explicit class implementation\ninterface Greeter {\n  greet(): string;\n}\n\nclass Bot implements Greeter {\n  constructor(private model: string) {}\n\n  greet(): string {\n    return `Beep boop, I am model ${this.model}`;\n  }\n}\n\nfunction sendWelcome(service: Greeter) {\n  console.log(service.greet());\n}\n\nsendWelcome(new Bot('GPT-4o'));",
         why: "Implicit interfaces let packages define abstractions without depending on external implementations. If it walks like a duck and quacks like a duck, it's a duck!",
         code: `package main
 
@@ -174,7 +174,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Loops, If & Switch Expressions",
         desc: "Go simplified control flow: there is only ONE looping keyword ('for'). 'while' and 'do-while' were removed. 'if' statements can declare variables inline, and 'switch' does not require break statements.",
-        nodeCode: "for (let i=0; i<3; i++); while(cond); switch(x) { case 1: break; }",
+        nodeCode: "// Traditional JS loops & switch statements\nfor (let i = 0; i < 3; i++) {\n  console.log('Index:', i);\n}\n\n// Switch requires explicit breaks to avoid accidental fallthrough\nconst status = 200;\nswitch (status) {\n  case 200:\n    console.log('OK');\n    break;\n  case 404:\n    console.log('Not Found');\n    break;\n  default:\n    console.log('Unknown Status');\n}",
         why: "No forgotten 'break' statements in switch blocks causing accidental fallthrough bugs. Single loop syntax simplifies codebases.",
         code: `package main
 
@@ -216,7 +216,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Packages & Capitalization Exports",
         desc: "In Node.js, you use 'module.exports' or 'export default'. In Go, visibility is controlled by CAPITALIZATION: uppercase identifiers are public (exported); lowercase identifiers are private to the package.",
-        nodeCode: "export function PublicFunc() {} function privateHelper() {}",
+        nodeCode: "// ES Modules: explicit export and import\nexport function calculateTax(amount, rate = 0.08) {\n  return amount * rate;\n}\n\n// Internal helper not exported to consumers\nfunction internalSanitizer(val) {\n  return val.trim();\n}\n\nexport default function processOrder(total) {\n  return total + calculateTax(total);\n}",
         why: "No need for export keywords. You know immediately whether any function or struct field across any library is public or private just by glancing at the first letter.",
         code: `package main
 
@@ -238,7 +238,7 @@ func internalMultiplier(p int) int {
 func main() {
 	fmt.Println("=== Go Capitalization Visibility Rule ===")
 	fmt.Println("Capital (Public):    fmt.Println, http.ListenAndServe, json.Marshal")
-	fmt.Println("Lowercase (Private): internal functions and unexported struct fields\\n")
+	fmt.Println("Lowercase (Private): internal functions and unexported struct fields")
 
 	reward := CalculateReward(5)
 	fmt.Printf("Calculated reward: %d points\\n", reward)
@@ -251,7 +251,7 @@ func main() {
         part: "Featured: Video Project",
         title: "Express vs Fiber (Video Project)",
         desc: "Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.",
-        nodeCode: "app.post('/api/products', createProduct); app.get('/api/products', getProducts);",
+        nodeCode: "import express from 'express';\nconst app = express();\napp.use(express.json());\n\n// Express routing and JSON handling\napp.get('/api/products', (req, res) => {\n  res.json([\n    { id: 'prod_1', title: 'Mechanical Keyboard' },\n    { id: 'prod_2', title: 'Ultrawide Monitor' }\n  ]);\n});\n\napp.post('/api/products', (req, res) => {\n  const newProduct = { id: `prod_${Date.now()}`, ...req.body };\n  res.status(201).json(newProduct);\n});",
         why: "Fiber is built on Fasthttp, the fastest HTTP engine in Go. It keeps Express-style routing while executing at 10x-20x the throughput of Node with minimal memory!",
         code: `package main
 
@@ -304,7 +304,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("=== Express vs Fiber Production Microservice Comparison ===")
 	fmt.Println("Node: app.get('/api/products', getProducts)")
-	fmt.Println("Go:   app.Get('/api/products', handlers.GetAllProducts)\\n")
+	fmt.Println("Go:   app.Get('/api/products', handlers.GetAllProducts)")
 
 	// Test GET products
 	req := httptest.NewRequest("GET", "/api/products", nil)
@@ -322,7 +322,7 @@ func main() {
         part: "Featured: Video Project",
         title: "MongoDB Client & sync.Once",
         desc: "In the video, Tom builds internal/db/db.go using sync.Once to create a thread-safe singleton MongoDB connection pool. Every Goroutine reuses this client safely.",
-        nodeCode: "const client = new MongoClient(URI); await client.connect();",
+        nodeCode: "import { MongoClient } from 'mongodb';\n\n// Singleton connection pattern in Node.js\nlet client;\nexport async function getDatabase() {\n  if (!client) {\n    client = new MongoClient(process.env.MONGO_URI, {\n      maxPoolSize: 20\n    });\n    await client.connect();\n    console.log('Connected to MongoDB');\n  }\n  return client.db('production');\n}",
         why: "sync.Once guarantees that the connection handshake runs only once even if 1,000 incoming requests hit the server concurrently on startup.",
         code: `package main
 
@@ -386,7 +386,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "Express API vs net/http",
         desc: "In Node, you install Express to handle routes and serialize JSON. In Go, an ultra-fast production HTTP server with routing and JSON serialization is built right into the standard library with zero external dependencies.",
-        nodeCode: "app.get('/api/users', (req, res) => res.json({ id: 1, name: 'Alice' }))",
+        nodeCode: "import express from 'express';\nconst app = express();\n\n// Route handler returning JSON payload\napp.get('/api/users', (req, res) => {\n  res.setHeader('Content-Type', 'application/json');\n  res.status(200).json({\n    id: 1,\n    name: 'Alice',\n    role: 'Admin'\n  });\n});\n\napp.listen(3000, () => console.log('Server running on port 3000'));",
         why: "Go's net/http package is production-grade out of the box. Cloudflare, Google, and Docker run massive workloads directly on it without requiring external frameworks.",
         code: `package main
 
@@ -466,7 +466,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "axios / fetch Client in Go",
         desc: "How to make outbound HTTP requests to microservices with request timeout deadlines, custom headers, and response decoding without axios.",
-        nodeCode: "const res = await axios.get('/api/quote', { timeout: 2000 })",
+        nodeCode: "import axios from 'axios';\n\n// Making an outbound HTTP request with timeout\nasync function fetchQuote() {\n  try {\n    const res = await axios.get('https://api.quotable.io/random', {\n      timeout: 2000,\n      headers: { 'User-Agent': 'NodeService/1.0' }\n    });\n    return res.data;\n  } catch (err) {\n    console.error('Request failed or timed out:', err.message);\n    throw err;\n  }\n}",
         why: "Go's http.Client includes connection pooling, HTTP/2 support, and context timeouts out-of-the-box.",
         code: `package main
 
@@ -514,7 +514,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "JSON.parse & stringify vs Struct Tags",
         desc: "In Node, JSON parsing is dynamic. In Go, you define a struct with JSON tags (like `json:\"userId\"`) to validate and deserialize strictly.",
-        nodeCode: "const data = JSON.parse(str); const text = JSON.stringify(obj);",
+        nodeCode: "// Parsing JSON strings and serializing objects in Node.js\nconst rawJson = '{\"id\": 101, \"title\": \"Learn Go\", \"completed\": false}';\n\n// Dynamic parse: no compile-time schema validation\nconst task = JSON.parse(rawJson);\nconsole.log('Parsed task:', task.title);\n\n// Pretty serialization\nconst jsonString = JSON.stringify(task, null, 2);\nconsole.log(jsonString);",
         why: "Struct tags prevent schema drift and runtime shape errors by enforcing exact types at compile time.",
         code: `package main
 
@@ -548,7 +548,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "fs.createReadStream vs io.Reader",
         desc: "Streaming data in Node uses stream.pipe(). In Go, the universal io.Reader and io.Writer interfaces provide zero-allocation streaming pipelines.",
-        nodeCode: "fs.createReadStream('input.txt').pipe(dest);",
+        nodeCode: "import fs from 'fs';\n\n// Node.js Streams piping chunk by chunk\nconst readable = fs.createReadStream('input.txt', { encoding: 'utf8' });\nconst writable = fs.createWriteStream('output.txt');\n\nreadable.pipe(writable);\nwritable.on('finish', () => {\n  console.log('File copy complete');\n});",
         why: "io.Reader and io.Writer are the bedrock of Go. HTTP bodies, files, compression, and network sockets all implement the exact same interface.",
         code: `package main
 
@@ -580,7 +580,7 @@ func main() {
         part: "Part 1: Web APIs",
         title: "process.env vs os.Getenv & Defaults",
         desc: "Reading 12-factor environment variables and providing fallback defaults using Go's built-in os package without needing dotenv.",
-        nodeCode: "const port = process.env.PORT || '3000';",
+        nodeCode: "// Accessing environment variables in Node.js\nconst port = parseInt(process.env.PORT || '3000', 10);\nconst dbHost = process.env.DATABASE_URL;\n\nif (!dbHost) {\n  console.error('FATAL: DATABASE_URL is not configured');\n  process.exit(1);\n}\n\nconsole.log(`Running on port ${port}`);",
         why: "Go apps are designed to be deployed as stateless containers where all configuration is passed cleanly through environment variables.",
         code: `package main
 
@@ -615,7 +615,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Array.map() in Go",
         desc: "In JavaScript, arr.map((x) => x * 2) transforms elements functionally. In Go, you can transform slices with pre-allocated loops or reusable generics.",
-        nodeCode: "const doubled = numbers.map(n => n * 2);",
+        nodeCode: "// Array transformation with Array.prototype.map\nconst numbers = [10, 20, 30, 40, 50];\n\n// Creates a brand new array, triggering GC allocations\nconst doubled = numbers.map(n => n * 2);\n\nconsole.log(doubled); // [20, 40, 60, 80, 100]",
         why: "Pre-allocating slice capacity with make([]int, 0, len(items)) avoids array re-allocations and GC thrashing, running significantly faster than JS array methods.",
         code: `package main
 
@@ -650,7 +650,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Array.filter() in Go",
         desc: "In JS, arr.filter((x) => x > 10) selects matching elements. In Go, you filter into a new slice using a range loop or a generic Filter function.",
-        nodeCode: "const evens = numbers.filter(n => n % 2 === 0);",
+        nodeCode: "// Array filtering with Array.prototype.filter\nconst numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n\n// Allocates a new array with elements satisfying the predicate\nconst evens = numbers.filter(n => n % 2 === 0);\n\nconsole.log(evens); // [2, 4, 6, 8, 10]",
         why: "Go gives you full control over slice memory allocation without creating intermediate closures or generator wrappers.",
         code: `package main
 
@@ -692,7 +692,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Array.reduce() in Go",
         desc: "In JS, arr.reduce((acc, curr) => acc + curr, 0) aggregates an array into a single value. In Go, an explicit loop or generic Reduce function achieves the same result.",
-        nodeCode: "const total = cart.reduce((sum, item) => sum + item.price, 0);",
+        nodeCode: "// Aggregation with Array.prototype.reduce\nconst cart = [\n  { item: 'Keyboard', price: 99.99 },\n  { item: 'Mouse', price: 49.99 },\n  { item: 'Desk Mat', price: 24.50 }\n];\n\nconst total = cart.reduce((sum, item) => sum + item.price, 0);\nconsole.log('Cart Total: $' + total.toFixed(2));",
         why: "Explicit loops in Go are easier to debug, have zero allocation overhead, and avoid complex accumulator callback binding.",
         code: `package main
 
@@ -720,7 +720,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Array.sort() (slices.Sort & SortFunc)",
         desc: "In JS, array.sort((a,b) => a - b) sorts in place. In Go 1.21+, the standard library 'slices' package provides high-performance Sort and SortFunc.",
-        nodeCode: "users.sort((a, b) => b.score - a.score); // descending",
+        nodeCode: "// In-place sorting in JavaScript\nconst users = [\n  { name: 'Alice', score: 85 },\n  { name: 'Bob', score: 92 },\n  { name: 'Charlie', score: 78 }\n];\n\n// Mutates the original array in-place\nusers.sort((a, b) => b.score - a.score);\nconsole.log('Top user:', users[0].name);",
         why: "Go uses pdqsort (Pattern-Defeating Quicksort), combining the speed of quicksort with the worst-case guarantees of heapsort and insertion sort for small slices.",
         code: `package main
 
@@ -761,7 +761,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "push/pop/splice vs Go append & slices",
         desc: "In JS: push(), pop(), shift(), unshift(), and splice(). In Go, the append() built-in and slice re-slicing handle all dynamic array modifications.",
-        nodeCode: "arr.push(4); const last = arr.pop(); arr.splice(1, 1);",
+        nodeCode: "// Common JavaScript Array mutations\nconst arr = [1, 2, 3];\n\narr.push(4);          // Append to end: [1, 2, 3, 4]\nconst last = arr.pop(); // Remove last: 4\narr.splice(1, 1);     // Remove 1 item at index 1: [1, 3]\narr.unshift(0);       // Prepend to front: [0, 1, 3]\n\nconsole.log(arr);",
         why: "Go slices are a lightweight 3-word view (pointer, length, capacity) over an underlying array. Slicing never copies memory unless you grow beyond capacity.",
         code: `package main
 
@@ -794,7 +794,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Primitive Types (int64, runes)",
         desc: "JS has number, string, boolean, bigint, symbol, null, undefined. Go has explicit sized integers (int8, int32, int64), floats (float32, float64), byte, and rune (Unicode).",
-        nodeCode: "let x = 42; let y = 3.14; let s = 'hello'; typeof x === 'number';",
+        nodeCode: "// JavaScript loose dynamic typing\nlet count = 42;         // number (64-bit IEEE-754 float)\nlet price = 19.99;      // number\nlet title = 'Go Guide'; // string\nlet active = true;      // boolean\nlet payload = null;     // object (historical JS quirk!)\n\nconsole.log(typeof count, typeof price, typeof payload);",
         why: "In Go, choosing int32 vs int64 or float64 determines exact byte memory layout and CPU cache efficiency.",
         code: `package main
 
@@ -851,7 +851,7 @@ func main() {
         part: "Part 2: Arrays & Types",
         title: "Pointers (*T & &T) Demystified for JS Devs",
         desc: "In JS, primitives pass by value, and objects pass by reference automatically. In Go, you explicitly decide using & (address of) and * (pointer dereference).",
-        nodeCode: "// In JS, objects mutate by reference automatically, but primitives cannot!",
+        nodeCode: "// In JavaScript, objects are passed by reference\nfunction updateUser(user) {\n  // Mutates caller's object directly!\n  user.views += 1;\n}\n\n// Primitives are passed by value (copied)\nfunction updateScore(score) {\n  score += 10; // Does NOT affect caller\n}\n\nconst user = { name: 'Alice', views: 0 };\nupdateUser(user);\nconsole.log(user.views); // 1",
         why: "Pointers allow you to modify data without cloning large structs in memory, or use nil to indicate an optional/missing value.",
         code: `package main
 
@@ -881,7 +881,7 @@ func main() {
         part: "Part 3: Databases & ORMs",
         title: "pg.Pool vs database/sql Pool",
         desc: "In Node, you install pg or pg-pool and configure max connections. In Go, connection pooling is built directly into database/sql.",
-        nodeCode: "const pool = new Pool({ max: 25, idleTimeoutMillis: 30000 });",
+        nodeCode: "import { Pool } from 'pg';\n\n// Connection pooling configuration in pg / Node.js\nconst pool = new Pool({\n  connectionString: process.env.DATABASE_URL,\n  max: 25,                  // Max active connections in pool\n  idleTimeoutMillis: 30000, // Close idle connections after 30s\n  connectionTimeoutMillis: 2000\n});\n\nexport async function query(text, params) {\n  return pool.query(text, params);\n}",
         why: "In Go, sql.DB is a thread-safe connection pool shared across all Goroutines without PM2 cluster duplication.",
         code: `package main
 
@@ -918,7 +918,7 @@ func main() {
         part: "Part 3: Databases & ORMs",
         title: "DB Queries: Exec vs QueryRow vs Query",
         desc: "In Node, pool.query() handles everything dynamically. Go strictly separates queries by return shape: Exec, QueryRow, and Query.",
-        nodeCode: "const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [id]);",
+        nodeCode: "import db from './db.js';\n\n// Querying database with parameterized inputs\nasync function getUser(id) {\n  const { rows } = await db.query(\n    'SELECT id, email, created_at FROM users WHERE id = $1 LIMIT 1',\n    [id]\n  );\n  return rows[0] || null;\n}\n\nconst user = await getUser(42);\nconsole.log(user);",
         why: "Separating single vs multi-row prevents buffer bloat and memory leaks.",
         code: `package main
 
@@ -948,7 +948,7 @@ func main() {
         part: "Part 3: Databases & ORMs",
         title: "ACID Transactions (db.BeginTx)",
         desc: "In Node, you use BEGIN / COMMIT or prisma.$transaction(). In Go, db.BeginTx binds queries to an isolated connection, and defer tx.Rollback() ensures guaranteed safety.",
-        nodeCode: "await client.query('BEGIN'); ... await client.query('COMMIT');",
+        nodeCode: "import pool from './pool.js';\n\n// Managing ACID transactions manually in Node.js\nasync function transferFunds(fromId, toId, amount) {\n  const client = await pool.connect();\n  try {\n    await client.query('BEGIN');\n    await client.query('UPDATE accounts SET balance = balance - $1 WHERE id = $2', [amount, fromId]);\n    await client.query('UPDATE accounts SET balance = balance + $1 WHERE id = $2', [amount, toId]);\n    await client.query('COMMIT');\n  } catch (err) {\n    await client.query('ROLLBACK');\n    throw err;\n  } finally {\n    client.release();\n  }\n}",
         why: "defer tx.Rollback() is a standard safety idiom: if Commit() is called, rollback is a no-op; if an error occurs early, rollback triggers automatically.",
         code: `package main
 
@@ -982,7 +982,7 @@ func main() {
         part: "Part 3: Databases & ORMs",
         title: "Prisma & TypeORM vs GORM & sqlc",
         desc: "Node developers rely heavily on Prisma or TypeORM. In Go, backend engineers either use GORM (ActiveRecord ORM) or sqlc (generates type-safe Go code from plain SQL files).",
-        nodeCode: "const user = await prisma.user.findUnique({ where: { id: 1 } });",
+        nodeCode: "import { PrismaClient } from '@prisma/client';\nconst prisma = new PrismaClient();\n\n// Querying with an ORM in Node.js\nasync function getOrderDetails(orderId) {\n  const order = await prisma.order.findUnique({\n    where: { id: orderId },\n    include: { items: true, customer: true }\n  });\n  return order;\n}",
         why: "sqlc is the current industry gold standard in Go: you write pure SQL queries, and the compiler generates zero-reflection, hyper-fast Go structs and methods automatically.",
         code: `package main
 
@@ -1013,7 +1013,7 @@ func main() {
         part: "Part 4: Queues & BullMQ",
         title: "BullMQ vs Go Channel Worker Queue",
         desc: "In Node, BullMQ uses Redis to distribute jobs across background workers. In Go, you can build a high-performance in-process worker queue using buffered channels without Redis.",
-        nodeCode: "const queue = new Bull('emails'); queue.process(3, async job => sendEmail(job.data));",
+        nodeCode: "import { Queue, Worker } from 'bullmq';\n\n// Redis-backed BullMQ Queue in Node.js\nconst emailQueue = new Queue('emails', {\n  connection: { host: 'localhost', port: 6379 }\n});\n\n// Worker processing jobs concurrently\nconst worker = new Worker('emails', async job => {\n  console.log(`Sending email to ${job.data.to}...`);\n  await sendEmail(job.data);\n}, { concurrency: 5 });",
         why: "A Go channel queue can process 500,000 jobs/sec in memory using 15MB RAM.",
         code: `package main
 
@@ -1059,7 +1059,7 @@ func main() {
         part: "Part 4: Queues & BullMQ",
         title: "BullMQ Retries & Dead-Letter Queue",
         desc: "In BullMQ, you configure attempts: 3 and backoff: exponential. In Go, you implement retry loops with exponential backoff and forward failed jobs to a DLQ channel.",
-        nodeCode: "queue.add('payment', data, { attempts: 3, backoff: { type: 'exponential' } });",
+        nodeCode: "import { Queue } from 'bullmq';\n\n// Queue job with exponential backoff retries\nconst paymentQueue = new Queue('payments');\n\nawait paymentQueue.add('charge-card', {\n  userId: 42,\n  amount: 2500\n}, {\n  attempts: 3,\n  backoff: {\n    type: 'exponential',\n    delay: 1000 // 1s, 2s, 4s...\n  }\n});",
         why: "In Go, retries are transparent and testable without black-box Redis scripts.",
         code: `package main
 
@@ -1112,7 +1112,7 @@ func main() {
         part: "Part 5: Concurrency & Async",
         title: "Promise.all vs sync.WaitGroup",
         desc: "In Node, Promise.all([p1, p2, p3]) runs promises concurrently on the event loop. In Go, sync.WaitGroup coordinates true multi-core parallel execution across Goroutines.",
-        nodeCode: "const results = await Promise.all([fetchDB(), fetchCache(), fetchAPI()]);",
+        nodeCode: "// Concurrent execution with Promise.all in Node.js\nasync function loadDashboard(userId) {\n  // If ANY promise rejects, the entire Promise.all fails immediately\n  const [profile, orders, notifications] = await Promise.all([\n    fetchUserProfile(userId),\n    fetchUserOrders(userId),\n    fetchNotifications(userId)\n  ]);\n\n  return { profile, orders, notifications };\n}",
         why: "Node executes async tasks sequentially across I/O ticks on a single core. Go executes them simultaneously on physical multi-core threads.",
         code: `package main
 
@@ -1152,7 +1152,7 @@ func main() {
         part: "Part 5: Concurrency & Async",
         title: "Promise.race vs select Statement",
         desc: "In Node, Promise.race([fetch(), timeout(100)]) returns the fastest resolving promise. In Go, the select statement multiplexes channel reads natively.",
-        nodeCode: "const fastest = await Promise.race([queryPrimary(), queryReplica()]);",
+        nodeCode: "// Racing multiple asynchronous operations in Node.js\nasync function fetchFastestReplica() {\n  // Returns the first settled (resolved or rejected) promise\n  const fastestData = await Promise.race([\n    fetchFromPrimary(),\n    fetchFromReplicaEast(),\n    fetchFromReplicaWest()\n  ]);\n\n  return fastestData;\n}",
         why: "select is a built-in language keyword designed specifically for racing async streams and cancellation signals without Promise allocations.",
         code: `package main
 
@@ -1189,7 +1189,7 @@ func main() {
         part: "Part 5: Concurrency & Async",
         title: "AbortController vs context.Context",
         desc: "In Node 16+, AbortController sends cancellation signals to fetch() and DB drivers. In Go, context.Context is the universal standard across the entire Go ecosystem.",
-        nodeCode: "const ac = new AbortController(); fetch(url, { signal: ac.signal }); ac.abort();",
+        nodeCode: "// Cancelling async operations with AbortController\nconst ac = new AbortController();\nconst timeoutId = setTimeout(() => ac.abort(), 2000); // 2s timeout\n\ntry {\n  const res = await fetch('https://api.internal.net/data', {\n    signal: ac.signal\n  });\n  const data = await res.json();\n} catch (err) {\n  if (err.name === 'AbortError') {\n    console.error('Request cancelled due to timeout!');\n  }\n} finally {\n  clearTimeout(timeoutId);\n}",
         why: "Go contexts pass deadlines, cancellation signals, and request-scoped metadata across network boundaries and database queries automatically.",
         code: `package main
 
@@ -1222,7 +1222,7 @@ func main() {
         part: "Part 5: Concurrency & Async",
         title: "Error Wrapping & errors.Is/As",
         desc: "In Node, nested try/catch loses context unless using err.cause. Go supports native error wrapping with %w and inspection using errors.Is and errors.As.",
-        nodeCode: "throw new Error('Failed to checkout', { cause: dbError });",
+        nodeCode: "// Preserving root cause errors in modern Node.js\ntry {\n  await database.connect();\n} catch (dbError) {\n  // Attach cause using Error options (Node 16.9+)\n  throw new Error('Failed to bootstrap checkout service', {\n    cause: dbError\n  });\n}",
         why: "Wrapping errors preserves the root cause across architecture layers while attaching domain context.",
         code: `package main
 
@@ -1263,7 +1263,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Pointers (*T & &T) & Pass-By-Value",
         desc: "In JS, primitive values are passed by value and objects are passed by reference. In Go, EVERY argument is passed by value (copied) unless you explicitly pass a pointer using & (address-of) and dereference using *.",
-        nodeCode: "const u = { views: 10 }; update(u); // JS always mutates object references",
+        nodeCode: "// In JS, object mutations affect all alias references\nconst user = { name: 'Alice', views: 10 };\nconst alias = user;\n\nalias.views += 1;\nconsole.log(user.views); // 11 (mutated both!)\n\n// To avoid mutation, you must explicitly clone:\nconst clone = { ...user };",
         why: "Pointers give you explicit control over heap vs stack memory. Value semantics prevent unexpected mutation bugs across goroutines.",
         code: `package main
 
@@ -1391,7 +1391,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Struct Embedding (Composition over Inheritance)",
         desc: "In JS/TS, code reuse uses 'class Admin extends User' with super(). Go deliberately omits classes and inheritance. It uses struct embedding where inner fields and methods are automatically promoted.",
-        nodeCode: "class Admin extends User { constructor() { super(); } }",
+        nodeCode: "// OOP inheritance in JavaScript via 'extends'\nclass BaseUser {\n  constructor(name) {\n    this.name = name;\n  }\n  getDisplayName() {\n    return `User: ${this.name}`;\n  }\n}\n\nclass AdminUser extends BaseUser {\n  constructor(name, permissions) {\n    super(name);\n    this.permissions = permissions;\n  }\n}",
         why: "Avoids the fragile base class problem. Outer structs can promote inner methods or override them cleanly without virtual dispatch overhead.",
         code: `package main
 
@@ -1480,7 +1480,7 @@ func main() {
         part: "Part 0: Language Basics",
         title: "Generics in Go (Type Parameters)",
         desc: "TypeScript has rich generics like 'function map<T, R>(arr: T[], fn: (x: T) => R): R[]'. Since Go 1.18, Go supports type parameters '[T any]' with compile-time monomorphization.",
-        nodeCode: "function first<T>(items: T[]): T | undefined { return items[0]; }",
+        nodeCode: "// TypeScript Generics for type safety\nfunction getFirstItem<T>(items: T[]): T | undefined {\n  if (items.length === 0) return undefined;\n  return items[0];\n}\n\nconst num = getFirstItem([10, 20, 30]); // number\nconst str = getFirstItem(['a', 'b', 'c']); // string",
         why: "Allows reusable algorithms and data structures without dynamic 'any' casting or runtime reflection overhead.",
         code: `package main
 
@@ -1538,7 +1538,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "Slice Header: Len, Cap & Pointer",
         desc: "In JS, arrays are dynamic heap objects managed by V8. In Go, a slice is a 24-byte struct header containing: Pointer to underlying array, Length, and Capacity. Sub-slices share memory!",
-        nodeCode: "const arr = [1, 2]; arr.push(3); // V8 reallocates hidden arrays",
+        nodeCode: "// Dynamic arrays in V8 engine\nconst arr = [1, 2];\narr.push(3); // V8 reallocates hidden continuous storage behind the scenes\n\n// Sub-arrays in JS allocate new independent memory arrays\nconst sub = arr.slice(0, 2);",
         why: "Pre-allocating slice capacity with make([]T, 0, cap) prevents heap re-allocations and improves throughput 5-10x.",
         code: `package main
 
@@ -1577,7 +1577,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "Map Buckets & Randomized Iteration",
         desc: "In JS ES6 Map, keys preserve insertion order. In Go, map[K]V iteration order is INTENTIONALLY randomized on every execution by the Go runtime so developers do not rely on hash bucket ordering.",
-        nodeCode: "const map = new Map(); // Iterates in exact insertion order",
+        nodeCode: "// JavaScript Map retains exact insertion order\nconst map = new Map();\nmap.set('user_1', 'Alice');\nmap.set('user_2', 'Bob');\n\n// Iteration order is always guaranteed to be insertion order\nfor (const [k, v] of map) {\n  console.log(k, v);\n}",
         why: "Go map iteration randomization prevents subtle bugs where code accidentally assumes hash table ordering.",
         code: `package main
 
@@ -1622,7 +1622,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "Struct Memory Alignment & Padding",
         desc: "In JS, object property order has zero memory effect. In Go, struct fields sit in contiguous memory aligned to 8-byte boundaries. Reordering struct fields can shrink memory usage by 33%!",
-        nodeCode: "const user = { isAdmin: true, age: 30, active: false };",
+        nodeCode: "// JS Objects are dynamic hash tables on V8 heap\nconst user = {\n  isAdmin: true,\n  age: 30,\n  active: false\n};\n// Consumes ~40-64 bytes on heap with hidden class pointer",
         why: "Memory alignment impacts CPU cache performance and footprint in high-density in-memory caches.",
         code: `package main
 
@@ -1663,7 +1663,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "FIFO Queue (Avoiding O(N) shift())",
         desc: "In JS, developers often call array.shift() for FIFO queues. In V8, shift() is an O(N) disaster because all remaining elements must be reindexed. In Go, we use head pointers and amortized compaction for true O(1).",
-        nodeCode: "const item = queue.shift(); // O(N) performance cliff in JS!",
+        nodeCode: "// JavaScript Array as a queue\nconst queue = [];\nqueue.push('task_1'); // O(1) push to back\nqueue.push('task_2');\n\n// WARNING: shift() is O(N) because it re-indexes every element in the array!\nconst nextTask = queue.shift();",
         why: "High-throughput messaging queues require deterministic O(1) enqueue and dequeue operations.",
         code: `package main
 
@@ -1722,7 +1722,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "Priority Queue with container/heap",
         desc: "In JS, priority queues require 3rd-party npm libraries or O(N log N) array.sort() re-sorts. Go's standard library provides container/heap: an O(log N) binary heap interface.",
-        nodeCode: "items.sort((a, b) => b.priority - a.priority); // O(N log N) resort",
+        nodeCode: "// Priority Queue simulation using array sorting in JS\nconst items = [\n  { task: 'Email', priority: 1 },\n  { task: 'Alert', priority: 10 }\n];\n\n// O(N log N) resort every time an element is inserted\nitems.sort((a, b) => b.priority - a.priority);\nconst highest = items.shift();",
         why: "Binary heaps guarantee efficient task scheduling and Dijkstra shortest path routing.",
         code: `package main
 
@@ -1784,7 +1784,7 @@ func main() {
         part: "Part 2: Data Structures",
         title: "Zero-Allocation Pools (sync.Pool)",
         desc: "In JS, allocating thousands of objects per second causes V8 Garbage Collector stop-the-world spikes. In Go, sync.Pool recycles temporary buffers across goroutines with lock-free concurrency.",
-        nodeCode: "const buf = Buffer.alloc(1024); // Constant GC allocation pressure",
+        nodeCode: "// Node.js Buffer allocation\n// Buffer.alloc creates GC pressure under high traffic\nfunction handlePayload(data) {\n  const buf = Buffer.alloc(4096);\n  buf.write(data);\n  return buf;\n}",
         why: "sync.Pool is essential for high-throughput HTTP servers and network proxies to eliminate GC pauses.",
         code: `package main
 

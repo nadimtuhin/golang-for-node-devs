@@ -67,19 +67,19 @@ test.describe('Run Code Execution Functional Tests', () => {
     const pagesToTest = [
       {
         path: '/leetcode',
-        linkSelector: 'a.action-btn[href*="/?chapter=lc_two_sum"], a:has-text("Run in Studio")',
+        linkSelector: 'a.action-btn[href*="/chapter/lc_two_sum"], a:has-text("Run in Studio")',
         expectedChapter: 'lc_two_sum',
         expectedOutput: 'Output Indices',
       },
       {
         path: '/interviews',
-        linkSelector: 'a.action-btn[href*="/?chapter=promise_all"], a:has-text("Try Concurrency in Studio")',
+        linkSelector: 'a.action-btn[href*="/chapter/promise_all"], a:has-text("Try Concurrency in Studio")',
         expectedChapter: 'promise_all',
         expectedOutput: 'data',
       },
       {
         path: '/philosophy',
-        linkSelector: 'a.action-btn[href*="/?chapter=philo_clear_over_clever"], a:has-text("Try in Playground")',
+        linkSelector: 'a.action-btn[href*="/chapter/philo_clear_over_clever"], a:has-text("Try in Playground")',
         expectedChapter: 'philo_clear_over_clever',
         expectedOutput: 'Clear is better than clever',
       },

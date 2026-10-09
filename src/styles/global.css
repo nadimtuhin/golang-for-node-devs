@@ -977,25 +977,40 @@ header {
 
 .node-code {
   font-family: var(--font-mono, 'JetBrains Mono', 'Fira Code', monospace);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   background: #0f172a;
   color: #f8fafc;
   padding: 1rem 1.25rem;
   border-radius: var(--radius-sm);
   overflow-x: auto;
   line-height: 1.6;
-  white-space: pre-wrap;
+  white-space: pre;
   word-break: normal;
   border: 1px solid #1e293b;
   tab-size: 2;
+  outline: none;
+}
+
+.node-code:focus {
+  outline: none;
+}
+
+.node-code:focus-visible {
+  outline: 2px solid var(--go-blue);
+  outline-offset: 2px;
 }
 
 .node-code code {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-  background: transparent;
-  padding: 0;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  display: block;
 }
 
 /* JavaScript / TypeScript Syntax Highlighting Tokens */
