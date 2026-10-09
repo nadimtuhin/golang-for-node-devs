@@ -15,11 +15,25 @@ export function getStaticPaths() {
 }
 
 const { chapterKey, chapter } = Astro.props;
+
+// Keep title between 30 and 60 characters for optimal search CTR and SEO score
+const suffix = " — Go for Node.js";
+let pageTitle = `${chapter.title}${suffix}`;
+if (pageTitle.length > 60) {
+  const maxT = 60 - suffix.length;
+  pageTitle = `${chapter.title.slice(0, maxT - 1)}…${suffix}`;
+}
 ---
 
 <Layout 
-  title={`${chapter.title} — Go for Node.js Developers Masterclass`}
+  title={pageTitle}
   description={`Learn Go ${chapter.title} with Node.js comparisons, live compiler playground, and idiomatic Go mental models.`}
+  canonicalPath={`/chapter/${chapterKey}`}
+  breadcrumbs={[
+    { name: "Home", item: "https://golang-for-node-devs.vercel.app" },
+    { name: "Chapters", item: "https://golang-for-node-devs.vercel.app/chapters" },
+    { name: chapter.title, item: `https://golang-for-node-devs.vercel.app/chapter/${chapterKey}` }
+  ]}
 >
   <Header />
 
@@ -45,8 +59,9 @@ const { chapterKey, chapter } = Astro.props;
   </div>
 
   <!-- Client-side Interactive Engine -->
-  <script define:vars={{ chaptersData, initialKey: chapterKey }}>
-    window.chaptersData = chaptersData;
+  <script is:inline src="/chapters-data.js"></script>
+  <script define:vars={{ initialKey: chapterKey }}>
+    var chaptersData = window.chaptersData || {};
 
     let activeKey = initialKey || 'basic_vars';
     let editor = null;

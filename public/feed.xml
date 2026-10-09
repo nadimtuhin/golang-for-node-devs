@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Go for Node.js Developers Masterclass</title>
+  <link>https://golang-for-node-devs.vercel.app/</link>
+  <description>Interactive Go learning platform with live Go compiler, 56 chapters, and 13 production architecture guides for JavaScript and TypeScript engineers.</description>
+  <language>en-us</language>
+  <lastBuildDate>Fri, 10 Oct 2026 00:00:00 +0000</lastBuildDate>
+  <atom:link href="https://golang-for-node-devs.vercel.app/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>Unit &amp; Integration Testing in Go: Testcontainers, miniredis &amp; httptest</title>
+    <link>https://golang-for-node-devs.vercel.app/testing</link>
+    <guid>https://golang-for-node-devs.vercel.app/testing</guid>
+    <pubDate>Fri, 10 Oct 2026 00:00:00 +0000</pubDate>
+    <description>Comprehensive testing guide for Node.js developers transitioning to Go table-driven tests and Testcontainers.</description>
+  </item>
+  <item>
+    <title>Go in the AI Era: High-Performance Infrastructure &amp; LLM Gateways</title>
+    <link>https://golang-for-node-devs.vercel.app/ai</link>
+    <guid>https://golang-for-node-devs.vercel.app/ai</guid>
+    <pubDate>Fri, 10 Oct 2026 00:00:00 +0000</pubDate>
+    <description>Why Go powers Ollama, Weaviate, high-throughput token streaming, and Kubernetes AI control planes.</description>
+  </item>
+  <item>
+    <title>Go vs Rust: The Pragmatic Systems Engineering Guide</title>
+    <link>https://golang-for-node-devs.vercel.app/go-vs-rust</link>
+    <guid>https://golang-for-node-devs.vercel.app/go-vs-rust</guid>
+    <pubDate>Fri, 10 Oct 2026 00:00:00 +0000</pubDate>
+    <description>Head-to-head architectural comparison of memory models, concurrency, compilation speed, and team velocity.</description>
+  </item>
+</channel>
+</rss>

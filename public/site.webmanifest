@@ -1,0 +1,17 @@
+{
+  "name": "Go for Node.js Developers Masterclass",
+  "short_name": "GoForNodeDevs",
+  "description": "Interactive Go learning platform with live compiler, 56 lessons, and 13 production architecture guides.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007d9c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

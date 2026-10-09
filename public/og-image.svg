@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071927" />
+      <stop offset="50%" stop-color="#0b2b3f" />
+      <stop offset="100%" stop-color="#021019" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00ADD8" />
+      <stop offset="100%" stop-color="#29BEB0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle Grid Lines -->
+  <g stroke="#1e3a5f" stroke-width="1" opacity="0.3">
+    <line x1="0" y1="120" x2="1200" y2="120"/>
+    <line x1="0" y1="240" x2="1200" y2="240"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="480" x2="1200" y2="480"/>
+    <line x1="240" y1="0" x2="240" y2="630"/>
+    <line x1="480" y1="0" x2="480" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/>
+    <line x1="960" y1="0" x2="960" y2="630"/>
+  </g>
+
+  <!-- Glow circle -->
+  <circle cx="980" cy="315" r="220" fill="#00ADD8" opacity="0.12" filter="blur(40px)"/>
+
+  <!-- Left Content Box -->
+  <g transform="translate(100, 120)">
+    <!-- Brand Badge -->
+    <rect x="0" y="0" width="310" height="38" rx="19" fill="#00ADD8" opacity="0.2"/>
+    <rect x="0" y="0" width="310" height="38" rx="19" fill="none" stroke="#00ADD8" stroke-width="1.5"/>
+    <text x="20" y="24" fill="#38bdf8" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" letter-spacing="1">INTERACTIVE MASTERCLASS</text>
+
+    <!-- Main Title -->
+    <text x="0" y="110" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="58" font-weight="900" letter-spacing="-1.5">Go for Node.js</text>
+    <text x="0" y="180" fill="url(#cyanGrad)" font-family="system-ui, -apple-system, sans-serif" font-size="58" font-weight="900" letter-spacing="-1.5">Developers</text>
+
+    <!-- Subtitle -->
+    <text x="0" y="240" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400">The definitive architectural rosetta stone &amp; interactive studio.</text>
+    <text x="0" y="272" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400">56 Live Coding Chapters • 13 Architecture Guides • Sub-15MB Docker</text>
+
+    <!-- Feature Pills -->
+    <g transform="translate(0, 320)">
+      <rect x="0" y="0" width="130" height="34" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="65" y="22" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="700" text-anchor="middle">56 CHAPTERS</text>
+
+      <rect x="145" y="0" width="170" height="34" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="230" y="22" fill="#29BEB0" font-family="monospace" font-size="14" font-weight="700" text-anchor="middle">LIVE COMPILER</text>
+
+      <rect x="330" y="0" width="175" height="34" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="417" y="22" fill="#f59e0b" font-family="monospace" font-size="14" font-weight="700" text-anchor="middle">ZERO ALLOCATION</text>
+    </g>
+  </g>
+
+  <!-- Right Visual: Gopher & Code Shield -->
+  <g transform="translate(860, 220)">
+    <!-- Card Frame -->
+    <rect x="0" y="0" width="240" height="240" rx="30" fill="#0f172a" stroke="#00ADD8" stroke-width="3" filter="drop-shadow(0 20px 30px rgba(0,0,0,0.5))"/>
+    <circle cx="120" cy="110" r="65" fill="#00ADD8" opacity="0.25"/>
+    <!-- Gopher Icon -->
+    <text x="120" y="135" font-size="80" text-anchor="middle" dominant-baseline="middle">🐹</text>
+    <text x="120" y="200" fill="#00ADD8" font-family="monospace" font-size="16" font-weight="700" text-anchor="middle">golang.org</text>
+  </g>
+</svg>

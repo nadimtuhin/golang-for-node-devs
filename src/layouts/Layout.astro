@@ -3,24 +3,32 @@ interface Props {
   title?: string;
   description?: string;
   canonicalPath?: string;
-  schemaType?: 'WebSite' | 'Course' | 'TechArticle';
+  breadcrumbs?: { name: string; item: string }[];
 }
 
 const {
-  title = "Go for Node.js Developers Masterclass Studio",
-  description = "Interactive Go learning platform with live Go compiler, 56 lessons, microservices architecture, interview questions, LeetCode, and production Docker recipes.",
+  title = "Go for Node.js Devs | Interactive Book",
+  description = "Learn Go with live Go compiler, 56 progressive chapters, Node.js comparisons, and 13 production architecture guides.",
   canonicalPath = Astro.url.pathname,
-  schemaType = "Course"
+  breadcrumbs = []
 } = Astro.props;
 
 import '../styles/global.css';
 
 const siteOrigin = "https://golang-for-node-devs.vercel.app";
-const canonicalUrl = new URL(canonicalPath, siteOrigin).href;
+// Ensure canonical has no trailing slash (matches vercel.json trailingSlash: false)
+const cleanPath = canonicalPath.replace(/\/+$/, '') || '';
+const canonicalUrl = `${siteOrigin}${cleanPath}`;
 const ogImageUrl = `${siteOrigin}/og-image.png`;
 
-// Structured Data (JSON-LD) for SEO, AEO, and GEO citation
-const courseSchema = {
+const defaultBreadcrumbs = [
+  { name: "Home", item: siteOrigin },
+  ...(cleanPath ? [{ name: title.split('|')[0].trim(), item: canonicalUrl }] : [])
+];
+const activeBreadcrumbs = breadcrumbs.length > 0 ? breadcrumbs : defaultBreadcrumbs;
+
+// Structured Data (JSON-LD) with BreadcrumbList & Entity Disambiguation (sameAs)
+const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -29,6 +37,7 @@ const courseSchema = {
       "url": siteOrigin,
       "name": "Go for Node.js Developers Masterclass Studio",
       "description": "Interactive Golang learning platform and Rosetta Stone for Node.js and TypeScript developers.",
+      "inLanguage": "en-US",
       "publisher": {
         "@type": "Organization",
         "name": "Go for Node Developers",
@@ -36,26 +45,23 @@ const courseSchema = {
         "logo": {
           "@type": "ImageObject",
           "url": `${siteOrigin}/favicon.svg`
-        }
+        },
+        "sameAs": [
+          "https://github.com/nadimtuhin/golang-for-node-devs",
+          "https://en.wikipedia.org/wiki/Go_(programming_language)",
+          "https://www.wikidata.org/wiki/Q37227"
+        ]
       }
     },
     {
-      "@type": "Course",
-      "@id": `${siteOrigin}/#course`,
-      "name": "Go for Node.js Developers Masterclass",
-      "description": "Transition from Node.js and TypeScript to high-performance Golang backend development. Covers GMP runtime scheduler, Goroutines, Channels, Fiber microservices, Testcontainers, and production Docker packaging.",
-      "provider": {
-        "@type": "Organization",
-        "name": "Go for Node Developers",
-        "sameAs": siteOrigin
-      },
-      "educationalLevel": "Intermediate to Advanced",
-      "hasCourseInstance": {
-        "@type": "CourseInstance",
-        "courseMode": "Online",
-        "courseWorkload": "PT15H"
-      },
-      "inLanguage": "en"
+      "@type": "BreadcrumbList",
+      "@id": `${canonicalUrl}#breadcrumb`,
+      "itemListElement": activeBreadcrumbs.map((b, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "name": b.name,
+        "item": b.item
+      }))
     },
     {
       "@type": "TechArticle",
@@ -64,11 +70,35 @@ const courseSchema = {
       "description": description,
       "url": canonicalUrl,
       "mainEntityOfPage": canonicalUrl,
-      "inLanguage": "en",
+      "inLanguage": "en-US",
+      "datePublished": "2026-10-01T00:00:00Z",
+      "dateModified": "2026-10-10T00:00:00Z",
       "author": {
         "@type": "Organization",
-        "name": "Go for Node Developers"
-      }
+        "name": "Go for Node Developers",
+        "url": siteOrigin,
+        "sameAs": [
+          "https://github.com/nadimtuhin/golang-for-node-devs",
+          "https://en.wikipedia.org/wiki/Go_(programming_language)"
+        ]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Go for Node Developers",
+        "url": siteOrigin
+      },
+      "about": [
+        {
+          "@type": "Thing",
+          "name": "Go (programming language)",
+          "sameAs": "https://en.wikipedia.org/wiki/Go_(programming_language)"
+        },
+        {
+          "@type": "Thing",
+          "name": "Node.js",
+          "sameAs": "https://en.wikipedia.org/wiki/Node.js"
+        }
+      ]
     }
   ]
 };
@@ -83,8 +113,9 @@ const courseSchema = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
 
-    <!-- Favicon & Brand -->
+    <!-- Favicon, Manifest & Theme -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#007d9c" />
 
     <!-- OpenGraph / Facebook -->
@@ -106,24 +137,27 @@ const courseSchema = {
 
     <!-- AI & Generative Search / LLM Optimization (AEO / GEO) -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <link rel="help" type="text/plain" href="/llms.txt" title="LLM Documentation" />
+    <link rel="help" type="text/plain" href="/llms.txt" title="LLM Context Documentation" />
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Go for Node.js Devs" href="/feed.xml" />
+    <link rel="alternate" hreflang="en" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
     <!-- JSON-LD Structured Data Schema -->
-    <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
     <!-- Google Fonts Preconnect & Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- CodeMirror 5 (Eclipse Light Theme) -->
+    <!-- CodeMirror 5 (Non-blocking: defer) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js" defer></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js" defer></script>
   </head>
   <body>
-    <!-- Skip to main content landmark for keyboard / screen-reader accessibility -->
+    <!-- Skip to main content landmark for accessibility -->
     <a href="#main-content" class="skip-to-content">Skip to main content</a>
 
     <slot />

@@ -8,7 +8,7 @@ import Playground from '../components/Playground.astro';
 import { chaptersData } from '../data/chapters';
 ---
 
-<Layout title="Interactive Studio — Go for Node.js Developers Masterclass">
+<Layout title="Go for Node.js Devs | Interactive Book">
   <Header />
 
   <!-- GitBook Book Reader Layout -->
@@ -33,8 +33,9 @@ import { chaptersData } from '../data/chapters';
   </div>
 
   <!-- Client-side Interactive Engine -->
-  <script define:vars={{ chaptersData }}>
-    window.chaptersData = chaptersData;
+  <script is:inline src="/chapters-data.js"></script>
+  <script>
+    const chaptersData = window.chaptersData || {};
 
     let activeKey = 'basic_vars';
     let editor = null;
