@@ -408,6 +408,9 @@ go func() {
           <div class="qa-pro-tip">
             <strong>Staff Production Formula:</strong> Always set <code>GOMEMLIMIT</code> to <strong>80–85% of your Kubernetes container memory limit</strong> (reserving 15–20% for OS kernel overhead, Goroutine stacks, and cgo allocations). E.g., for a 1GiB pod limit, configure <code>env: - name: GOMEMLIMIT, value: "850MiB"</code>.
           </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/pointers">🚀 Explore Pointers & Stack/Heap in Studio</a>
+          </div>
         </div>
       </div>
     </div>
@@ -603,6 +606,9 @@ func main() {
 }</pre>
           <div class="qa-pro-tip">
             <strong>The Golden Rule:</strong> Never declare concrete error pointer variables to return as errors. Always return explicit untyped <code>return nil</code> when a function succeeds.
+          </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/ds_slice_internals">🚀 Explore Slice Headers & Memory in Studio</a>
           </div>
         </div>
       </div>
@@ -842,6 +848,9 @@ curl http://localhost:6060/debug/pprof/goroutine?debug=2</pre>
     // test logic...
 }</pre>
           </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/promise_race">🚀 Explore Go Channels & Select in Studio</a>
+          </div>
         </div>
       </div>
     </div>
@@ -968,6 +977,9 @@ if errors.As(err, &valErr) {
 }</pre>
           <div class="qa-pro-tip">
             <strong>Architectural Boundary Translation:</strong> In Clean Architecture, repository layers must translate database-specific errors (e.g. Postgres unique key violation code <code>23505</code>) into domain sentinel errors (e.g. <code>domain.ErrAlreadyExists</code>). This prevents leakages of database driver types into the service and presentation layers.
+          </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/error_wrapping">🚀 Explore Error Wrapping & errors.Is in Studio</a>
           </div>
         </div>
       </div>
@@ -1193,6 +1205,9 @@ db.SetConnMaxIdleTime(2 * time.Minute)</pre>
           </ol>
           <div class="qa-pro-tip">
             <strong>Staff Capacity Formula:</strong> <code>MaxOpenConnsPerPod = (DatabaseMaxConnections * 0.8) / NumberOfPods</code>. If PostgreSQL has <code>max_connections = 200</code> and you run 4 replica pods, configure <code>SetMaxOpenConns(40)</code> per pod!
+          </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/abort_controller">🚀 Explore Context & Graceful Shutdown in Studio</a>
           </div>
         </div>
       </div>
