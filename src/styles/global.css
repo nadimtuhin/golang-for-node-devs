@@ -600,10 +600,9 @@
 
     /* VIEW CONTAINERS (FOR FULL-PAGE VIEWS) */
     .view-container {
-      display: none;
-      flex: 1;
-      height: calc(100vh - 54px);
-      overflow-y: auto;
+      display: block;
+      width: 100%;
+      min-height: calc(100vh - 54px);
       background: #ffffff;
     }
     .view-container.active { display: block; }

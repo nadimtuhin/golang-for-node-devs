@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ViewComponent from '../components/views/PitfallsView.astro';
+---
+
+<Layout title="Known Pitfalls & Footguns in Go — Go for Node.js Devs" description="The top 8 common traps where JavaScript intuition fails in Go, with side-by-side buggy vs idiomatic code diffs.">
+  <Header />
+  <main style="min-height: calc(100vh - 54px); overflow-y: auto;">
+    <ViewComponent />
+  </main>
+</Layout>

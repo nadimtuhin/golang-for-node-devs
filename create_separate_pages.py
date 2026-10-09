@@ -1,4 +1,113 @@
+import os, re
+
+base_dir = '/Users/nadimtuhin/opensource/golang-for-node-devs'
+views_dir = os.path.join(base_dir, 'src', 'components', 'views')
+pages_dir = os.path.join(base_dir, 'src', 'pages')
+
+# 1. UPDATE src/components/Header.astro WITH ACTIVE ROUTE PATHS
+new_header = """---
+const pathname = Astro.url.pathname.replace(/\\/$/, '') || '/';
 ---
+
+<header>
+  <a href="/" class="brand">
+    <span>🟢 ➔ 🐹</span>
+    <span>Go Backend Studio</span>
+    <span class="badge">56 Lessons & Demos</span>
+  </a>
+  
+  <nav class="header-nav-scroll">
+    <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`}>⚡ Studio</a>
+    <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`}>📂 Microservice</a>
+    <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`}>🐳 Docker</a>
+    <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`}>🧩 LeetCode</a>
+    <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`}>📦 go.mod vs npm</a>
+    <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`}>🧠 Philosophy</a>
+    <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`}>🎯 Interviews</a>
+    <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`}>⚠️ Pitfalls</a>
+    <a href="/troubleshooting" class={`tab-toggle ${pathname === '/troubleshooting' ? 'active' : ''}`}>🛠️ Diagnostics</a>
+    <a href="/cheatsheet" class={`tab-toggle ${pathname === '/cheatsheet' ? 'active' : ''}`}>📖 Rosetta</a>
+  </nav>
+
+  <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
+    <span>GitHub ★</span>
+  </a>
+</header>
+"""
+with open(os.path.join(base_dir, 'src', 'components', 'Header.astro'), 'w', encoding='utf-8') as f:
+    f.write(new_header)
+print("Updated src/components/Header.astro")
+
+# 2. UPDATE global.css TO MAKE .view-container DISPLAY BLOCK
+css_path = os.path.join(base_dir, 'src', 'styles', 'global.css')
+with open(css_path, 'r', encoding='utf-8') as f:
+    css = f.read()
+
+# Replace .view-container { display: none; ... } with display: block
+css = re.sub(r'\.view-container\s*\{[^}]*\}', """.view-container {
+      display: block;
+      width: 100%;
+      min-height: calc(100vh - 54px);
+      background: #ffffff;
+    }""", css)
+with open(css_path, 'w', encoding='utf-8') as f:
+    f.write(css)
+print("Updated src/styles/global.css")
+
+# 3. CONVERT JUMP BUTTONS TO REAL HREF LINKS IN VIEW HTML FILES
+for fname in os.listdir(views_dir):
+    if fname.endswith('.html'):
+        fpath = os.path.join(views_dir, fname)
+        with open(fpath, 'r', encoding='utf-8') as f:
+            v_content = f.read()
+        
+        # Replace onclick="jumpToChapter('xyz')" with href="/?chapter=xyz"
+        v_content = re.sub(
+            r'<button([^>]*?)onclick="jumpToChapter\(\'([^\']+)\'\)"([^>]*?)>(.*?)</button>',
+            r'<a\1href="/?chapter=\2"\3 style="text-decoration:none;">\4</a>',
+            v_content
+        )
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(v_content)
+        print(f"Updated jump links in {fname}")
+
+# 4. CREATE DEDICATED PAGES
+pages_meta = {
+    'microservice.astro': ('RepoExplorer.astro', 'Real-World Microservice Architecture (Express vs Go Fiber)', 'Side-by-side comparison of Express/Mongoose microservice rewritten in Go Fiber and official MongoDB driver.'),
+    'docker.astro': ('DockerView.astro', 'Production Go Docker Images (Distroless & Scratch)', 'Ultra-compact, production-ready Go Dockerfiles under 15MB compared against 200MB+ Node.js images.'),
+    'leetcode.astro': ('LeetcodeView.astro', 'LeetCode Easy Solutions in Go (JS vs Go)', 'Classic algorithm and data structure problems solved in Go with zero-allocation idioms vs JavaScript objects.'),
+    'go-mod-vs-npm.astro': ('ModExplainView.astro', 'Dependency Management: go.mod vs package.json', 'How Go Modules, go.sum, and semantic import versioning replace package.json and npm.'),
+    'philosophy.astro': ('PhilosophyView.astro', 'The Go Philosophy & Zen of Go', 'Rob Pike Go Proverbs, what Go deliberately omitted and why, and Dave Cheney Zen of Go.'),
+    'interviews.astro': ('InterviewsView.astro', 'Senior Backend Go Interview Questions', 'Top technical interview questions for developers transitioning from Node.js to Go with SVG architecture diagrams.'),
+    'pitfalls.astro': ('PitfallsView.astro', 'Known Pitfalls & Footguns in Go', 'The top 8 common traps where JavaScript intuition fails in Go, with side-by-side buggy vs idiomatic code diffs.'),
+    'troubleshooting.astro': ('TroubleshootingView.astro', 'Go Troubleshooting & Diagnostics', 'Playbooks for diagnosing deadlocks, data races with -race, and profiling CPU/memory with pprof.'),
+    'cheatsheet.astro': ('CheatsheetView.astro', 'Go vs Node.js Rosetta Code Cheatsheet', 'Side-by-side syntax comparison table between Node.js / TypeScript and Go.')
+}
+
+for page_name, (comp_name, title, desc) in pages_meta.items():
+    page_content = f"""---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ViewComponent from '../components/views/{comp_name}';
+---
+
+<Layout title="{title} — Go for Node.js Devs" description="{desc}">
+  <Header />
+  <main style="min-height: calc(100vh - 54px); overflow-y: auto;">
+    <ViewComponent />
+  </main>
+</Layout>
+"""
+    with open(os.path.join(pages_dir, page_name), 'w', encoding='utf-8') as f:
+        f.write(page_content)
+    print(f"Created src/pages/{page_name}")
+
+# 5. UPDATE src/pages/index.astro TO BE PURE STUDIO WITH URL PARAM DEEP LINKING
+with open(os.path.join(pages_dir, 'index.astro'), 'r', encoding='utf-8') as f:
+    idx_content = f.read()
+
+# In index.astro, remove the documentation views imports and renderings
+index_clean = """---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Sidebar from '../components/Sidebar.astro';
@@ -217,7 +326,7 @@ import { chaptersData } from '../data/chapters';
 
         if (data.Errors) {
           consoleArea.className = 'console-body is-error';
-          consoleArea.textContent = '❌ Compile Error:\n\n' + data.Errors;
+          consoleArea.textContent = '❌ Compile Error:\\n\\n' + data.Errors;
           if (statusDot) statusDot.className = 'status-dot error';
           if (statusTag) {
             statusTag.className = 'status-pill error';
@@ -242,7 +351,7 @@ import { chaptersData } from '../data/chapters';
         const elapsed = Math.round(performance.now() - startTime);
         if (statusLatency) statusLatency.innerText = `${elapsed}ms`;
         consoleArea.className = 'console-body is-error';
-        consoleArea.textContent = '⚠️ Request Failed:\n' + err.message;
+        consoleArea.textContent = '⚠️ Request Failed:\\n' + err.message;
         if (statusDot) statusDot.className = 'status-dot error';
         if (statusTag) {
           statusTag.className = 'status-pill error';
@@ -277,3 +386,8 @@ import { chaptersData } from '../data/chapters';
     window.executeGoCode = executeGoCode;
   </script>
 </Layout>
+"""
+
+with open(os.path.join(pages_dir, 'index.astro'), 'w', encoding='utf-8') as f:
+    f.write(index_clean)
+print("Updated src/pages/index.astro to dedicated studio page with URL deep linking!")

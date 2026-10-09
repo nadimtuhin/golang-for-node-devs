@@ -1,27 +1,28 @@
 ---
-// Header Component
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
-<header>
-    <a href="#" class="brand" onclick="switchMainView('studio')">
-      <span>🟢 ➔ 🐹</span>
-      <span>Go Backend Studio</span>
-      <span class="badge">56 Lessons & Demos</span>
-    </a>
-    
-    <nav class="header-nav-scroll">
-      <button class="tab-toggle active" id="btnPlayground" onclick="switchMainView('studio')">⚡ Studio</button>
-      <button class="tab-toggle" id="btnRepoExplorer" onclick="switchMainView('repoExplorer')">📂 Microservice</button>
-      <button class="tab-toggle" id="btnDocker" onclick="switchMainView('docker')">🐳 Docker</button>
-      <button class="tab-toggle" id="btnLeetcode" onclick="switchMainView('leetcode')">🧩 LeetCode</button>
-      <button class="tab-toggle" id="btnModExplain" onclick="switchMainView('modExplain')">📦 go.mod vs npm</button>
-      <button class="tab-toggle" id="btnPhilosophy" onclick="switchMainView('philosophy')">🧠 Philosophy</button>
-      <button class="tab-toggle" id="btnInterviews" onclick="switchMainView('interviews')">🎯 Interviews</button>
-      <button class="tab-toggle" id="btnPitfalls" onclick="switchMainView('pitfalls')">⚠️ Pitfalls</button>
-      <button class="tab-toggle" id="btnTroubleshooting" onclick="switchMainView('troubleshooting')">🛠️ Diagnostics</button>
-      <button class="tab-toggle" id="btnCheatsheet" onclick="switchMainView('cheatsheet')">📖 Rosetta</button>
-    </nav>
 
-    <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
-      <span>GitHub ★</span>
-    </a>
-  </header>
+<header>
+  <a href="/" class="brand">
+    <span>🟢 ➔ 🐹</span>
+    <span>Go Backend Studio</span>
+    <span class="badge">56 Lessons & Demos</span>
+  </a>
+  
+  <nav class="header-nav-scroll">
+    <a href="/" class={`tab-toggle ${pathname === '/' ? 'active' : ''}`}>⚡ Studio</a>
+    <a href="/microservice" class={`tab-toggle ${pathname === '/microservice' ? 'active' : ''}`}>📂 Microservice</a>
+    <a href="/docker" class={`tab-toggle ${pathname === '/docker' ? 'active' : ''}`}>🐳 Docker</a>
+    <a href="/leetcode" class={`tab-toggle ${pathname === '/leetcode' ? 'active' : ''}`}>🧩 LeetCode</a>
+    <a href="/go-mod-vs-npm" class={`tab-toggle ${pathname === '/go-mod-vs-npm' ? 'active' : ''}`}>📦 go.mod vs npm</a>
+    <a href="/philosophy" class={`tab-toggle ${pathname === '/philosophy' ? 'active' : ''}`}>🧠 Philosophy</a>
+    <a href="/interviews" class={`tab-toggle ${pathname === '/interviews' ? 'active' : ''}`}>🎯 Interviews</a>
+    <a href="/pitfalls" class={`tab-toggle ${pathname === '/pitfalls' ? 'active' : ''}`}>⚠️ Pitfalls</a>
+    <a href="/troubleshooting" class={`tab-toggle ${pathname === '/troubleshooting' ? 'active' : ''}`}>🛠️ Diagnostics</a>
+    <a href="/cheatsheet" class={`tab-toggle ${pathname === '/cheatsheet' ? 'active' : ''}`}>📖 Rosetta</a>
+  </nav>
+
+  <a href="https://github.com/nadimtuhin/golang-for-node-devs" target="_blank" class="github-link-btn">
+    <span>GitHub ★</span>
+  </a>
+</header>

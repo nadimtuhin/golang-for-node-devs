@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ViewComponent from '../components/views/TroubleshootingView.astro';
+---
+
+<Layout title="Go Troubleshooting & Diagnostics — Go for Node.js Devs" description="Playbooks for diagnosing deadlocks, data races with -race, and profiling CPU/memory with pprof.">
+  <Header />
+  <main style="min-height: calc(100vh - 54px); overflow-y: auto;">
+    <ViewComponent />
+  </main>
+</Layout>
