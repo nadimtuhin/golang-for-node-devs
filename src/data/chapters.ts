@@ -1131,6 +1131,7 @@ func executeWithRetry(job PaymentJob, maxAttempts int, dlq chan<- PaymentJob) {
 		fmt.Printf("⚠️ Retrying in %v...\\n", backoff)
 		time.Sleep(backoff)
 		backoff *= 2
+	}
 	fmt.Printf("❌ Job %s failed all %d attempts, routing to DLQ\\n", job.ID, maxAttempts)
 	select {
 	case dlq <- job:
@@ -2167,7 +2168,7 @@ func main() {
         part: "Part 7: LeetCode in Go",
         title: "Valid Parentheses (#20) — Slice Stack",
         desc: "Determine if string parentheses '()[]{}' are valid. In JS, Array.push() and Array.pop() act as a stack. In Go, we use a slice of runes '[]rune' with sub-slicing stack[:len(stack)-1] for an ultra-fast, zero-overhead LIFO stack.",
-        nodeCode: "const stack = [];\nfor (const char of s) {\n  if (map[char]) stack.push(char);\n  else if (stack.pop() !== match[char]) return false;\n}\nreturn stack.length === 0;",
+        nodeCode: "const stack = [];\nconst pairs = { ')': '(', '}': '{', ']': '[' };\nfor (const char of s) {\n  if (pairs[char]) {\n    if (stack.pop() !== pairs[char]) return false;\n  } else {\n    stack.push(char);\n  }\n}\nreturn stack.length === 0;",
         why: "Teaches how Go slices naturally represent stacks without needing specialized container classes or npm packages.",
         code: `package main
 
@@ -2212,7 +2213,7 @@ func main() {
         part: "Part 7: LeetCode in Go",
         title: "Merge Two Sorted Lists (#21) — Dummy Pointers",
         desc: "Merge two sorted linked lists into one sorted list. In JS, nodes are objects with 'val' and 'next'. In Go, we use pointers to structs (*ListNode) and a dummy head node to eliminate special-case code for the list head.",
-        nodeCode: "let dummy = new ListNode(0);\nlet tail = dummy;\nwhile (l1 && l2) {\n  if (l1.val <= l2.val) { tail.next = l1; l1 = l1.next; }\n  else { tail.next = l2; l2 = l2.next; }\n  tail = tail.next;\n}",
+        nodeCode: "let dummy = new ListNode(0);\nlet tail = dummy;\nwhile (l1 && l2) {\n  if (l1.val <= l2.val) { tail.next = l1; l1 = l1.next; }\n  else { tail.next = l2; l2 = l2.next; }\n  tail = tail.next;\n}\ntail.next = l1 || l2;\nreturn dummy.next;",
         why: "Classic demonstration of Go pointer ergonomics: *ListNode struct pointers, referencing fields directly without arrow syntax (l1.Val, not l1->Val).",
         code: `package main
 

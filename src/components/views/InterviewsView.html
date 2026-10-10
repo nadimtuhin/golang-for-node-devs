@@ -115,7 +115,7 @@
           </p>
           <ul>
             <li>
-              <strong>G (Goroutine):</strong> Represents the executable user-space thread. It contains a 2 KB initial contiguous stack, program counter (PC), CPU registers, stack boundaries, and state flags (<code>_Gidle</code>, <code>_Grunnable</code>, <code>_Grunning</code>, <code>_Gwaiting</code>, <code>_Gsyscall</code>, <code>_Gcopystack</code>, <code>_Gdead</code>). Unlike OS threads that require 1–8 MB upfront, Goroutine stacks grow dynamically via contiguous stack copying (allocating a 2x segment, adjusting internal pointers, and transitioning through <code>_Gcopystack</code>).
+              <strong>G (Goroutine):</strong> Represents the executable user-space thread. It contains a 2 KB initial contiguous stack, program counter (PC), CPU registers, stack boundaries, and state flags (<code>_Gidle</code>, <code>_Grunnable</code>, <code>_Grunning</code>, <code>_Gwaiting</code>, <code>_Gsyscall</code>, <code>_Gcopystack</code>, <code>_Gdead</code>). Unlike OS threads that require 1–8 MB upfront, Goroutine stacks grow dynamically via <strong>contiguous stack copying</strong> (allocating a 2x segment, adjusting internal pointers, and transitioning through <code>_Gcopystack</code>). This eliminated the Go 1.0–1.2 <em>segmented stack "hot split" problem</em>, where tight loops crossing stack boundaries repeatedly allocated and freed stack segments.
             </li>
             <li>
               <strong>M (Machine / OS Thread):</strong> Represents an actual kernel thread created and managed by the operating system (via <code>pthread_create</code> or <code>clone</code>). The Go runtime can spawn up to 10,000 M instances (default limit), but active running Ms are capped by the number of P contexts.
@@ -414,6 +414,7 @@ go func() {
             <li>The Go GC Pacer becomes aware of total memory boundaries.</li>
             <li>As memory consumption nears the limit, the runtime automatically triggers GC cycles more frequently, keeping total memory under the threshold.</li>
             <li>If memory pressure remains critical, the runtime throttles allocations (assist mode) rather than allowing the pod to be killed.</li>
+            <li><strong>GC CPU Limiter (50% Cap):</strong> To prevent a thrashing death spiral where continuous GC consumes 100% CPU, the Go 1.19+ runtime enforces a hard 50% cap on GC CPU utilization, allowing memory to temporarily exceed <code>GOMEMLIMIT</code> if necessary rather than freezing user goroutines.</li>
           </ul>
           <div class="qa-pro-tip">
             <strong>Staff Production Formula:</strong> Always set <code>GOMEMLIMIT</code> to <strong>80–85% of your Kubernetes container memory limit</strong> (reserving 15–20% for OS kernel overhead, Goroutine stacks, and cgo allocations). E.g., for a 1GiB pod limit, configure <code>env: - name: GOMEMLIMIT, value: "850MiB"</code>.
@@ -748,6 +749,20 @@ for ch1 != nil || ch2 != nil {
         process(v)
     }
 }</pre>
+          <div style="background:#0f172a; color:#f8fafc; border-radius:6px; padding:0.85rem; margin:0.75rem 0; font-family:var(--font-mono, monospace); font-size:0.8rem; line-height:1.55;">
+            <span style="color:#38bdf8;">// Under the hood: runtime.hchan struct (src/runtime/chan.go)</span><br/>
+            type hchan struct {<br/>
+            &nbsp;&nbsp;qcount   uint           <span style="color:#64748b;">// Total elements currently in circular buffer</span><br/>
+            &nbsp;&nbsp;dataqsiz uint           <span style="color:#64748b;">// Buffer capacity: make(chan T, cap)</span><br/>
+            &nbsp;&nbsp;buf      unsafe.Pointer <span style="color:#64748b;">// Points to contiguous backing array ring buffer</span><br/>
+            &nbsp;&nbsp;sendx    uint           <span style="color:#64748b;">// Buffer index to send next element</span><br/>
+            &nbsp;&nbsp;recvx    uint           <span style="color:#64748b;">// Buffer index to receive next element</span><br/>
+            &nbsp;&nbsp;recvq    waitq          <span style="color:#64748b;">// Linked list of waiting receivers (wrapped in sudog)</span><br/>
+            &nbsp;&nbsp;sendq    waitq          <span style="color:#64748b;">// Linked list of waiting senders (wrapped in sudog)</span><br/>
+            &nbsp;&nbsp;lock     mutex          <span style="color:#64748b;">// Spinlock guarding all channel operations</span><br/>
+            }<br/>
+            <span style="color:#4ade80;">// Zero-Copy Stack Optimization: If a receiver is already waiting in recvq, sender writes directly into receiver goroutine stack memory via runtime.memmove, bypassing hchan.buf entirely!</span>
+          </div>
         </div>
       </div>
 
@@ -828,6 +843,13 @@ func Produce(ctx context.Context) <-chan int {
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.75rem; margin:0.75rem 0;">
+            <div style="font-weight:700; color:#0f172a; font-size:0.85rem;">🔒 Staff Deep-Dive: sync.Mutex Normal vs Starvation Mode (Go 1.9+)</div>
+            <p style="font-size:0.82rem; color:#475569; margin:0.35rem 0 0 0; line-height:1.5;">
+              <strong>Normal Mode (Throughput Optimized):</strong> Waiters queue in FIFO order, but a woken-up waiter competes with newly arriving goroutines already scheduled on an OS thread (which possess CPU cache locality). Incoming goroutines can acquire the lock without sleeping.<br/>
+              <strong>Starvation Mode (Tail-Latency Guaranteed):</strong> If a waiter fails to acquire the mutex for <strong>&gt; 1 millisecond</strong>, the mutex transitions into Starvation Mode. Incoming goroutines are prohibited from spinning and join the tail of the wait queue. The releasing goroutine hands ownership directly to the front waiter. Once the waiter waited &lt; 1ms or is the last in the queue, it transitions back to Normal Mode.
+            </p>
           </div>
           <div class="qa-pro-tip">
             <strong>Staff Rule of Thumb:</strong> Use <strong>Channels</strong> for orchestration and control flow between distinct goroutines. Use <strong>Mutexes</strong> for data synchronization within a single data structure or service.

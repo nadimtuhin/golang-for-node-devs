@@ -449,8 +449,8 @@
             </tr>
             <tr>
               <td><strong>Memory Safety Mechanism</strong></td>
-              <td><strong>Runtime GC:</strong> Automatic garbage collection + pointer safety (no pointer arithmetic).</td>
-              <td><strong>Compile-Time Proof:</strong> Ownership, borrowing rules, and lifetime analysis verified at build.</td>
+              <td><strong>Runtime GC:</strong> Safe from dangling pointers and use-after-free, but <strong>NOT data-race free</strong> at compile time (requires <code>-race</code> detector).</td>
+              <td><strong>Compile-Time Proof:</strong> Safe from dangling pointers, use-after-free, AND guaranteed <strong>100% data-race free</strong> at compile time via <code>Send</code>/<code>Sync</code>.</td>
             </tr>
             <tr>
               <td><strong>Standard Library</strong></td>
@@ -1381,6 +1381,11 @@ function calculateFee(p: PaymentMethod): number {
         const reasonsEl = document.getElementById('recReasons');
 
         if (!resultBox || !titleEl || !badgeEl || !descEl || !reasonsEl) return;
+
+        // Hard constraint override matching architectural flowchart
+        if (workload === 'wasm' || (workload === 'engine' && latency === 'zero')) {
+          rustScore = 999;
+        }
 
         if (rustScore > goScore) {
           resultBox.style.background = '#fff7ed';

@@ -287,7 +287,7 @@ go build -gcflags="-m" ./...
 go build -gcflags="-m -m" ./...
 
 # Inspect Bounds Check Elimination (BCE) decisions
-go build -gcflags="-d=ssa/check_bce" ./...</pre>
+go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
         </div>
 
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
@@ -299,7 +299,7 @@ go build -gcflags="-d=ssa/check_bce" ./...</pre>
           <span style="color:#64748b;">./main.go:28:13:</span> inlining call to calculateSubtotal<br>
           <span style="color:#64748b;">./main.go:30:14:</span> <span style="color:#fcd34d;">item.Price escapes to heap</span> (passed to interface fmt.Println(a ...any))<br>
           <span style="color:#64748b;">./main.go:32:9:</span> <span style="color:#4ade80;">&user does not escape</span> (allocated on stack!)<br>
-          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#a78bfa;">Found IsInBounds check eliminated</span> (BCE optimization succeeded!)
+          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#f87171;">Found IsInBounds</span> (BCE warning: bounds check generated! When BCE successfully eliminates a check, the compiler outputs nothing).
         </div>
 
         <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#14532d;">
@@ -905,6 +905,35 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello from zero-downtime Go service!"))
 }</pre>
         </div>
+
+        <div class="code-card" style="margin-top: 1rem;">
+          <div class="code-card-header">
+            <span>reuseport_listener.go (True Zero-Downtime SO_REUSEPORT Socket Binding)</span>
+            <button class="copy-code-btn" data-target="code-reuseport" aria-label="Copy SO_REUSEPORT code">
+              <span>📋</span> Copy Code
+            </button>
+          </div>
+          <pre id="code-reuseport" class="code-card-body">package main
+
+import (
+	"context"
+	"net"
+	"syscall"
+)
+
+// listenReusePort creates a TCP listener with SO_REUSEPORT enabled,
+// allowing old and new Go processes to bind to port 8080 simultaneously.
+func listenReusePort(addr string) (net.Listener, error) {
+	lc := net.ListenConfig{
+		Control: func(network, address string, c syscall.RawConn) error {
+			return c.Control(func(fd uintptr) {
+				_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, 0xf /* SO_REUSEPORT */, 1)
+			})
+		},
+	}
+	return lc.Listen(context.Background(), "tcp", addr)
+}</pre>
+        </div>
       </div>
     </section>
 
@@ -1075,7 +1104,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
           # Inspect live goroutine stack traces in terminal:<br>
           curl http://localhost:6060/debug/pprof/goroutine?debug=1<br><br>
           # Capture 30-second CPU profile and analyze with interactive UI:<br>
-          go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30
+          go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30<br><br>
+          # Execution Trace Viewer (visualize Goroutine scheduling, GC STW, and Netpoller events on microsecond timeline):<br>
+          curl -o trace.out http://localhost:6060/debug/pprof/trace?seconds=5<br>
+          go tool trace trace.out
         </div>
       </article>
 

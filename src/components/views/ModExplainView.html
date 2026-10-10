@@ -457,6 +457,22 @@ retract (
           </p>
         </div>
 
+        <!-- 4. toolchain directive -->
+        <div class="deepdive-box">
+          <div class="deepdive-title" style="color: #0369a1;">
+            <span>⚡</span> 4. The <code>toolchain</code> Directive (Go 1.21+ Auto-Switching)
+          </div>
+          <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
+            While <code>go 1.22.0</code> declares the required language syntax edition, <code>toolchain go1.23.1</code> pins the exact compiler binary. When <code>GOTOOLCHAIN=auto</code> (the default), running <code>go build</code> on a system with an older toolchain will automatically fetch and execute the specified newer toolchain:
+          </p>
+          <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:0.85rem; border-radius:6px; font-size:0.8rem; line-height:1.5; overflow-x: auto;">// In go.mod:
+go 1.22.0
+toolchain go1.23.1</pre>
+          <p style="color: #64748b; font-size: 0.82rem; margin-top: 0.5rem;">
+            Eliminates local development version drift across team members and CI/CD pipelines without external version managers.
+          </p>
+        </div>
+
       </div>
     </section>
 
@@ -913,7 +929,7 @@ export GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
     <!-- Footer Action Navigation -->
     <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <a href="/docker" class="action-btn" style="text-decoration: none;">
-        <span>⬅️</span> 🐳 Next: Production Docker for Go
+        <span>➡️</span> 🐳 Next: Production Docker for Go
       </a>
       <a href="/cheatsheet" class="action-btn" style="text-decoration: none;">
         <span>📖</span> Rosetta Cheatsheet <span>➡️</span>

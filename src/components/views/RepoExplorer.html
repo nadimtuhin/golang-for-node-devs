@@ -280,7 +280,7 @@ func CreateProduct(c *fiber.Ctx) error {
 	errors := ValidateProductStruct(product)
 
 	if errors != nil {
-		return c.JSON(errors)
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
 	client, err := db.GetMongoClient()

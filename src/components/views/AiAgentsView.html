@@ -482,12 +482,15 @@ if err := decoder.Decode(&amp;params); err != nil {
 
     // 2. Stream tokens directly from LLM to client
     ctx := r.Context()
-    for token := range tokenChannel {
+    for {
         select {
         case &lt;-ctx.Done():
             // Client closed tab or navigated away -> immediate teardown!
             return
-        default:
+        case token, ok := &lt;-tokenChannel:
+            if !ok {
+                return // Stream complete
+            }
             fmt.Fprintf(w, "data: %s\n\n", token)
             flusher.Flush() // Push chunk immediately to client
         }
@@ -1133,7 +1136,10 @@ func handleMCPMethod(req JSONRPCRequest) {
             Name      string          `json:"name"`
             Arguments json.RawMessage `json:"arguments"`
         }
-        _ = json.Unmarshal(req.Params, &amp;params)
+        if err := json.Unmarshal(req.Params, &amp;params); err != nil {
+            sendError(req.ID, -32602, "Invalid params: "+err.Error())
+            return
+        }
 
         if params.Name == "get_system_stats" {
             var mem runtime.MemStats
