@@ -273,7 +273,7 @@ body, _ := io.ReadAll(resp.Body)
 resp, err := http.Get("https://api.com")
 if err != nil { return err }
 defer resp.Body.Close()
-_, _ = io.Copy(io.Discard, resp.Body) // Drain to enable HTTP Keep-Alive reuse
+_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20)) // Bound drain to 1MB to preserve Keep-Alive without hang hazards
         </div>
       </div>
     </div>

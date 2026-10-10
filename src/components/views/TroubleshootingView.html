@@ -287,7 +287,7 @@ go build -gcflags="-m" ./...
 go build -gcflags="-m -m" ./...
 
 # Inspect Bounds Check Elimination (BCE) decisions
-go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
+go build -gcflags="-d=ssa/check_bce" ./...</pre>
         </div>
 
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
@@ -299,7 +299,7 @@ go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
           <span style="color:#64748b;">./main.go:28:13:</span> inlining call to calculateSubtotal<br>
           <span style="color:#64748b;">./main.go:30:14:</span> <span style="color:#fcd34d;">item.Price escapes to heap</span> (passed to interface fmt.Println(a ...any))<br>
           <span style="color:#64748b;">./main.go:32:9:</span> <span style="color:#4ade80;">&user does not escape</span> (allocated on stack!)<br>
-          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#f87171;">Found IsInBounds</span> (BCE diagnostic: bounds check generated! When BCE successfully eliminates a check, the compiler outputs nothing).
+          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#f87171;">Found IsInBounds</span> (BCE diagnostic: bounds check was NOT eliminated and was emitted into the binary; when BCE successfully proves safety, no IsInBounds diagnostic is emitted for that line).
         </div>
 
         <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#14532d; margin-bottom: 0.75rem;">

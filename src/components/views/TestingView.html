@@ -185,6 +185,9 @@ func TestDivide(t *testing.T) {
           <div style="font-size: 0.8rem; color: #0369a1; background: #e0f2fe; padding: 0.4rem 0.6rem; border-radius: 4px;">
             ⚠️ <strong>Go 1.22 Update:</strong> Prior to Go 1.22, parallel subtest closures captured the loop pointer, causing all subtests to evaluate the final item! In Go 1.22+, loop variables have per-iteration scope.
           </div>
+          <div style="font-size: 0.8rem; color: #854d0e; background: #fef9c3; padding: 0.4rem 0.6rem; border-radius: 4px; margin-top: 0.4rem;">
+            ⚠️ <strong>Lifecycle Warning:</strong> The outer test function returns before parallel subtests finish! Never use <code>defer</code> in the outer test for teardown—use <code>t.Cleanup()</code>, which executes only after all parallel subtests finish.
+          </div>
         </div>
 
         <!-- Card 2: t.Helper() -->

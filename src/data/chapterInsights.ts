@@ -46,9 +46,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'sync.Once guarantees database handshakes happen exactly once at hardware level, even under thousands of simultaneous boot requests.'
   },
   http_api: {
-    goParadigm: 'Production-ready HTTP/1.1 and HTTP/2 server built directly into standard library net/http with automatic goroutine-per-request spawning.',
+    goParadigm: 'HTTP/1.1 and HTTP/2 server built directly into standard library net/http with goroutine-per-request concurrency; requires explicit http.Server timeouts (ReadHeaderTimeout, ReadTimeout, WriteTimeout) to prevent Slowloris attacks.',
     nodeEquivalent: 'Requires external dependencies like Express, Fastify, or Koa, clustered across CPU cores via PM2 or Node cluster mode.',
-    coreTakeaway: 'Go eliminates framework dependencies for production web APIs; Google and Cloudflare run massive scale traffic on raw net/http.'
+    coreTakeaway: 'Go eliminates external web framework dependencies, but raw http.ListenAndServe uses zero-timeouts by default. Always instantiate &http.Server with explicit ReadHeaderTimeout and IdleTimeout.'
   },
   middleware: {
     goParadigm: 'Standard decorator pattern wrapping http.Handler or http.HandlerFunc without mutating request state.',
@@ -186,9 +186,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Struct embedding allows code reuse and method promotion without locking types into rigid, fragile object-oriented hierarchies.'
   },
   basic_defer_panic: {
-    goParadigm: 'defer schedules LIFO cleanup; recover() must be called directly inside a deferred closure in the SAME goroutine (cross-goroutine recover is impossible).',
+    goParadigm: 'defer schedules LIFO cleanup (inlined via Go 1.14+ open-coded defers); recover() must be called directly inside a deferred closure in the SAME goroutine (cross-goroutine recover is impossible).',
     nodeEquivalent: 'try/catch/finally and process.on("uncaughtException"). In Node, unhandled exceptions can be intercepted globally; in Go, an uncaught panic in any goroutine terminates the process.',
-    coreTakeaway: 'recover() only catches panics within its own goroutine stack. Fatal crashes like concurrent map read/write (runtime.throw) cannot be recovered.'
+    coreTakeaway: 'recover() only catches panics within its own goroutine stack. Fatal crashes like concurrent map read/write or stack overflow (runtime.throw) abort immediately and cannot be recovered.'
   },
   basic_generics: {
     goParadigm: 'Compile-time parametric polymorphism via type parameters [T any] and constraints [K comparable] without runtime reflection.',
@@ -206,7 +206,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Go intentionally randomizes map iteration to prevent developers from relying on non-deterministic key ordering.'
   },
   ds_struct_memory: {
-    goParadigm: 'Fields are aligned to memory boundary word sizes; ordering fields from largest to smallest saves padding memory.',
+    goParadigm: 'Fields align to their natural size (1, 2, 4, 8 bytes on 64-bit); ordering fields from largest to smallest eliminates padding gaps.',
     nodeEquivalent: 'V8 handles object layout and hidden classes invisibly, abstracting CPU memory alignment from developers.',
     coreTakeaway: 'Ordering struct fields by byte size optimizes CPU cache lines and eliminates padding bytes in high-density data structures.'
   },

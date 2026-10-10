@@ -1558,7 +1558,7 @@ func main() {
         num: "B11",
         part: "Part 0: Language Basics",
         title: "Defer, Panic & Recover",
-        desc: "In JS, cleanups use 'try { ... } finally { close() }'. In Go, 'defer' schedules cleanups to run immediately when the function returns (LIFO order). 'panic' is reserved for unrecoverable errors.",
+        desc: "In JS, cleanups use 'try { ... } finally { close() }'. In Go, 'defer' schedules cleanups to run immediately when the function returns (LIFO order, with Go 1.14+ open-coded inlining for near-zero overhead). 'panic' is reserved for unrecoverable errors.",
         nodeCode: "// Resource cleanup in Node.js using try/finally\nasync function processReport(dbClient) {\n  try {\n    await dbClient.connect();\n    console.log('Processing critical transaction...');\n    throw new Error('Simulated database write error');\n  } catch (err) {\n    console.error('Caught exception:', err.message);\n  } finally {\n    // Cleanup runs no matter what\n    await dbClient.close();\n    console.log('Database connection cleanly closed.');\n  }\n}",
         why: "Defer keeps cleanup logic adjacent to resource allocation (e.g., file opens, mutex locks), preventing memory and descriptor leaks.",
         code: `package main
@@ -1685,7 +1685,7 @@ func main() {
 	s = append(s, 30)
 	inspectSlice("Append 30", s)
 
-	// 3. Exceeding capacity triggers reallocation: Go allocates new array with 2x capacity!
+	// 3. Exceeding capacity triggers reallocation: Go allocates new array (doubles if cap < 256, transitions to ~1.25x for larger slices in Go 1.18+)
 	s = append(s, 40, 50)
 	inspectSlice("Exceeded cap", s)
 
@@ -1747,7 +1747,7 @@ func main() {
         num: "DS3",
         part: "Part 2: Data Structures",
         title: "Struct Memory Alignment & Padding",
-        desc: "In JS, object property order has zero memory effect. In Go, struct fields sit in contiguous memory aligned to 8-byte boundaries. Reordering struct fields can shrink memory usage by 33%!",
+        desc: "In JS, object property order has zero memory effect. In Go, struct fields sit in contiguous memory aligned to natural type boundaries (up to 8 bytes on 64-bit systems). Reordering struct fields can shrink memory usage by 33%!",
         nodeCode: "// JS Objects are dynamic hash tables on V8 heap\nconst user = {\n  isAdmin: true,\n  age: 30,\n  active: false\n};\n// Consumes ~40-64 bytes on heap with hidden class pointer",
         why: "Memory alignment impacts CPU cache performance and footprint in high-density in-memory caches.",
         code: `package main

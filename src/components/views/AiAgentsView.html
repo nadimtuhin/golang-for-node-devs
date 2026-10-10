@@ -465,10 +465,11 @@ if err := decoder.Decode(&amp;params); err != nil {
         </p>
 
         <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.2rem; border-radius:8px; font-size:0.83rem; line-height:1.6; overflow-x: auto;">func StreamTokenHandler(w http.ResponseWriter, r *http.Request) {
-    // 1. Set standard SSE headers
     w.Header().Set("Content-Type", "text/event-stream")
     w.Header().Set("Cache-Control", "no-cache, no-transform")
-    w.Header().Set("Connection", "keep-alive")
+    if r.ProtoMajor == 1 {
+        w.Header().Set("Connection", "keep-alive") // HTTP/1.1 only; forbidden in HTTP/2
+    }
     w.Header().Set("X-Accel-Buffering", "no") // Disable Nginx / Cloudflare reverse proxy buffering
     w.Header().Set("X-Content-Type-Options", "nosniff")
 
@@ -1179,6 +1180,9 @@ func handleMCPMethod(req JSONRPCRequest) {
 }
 
 func sendResult(id any, result any) {
+    if id == nil {
+        return // JSON-RPC 2.0 notifications must never receive a response
+    }
     resp := JSONRPCResponse{JSONRPC: "2.0", ID: id, Result: result}
     data, _ := json.Marshal(resp)
     fmt.Printf("%s\n", data)

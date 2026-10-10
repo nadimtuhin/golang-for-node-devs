@@ -313,8 +313,8 @@ github.com/gin-gonic/gin v1.10.0/go.mod h1:1q5C6D7E8F9G...=</pre>
           <li>Resolving complex graphs requires an NP-complete SAT solver that slows down package installations.</li>
         </ul>
         <p style="color: #334155;">
-          With Go MVS, dependency resolution runs in <strong>linear time</strong>.
-          The algorithm simply walks the requirement tree, and for any dependency D, it selects <code>max(required_versions)</code>.
+          With Go MVS (Minimal Version Selection), dependency resolution runs via deterministic graph traversal without complex SAT-solving.
+          The algorithm walks the build list requirement graph, computing a fixed point where for any required module path, it selects the <strong>maximum of all explicitly specified minimum versions</strong> (<code>max(required_versions)</code>).
           Because Go strictly enforces backward compatibility within major versions, selecting <code>v1.4.0</code> is guaranteed to satisfy
           Module A's requirement of <code>v1.2.0</code>. There is only ever <strong>one single copy</strong> of package D in the final binary!
         </p>

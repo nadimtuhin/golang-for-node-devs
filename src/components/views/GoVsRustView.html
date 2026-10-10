@@ -287,7 +287,7 @@
           In Go, concurrency is a first-class language construct built into the compiler and standard runtime:
         </p>
         <ul style="color: #334155; margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.6;">
-          <li><strong>2KB Dynamic Stacks:</strong> An OS thread requires 1MB–8MB of RAM for its stack. A Goroutine begins at only 2,048 bytes (2KB) and dynamically grows or shrinks on the heap as needed. You can easily spawn 500,000 goroutines on a $10 VPS without running out of memory.</li>
+          <li><strong>2KB Dynamic Stacks:</strong> An OS thread requires 1MB–8MB of RAM for its stack. A Goroutine begins at only 2,048 bytes (2KB) and dynamically grows or shrinks via runtime contiguous stack allocator pools (avoiding GC overhead). You can easily spawn 500,000 goroutines on a $10 VPS without running out of memory.</li>
           <li><strong>The GMP Scheduler:</strong>
             <br/>• <strong>G (Goroutine):</strong> Represents the lightweight thread of execution and its stack.
             <br/>• <strong>M (Machine):</strong> An actual OS thread managed by the operating system kernel.
@@ -450,7 +450,7 @@
             <tr>
               <td><strong>Memory Safety Mechanism</strong></td>
               <td><strong>Runtime GC:</strong> Safe from dangling pointers and use-after-free, but <strong>NOT data-race free</strong> at compile time (requires <code>-race</code> detector).</td>
-              <td><strong>Compile-Time Proof:</strong> Safe from dangling pointers, use-after-free, AND guaranteed <strong>100% data-race free</strong> at compile time via <code>Send</code>/<code>Sync</code>.</td>
+              <td><strong>Compile-Time Proof:</strong> In Safe Rust, guaranteed safe from dangling pointers, use-after-free, AND <strong>100% data-race free</strong> at compile time via <code>Send</code>/<code>Sync</code>.</td>
             </tr>
             <tr>
               <td><strong>Standard Library</strong></td>
