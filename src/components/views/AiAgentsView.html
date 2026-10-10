@@ -1085,6 +1085,10 @@ func main() {
 
 func handleMCPMethod(req JSONRPCRequest) {
     switch req.Method {
+    case "notifications/initialized":
+        // MCP Spec: Notifications MUST NOT receive a response
+        return
+
     case "initialize":
         // 1. Protocol Handshake
         sendResult(req.ID, map[string]any{
@@ -1143,6 +1147,9 @@ func handleMCPMethod(req JSONRPCRequest) {
         sendError(req.ID, -32601, "Method or tool not found")
 
     default:
+        if req.ID == nil {
+            return // Notifications do not have IDs and must be ignored without error
+        }
         sendError(req.ID, -32601, "Unsupported method")
     }
 }

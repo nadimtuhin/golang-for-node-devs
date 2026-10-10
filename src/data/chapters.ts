@@ -770,7 +770,7 @@ func main() {
         title: "push/pop/splice vs Go append & slices",
         desc: "In JS: push(), pop(), shift(), unshift(), and splice(). In Go, the append() built-in and slice re-slicing handle all dynamic array modifications.",
         nodeCode: "// Common JavaScript Array mutations\nconst arr = [1, 2, 3];\n\narr.push(4);          // Append to end: [1, 2, 3, 4]\nconst last = arr.pop(); // Remove last: 4\narr.splice(1, 1);     // Remove 1 item at index 1: [1, 3]\narr.unshift(0);       // Prepend to front: [0, 1, 3]\n\nconsole.log(arr);",
-        why: "Go slices are a lightweight 3-word view (pointer, length, capacity) over an underlying array. Slicing never copies memory unless you grow beyond capacity.",
+        why: "Go slices are a lightweight 3-word view (pointer, len, cap) over an underlying array. Slicing is O(1) zero-copy, but note that reslicing keeps the entire backing array pinned in memory.",
         code: `package main
 
 import (
@@ -1104,6 +1104,7 @@ func executeWithRetry(job PaymentJob, maxAttempts int, dlq chan<- PaymentJob) {
 		time.Sleep(backoff)
 		backoff *= 2
 	}
+	fmt.Printf("❌ Job %s failed all %d attempts, routing to DLQ\\n", job.ID, maxAttempts)
 	dlq <- job
 }
 
@@ -1111,6 +1112,14 @@ func main() {
 	dlq := make(chan PaymentJob, 5)
 	job := PaymentJob{ID: "PAY-999", Amount: 149.00}
 	executeWithRetry(job, 3, dlq)
+
+	// Inspect Dead-Letter Queue
+	select {
+	case deadJob := <-dlq:
+		fmt.Printf("📥 DLQ Consumer received failed job: %s (attempts: %d)\\n", deadJob.ID, deadJob.Attempts)
+	default:
+		fmt.Println("DLQ is empty.")
+	}
 }`
       },
 
@@ -2289,20 +2298,21 @@ import (
 )
 
 func isPalindrome(s string) bool {
-	left, right := 0, len(s)-1
+	runes := []rune(s)
+	left, right := 0, len(runes)-1
 
 	for left < right {
 		// Skip non-alphanumeric characters from left
-		for left < right && !isAlphaNumeric(rune(s[left])) {
+		for left < right && !isAlphaNumeric(runes[left]) {
 			left++
 		}
 		// Skip non-alphanumeric characters from right
-		for left < right && !isAlphaNumeric(rune(s[right])) {
+		for left < right && !isAlphaNumeric(runes[right]) {
 			right--
 		}
 
 		// Compare case-insensitively
-		if unicode.ToLower(rune(s[left])) != unicode.ToLower(rune(s[right])) {
+		if unicode.ToLower(runes[left]) != unicode.ToLower(runes[right]) {
 			return false
 		}
 		left++

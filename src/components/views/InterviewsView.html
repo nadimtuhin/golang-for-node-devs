@@ -572,9 +572,9 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
             <p style="color:#b91c1c; font-size:0.85rem; margin:0.35rem 0 0 0;">
               Go maps do not include internal locks for single-threaded speed. When writing, Go sets a bit flag in <code>hmap.flags</code> (<code>hashWriting = 1</code>). If another goroutine attempts to read or write while this flag is active, the runtime executes:
             </p>
-            <pre style="background:#ffffff; color:#dc2626; padding:0.4rem; border-radius:4px; font-size:0.82rem; margin:0.35rem 0;">fatal("concurrent map writes") // or "concurrent map read and map write"</pre>
+            <pre style="background:#ffffff; color:#dc2626; padding:0.4rem; border-radius:4px; font-size:0.82rem; margin:0.35rem 0;">throw("concurrent map writes") // or throw("concurrent map read and map write")</pre>
             <p style="color:#7f1d1d; font-size:0.82rem; margin:0.35rem 0 0 0;">
-              <strong>Critical Point:</strong> A runtime <code>fatal</code> is a direct OS abort (<code>throw</code>), <strong>NOT a Go panic</strong>. A <code>defer recover()</code> block <strong>CANNOT catch it</strong>. The entire binary crashes immediately with a core dump!
+              <strong>Critical Point:</strong> A runtime <code>throw</code> is an unrecoverable process crash, <strong>NOT a catchable Go panic</strong>. A <code>defer recover()</code> block <strong>CANNOT catch it</strong>. The entire binary crashes immediately with an exit code 2 and stack traces!
             </p>
           </div>
           <div class="qa-pro-tip">

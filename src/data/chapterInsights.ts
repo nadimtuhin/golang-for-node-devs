@@ -191,7 +191,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Placing defer resource.Close() immediately after opening ensures cleanup is never forgotten, regardless of how the function exits.'
   },
   basic_generics: {
-    goParadigm: 'Compile-time parametric polymorphism via type parameters [T comparable] without runtime reflection.',
+    goParadigm: 'Compile-time parametric polymorphism via type parameters [T any] and constraints [K comparable] without runtime reflection.',
     nodeEquivalent: 'TypeScript generics erased at compile time or dynamic JS functions accepting any type without safety.',
     coreTakeaway: 'Go generics deliver reusable data structures and algorithms while maintaining full compile-time static type verification.'
   },
