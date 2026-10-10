@@ -258,7 +258,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   lc_valid_parentheses: {
     goParadigm: 'Slice-based LIFO stack appending closing brackets and popping top elements in O(N) time and O(N) space.',
     nodeEquivalent: 'Array-based stack using .push() and .pop() with dynamic array allocation.',
-    coreTakeaway: 'A byte slice []rune acts as an optimal zero-allocation stack for matching bracket pairs in linear time.'
+    coreTakeaway: 'A pre-allocated []rune slice acts as an optimal stack with reslicing for matching bracket pairs in linear time.'
   },
   lc_merge_lists: {
     goParadigm: 'Dummy head pointer node traversing both linked lists and wiring Next pointers in O(N) time and O(1) space.',

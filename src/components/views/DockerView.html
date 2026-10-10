@@ -102,23 +102,29 @@ ENTRYPOINT ["/app/server"]</pre>
       </p>
       <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># Builder stage
 FROM golang:1.23-alpine AS builder
-RUN apk --no-cache add ca-certificates && \
+RUN apk --no-cache add ca-certificates tzdata && \
     adduser -D -u 10001 -g "" appuser
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server .
+# CGO_ENABLED=0 with GOOS=linux GOARCH=amd64 ensures fully portable static ELF binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o /app/server .
 
-# Final stage: completely empty scratch container
+# Final stage: completely empty scratch container (<15MB)
 FROM scratch
 
-# Copy unprivileged user
+# Copy unprivileged user and group mappings
 COPY --from=builder /etc/passwd /etc/passwd
-USER appuser:appuser
+COPY --from=builder /etc/group /etc/group
+USER 10001:10001
 
 # Copy SSL certificates for outbound HTTPS calls
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Optional: copy timezone data if loading timezones via time.LoadLocation
+# (Or compile with blank import: _ "time/tzdata")
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo/
 
 # Copy binary
 COPY --from=builder /app/server /server
@@ -144,3 +150,4 @@ tmp/
 vendor/</pre>
     </div>
   </div>
+</div>

@@ -260,6 +260,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"time"
 )
 
@@ -273,13 +274,18 @@ type Product struct {
 }
 
 // Simulated in-memory store matching the video's MongoDB collection
-var productsDB = []Product{
-	{ID: "prod_1", Title: "Mechanical Keyboard", CreatedAt: time.Now(), UpdatedAt: time.Now()},
-	{ID: "prod_2", Title: "Ultrawide Monitor", CreatedAt: time.Now(), UpdatedAt: time.Now()},
-}
+var (
+	dbMu       sync.RWMutex
+	productsDB = []Product{
+		{ID: "prod_1", Title: "Mechanical Keyboard", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: "prod_2", Title: "Ultrawide Monitor", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+)
 
 // Fiber / Express style Handler:
 func GetAllProducts(w http.ResponseWriter, r *http.Request) {
+	dbMu.RLock()
+	defer dbMu.RUnlock()
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(productsDB)
@@ -291,10 +297,12 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	dbMu.Lock()
 	newProd.ID = fmt.Sprintf("prod_%d", len(productsDB)+1)
 	newProd.CreatedAt = time.Now()
 	newProd.UpdatedAt = time.Now()
 	productsDB = append(productsDB, newProd)
+	dbMu.Unlock()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -1688,6 +1696,8 @@ func (q *FIFOQueue[T]) Dequeue() (T, error) {
 		return zero, errors.New("queue is empty")
 	}
 	item := q.items[q.head]
+	var zero T
+	q.items[q.head] = zero // Zero out memory slot to allow garbage collection
 	q.head++
 
 	// Periodically compact memory when head consumes over half of capacity
@@ -2268,9 +2278,9 @@ func main() {
         num: "LC125",
         part: "Part 7: LeetCode in Go",
         title: "Valid Palindrome (#125) — In-Place Runes & Two Pointers",
-        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers over runes avoids string allocations completely.",
+        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers directly over the string avoids heap allocations completely.",
         nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
-        why: "In Node, regex replace creates heavy string copies. In Go, unicode.IsLetter and unicode.ToLower over []rune achieves zero intermediate heap allocation.",
+        why: "In Node, regex replace creates heavy string copies. In Go, direct two-pointer string indexing with unicode.IsLetter and unicode.ToLower achieves true O(1) space with zero heap allocations.",
         code: `package main
 
 import (
@@ -2279,21 +2289,20 @@ import (
 )
 
 func isPalindrome(s string) bool {
-	runes := []rune(s)
-	left, right := 0, len(runes)-1
+	left, right := 0, len(s)-1
 
 	for left < right {
 		// Skip non-alphanumeric characters from left
-		for left < right && !isAlphaNumeric(runes[left]) {
+		for left < right && !isAlphaNumeric(rune(s[left])) {
 			left++
 		}
 		// Skip non-alphanumeric characters from right
-		for left < right && !isAlphaNumeric(runes[right]) {
+		for left < right && !isAlphaNumeric(rune(s[right])) {
 			right--
 		}
 
 		// Compare case-insensitively
-		if unicode.ToLower(runes[left]) != unicode.ToLower(runes[right]) {
+		if unicode.ToLower(rune(s[left])) != unicode.ToLower(rune(s[right])) {
 			return false
 		}
 		left++
@@ -2376,7 +2385,7 @@ func main() {
         part: "Part 7: LeetCode in Go",
         title: "Maximum Subarray (#53) — Kadane's Algorithm",
         desc: "Find the contiguous subarray with the largest sum. Kadane's dynamic programming algorithm tracks currentSum and maxSum in O(N) time and O(1) space.",
-        nodeCode: "let maxSum = nums[0], current = nums[0];\nfor (let i = 1; i < nums.length; i++) {\n  current = Math.max(nums[i], current + nums[i]);\n  maxSum = Math.max(maxSum, current);\n}\nreturn maxSum;",
+        nodeCode: "function maxSubArray(nums) {\n  let maxSum = nums[0], current = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    current = Math.max(nums[i], current + nums[i]);\n    maxSum = Math.max(maxSum, current);\n  }\n  return maxSum;\n}",
         why: "Demonstrates high-performance single-pass dynamic programming without slice reallocations.",
         code: `package main
 
