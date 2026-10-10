@@ -104,8 +104,8 @@
         </p>
         <p style="color: #334155; margin-bottom: 1rem;">
           In contrast, Go treats <code>go.mod</code> as a <strong>first-class language construct</strong> parsed directly by the Go compiler.
-          It contains no tool configs, no scripts, and no registry publishing metadata. It contains only 5 fundamental directives:
-          <code>module</code> (identity), <code>go</code> (minimum Go toolchain version), <code>require</code> (dependencies),
+          It contains no tool configs, no scripts, and no registry publishing metadata. It contains only standard directives:
+          <code>module</code> (identity), <code>go</code> (language version), <code>toolchain</code> (compiler toolchain pinning), <code>require</code> (dependencies),
           <code>replace</code> (module overrides), and <code>exclude</code> / <code>retract</code> (disallowed versions).
         </p>
 

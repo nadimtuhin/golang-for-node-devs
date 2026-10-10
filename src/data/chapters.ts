@@ -481,6 +481,7 @@ func main() {
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -499,7 +500,11 @@ func main() {
 	defer mockServer.Close()
 
 	client := &http.Client{Timeout: 2 * time.Second}
-	req, _ := http.NewRequest("GET", mockServer.URL, nil)
+	req, err := http.NewRequest("GET", mockServer.URL, nil)
+	if err != nil {
+		fmt.Println("Invalid request:", err)
+		return
+	}
 	req.Header.Set("User-Agent", "GoMicroservice/1.0")
 
 	res, err := client.Do(req)
@@ -507,7 +512,10 @@ func main() {
 		fmt.Println("Request failed:", err)
 		return
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body) // Drain body to preserve TCP connection reuse
+		res.Body.Close()
+	}()
 
 	var quote QuoteResponse
 	json.NewDecoder(res.Body).Decode(&quote)
@@ -1123,9 +1131,12 @@ func executeWithRetry(job PaymentJob, maxAttempts int, dlq chan<- PaymentJob) {
 		fmt.Printf("⚠️ Retrying in %v...\\n", backoff)
 		time.Sleep(backoff)
 		backoff *= 2
-	}
 	fmt.Printf("❌ Job %s failed all %d attempts, routing to DLQ\\n", job.ID, maxAttempts)
-	dlq <- job
+	select {
+	case dlq <- job:
+	default:
+		fmt.Printf("⚠️ DLQ is saturated, dropping job %s to avoid blocking\\n", job.ID)
+	}
 }
 
 func main() {

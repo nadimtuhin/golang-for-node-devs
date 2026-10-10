@@ -223,7 +223,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   ds_sync_pool: {
     goParadigm: 'sync.Pool caches allocated, unused temporary objects across goroutines to eliminate garbage collection pressure.',
     nodeEquivalent: 'No standard object pool; V8 garbage collection must clean up every temporary object created in request pipelines.',
-    coreTakeaway: 'High-throughput Go servers reuse byte buffers and request structs via sync.Pool, achieving near-zero GC pause overhead.'
+    coreTakeaway: 'sync.Pool is an ephemeral recycler using Go 1.13+ victim caches (surviving 1 GC cycle), not a persistent cache. Never rely on it for state retention.'
   },
   philo_clear_over_clever: {
     goParadigm: 'Write simple, transparent code that any engineer can read and maintain without mental deciphering.',

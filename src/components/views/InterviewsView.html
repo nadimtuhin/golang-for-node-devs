@@ -565,7 +565,7 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
     overflow *bmap         // Linked list pointer to overflow bucket if >8 collisions
 }</pre>
           <p>
-            <strong>Incremental Evacuation (Rehashing):</strong> When the load factor exceeds 6.5 or too many overflow buckets exist, the map doubles $B$ ($2^{B+1}$). Rehashing does <em>not</em> stop the world; whenever a key is written or deleted, the runtime incrementally evacuates 1–2 buckets from the old bucket array to the new one.
+            <strong>Incremental Evacuation (Rehashing):</strong> If the load factor exceeds 6.5, the map doubles its bucket count ($2^{B+1}$). If the load factor is under 6.5 but there are too many overflow buckets, the map performs a <em>same-size growth</em> ($2^B$) to compact sparse buckets and reclaim memory. Rehashing does <em>not</em> stop the world; whenever a key is written or deleted, the runtime incrementally evacuates 1–2 buckets from the old array to the new one.
           </p>
           <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:6px; padding:0.75rem; margin:0.75rem 0;">
             <div style="font-weight:700; color:#991b1b; font-size:0.88rem;">⚠️ Why Concurrent Writes Cause Fatal Crashes (`fatal` vs `panic`):</div>
@@ -604,7 +604,12 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
             <strong>The Rule:</strong> An interface value evaluates to <code>nil</code> if and only if <strong>both</strong> its type/itab and its data pointer are <code>nil</code>.
           </p>
           <pre style="background:#1e293b; color:#e2e8f0; padding:0.75rem; border-radius:6px; font-size:0.85rem; margin:0.75rem 0;">type NotFoundError struct{ Message string }
-func (e *NotFoundError) Error() string { return e.Message }
+func (e *NotFoundError) Error() string {
+    if e == nil {
+        return "not found (nil pointer error)"
+    }
+    return e.Message
+}
 
 func FindUser(id string) error {
     var customErr *NotFoundError = nil

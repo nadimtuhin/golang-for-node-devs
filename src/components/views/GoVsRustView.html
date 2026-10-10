@@ -1353,7 +1353,8 @@ function calculateFee(p: PaymentMethod): number {
         let goScore = 0;
 
         // Workload scoring
-        if (workload === 'engine' || workload === 'wasm') rustScore += 40;
+        if (workload === 'wasm') rustScore += 65; // Rust is universally superior for in-browser client Wasm
+        else if (workload === 'engine') rustScore += 50;
         else if (workload === 'cli') { rustScore += 25; goScore += 25; }
         else if (workload === 'infra') goScore += 40;
         else goScore += 35; // microservice

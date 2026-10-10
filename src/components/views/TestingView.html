@@ -1312,12 +1312,12 @@ go tool cover -html=coverage.out</code></pre>
             </tr>
             <tr>
               <td><code>expect(a).toBe(b)</code></td>
-              <td><code>if a != b { t.Fatalf("got %v, want %v", a, b) }</code> or <code>assert.Equal(t, b, a)</code></td>
+              <td><code>if got != want { t.Fatalf("got %v, want %v", got, want) }</code> or <code>assert.Equal(t, expected, actual)</code></td>
               <td>Explicit type-checked comparison or testify.</td>
             </tr>
             <tr>
               <td><code>expect(a).toEqual(b)</code></td>
-              <td><code>if !reflect.DeepEqual(a, b)</code> or <code>assert.Equal(t, b, a)</code></td>
+              <td><code>if !reflect.DeepEqual(got, want)</code> or <code>assert.Equal(t, expected, actual)</code></td>
               <td>Structural deep equality for slices, maps, structs.</td>
             </tr>
             <tr>
