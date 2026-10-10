@@ -965,22 +965,42 @@ import (
 	"fmt"
 )
 
+// MockTx simulates the standard database/sql *sql.Tx
+type MockTx struct {
+	committed bool
+}
+
+func (tx *MockTx) Commit() error {
+	tx.committed = true
+	fmt.Println("3. tx.Commit() -> Done!")
+	return nil
+}
+
+func (tx *MockTx) Rollback() error {
+	if !tx.committed {
+		fmt.Println("⚠️  tx.Rollback() executed safely via defer!")
+	}
+	return nil
+}
+
 func transferMoney(from, to string, amount float64) error {
+	tx := &MockTx{}
+	defer tx.Rollback() // Guarantees rollback on error or panic; no-op after Commit()
+
 	fmt.Printf("ACID transaction: Transfer $%.2f from %s to %s\\n", amount, from, to)
 	if amount > 500 {
 		return errors.New("insufficient funds (limit $500)")
 	}
 	fmt.Printf("1. Deducting $%.2f from %s\\n", amount, from)
 	fmt.Printf("2. Crediting $%.2f to %s\\n", amount, to)
-	fmt.Println("3. tx.Commit() -> Done!")
-	return nil
+	return tx.Commit()
 }
 
 func main() {
 	transferMoney("ACC_100", "ACC_200", 250.0)
 	fmt.Println()
 	if err := transferMoney("ACC_100", "ACC_200", 999.0); err != nil {
-		fmt.Println("Transaction Failed & Rolled Back:", err)
+		fmt.Println("Transaction Result:", err)
 	}
 }`
       },

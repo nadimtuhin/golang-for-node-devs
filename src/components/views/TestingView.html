@@ -1182,7 +1182,7 @@ func BenchmarkJSONMarshal(b *testing.B) {
         </div>
 
         <div style="background: #1e293b; color: #e2e8f0; padding: 0.85rem; border-radius: 6px; font-family: monospace; font-size: 0.82rem; margin-top: 0.5rem;">
-          <div style="color: #38bdf8; margin-bottom: 0.3rem;">$ go test -bench=BenchmarkJSONMarshal -benchmem ./...</div>
+          <div style="color: #38bdf8; margin-bottom: 0.3rem;">$ go test -run=^$ -bench=^BenchmarkJSONMarshal$ -benchmem -count=5 ./...</div>
           BenchmarkJSONMarshal-10   2841912   412.3 ns/op   128 B/op   2 allocs/op
         </div>
         <p style="font-size: 0.84rem; color: #64748b; margin-top: 0.5rem;">

@@ -251,5 +251,65 @@ if Validate() != nil {
         </div>
       </div>
     </div>
+
+    <!-- Pitfall 8: Unclosed or Undrained HTTP Response Body -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 8: Unclosed HTTP resp.Body Leaks TCP Sockets</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        In Node.js, fetch/axios automatically cleans up socket connections. In Go, failing to close <code>resp.Body</code> prevents TCP connection reuse, causing connection exhaustion under load. Also, calling <code>defer resp.Body.Close()</code> BEFORE checking <code>err != nil</code> will panic!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: Nil panic on error + TCP connection leak</div>
+resp, err := http.Get("https://api.com")
+defer resp.Body.Close() // 💥 PANIC if err != nil!
+if err != nil { return err }
+body, _ := io.ReadAll(resp.Body)
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Check error first, defer close, drain body</div>
+resp, err := http.Get("https://api.com")
+if err != nil { return err }
+defer resp.Body.Close()
+_, _ = io.Copy(io.Discard, resp.Body) // Drain to enable HTTP Keep-Alive reuse
+        </div>
+      </div>
+    </div>
+
+    <!-- Pitfall 9: time.After Memory Leak in Long Loops -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 9: time.After in Loop / Select Leaks Timers</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        <code>time.After(d)</code> allocates a <code>time.Timer</code> that is NOT garbage collected until duration <code>d</code> elapses. Calling it inside a continuous select loop accumulates thousands of uncollected timers in memory.
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: Accumulates thousands of timers in heap</div>
+for {
+    select {
+    case msg := &lt;-ch:
+        process(msg)
+    case &lt;-time.After(30 * time.Second): // 💥 Leaks 1 timer per loop iteration!
+        handleTimeout()
+    }
+}
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Reuse time.NewTimer with Reset</div>
+timer := time.NewTimer(30 * time.Second)
+defer timer.Stop()
+for {
+    timer.Reset(30 * time.Second)
+    select {
+    case msg := &lt;-ch:
+        if !timer.Stop() { &lt;-timer.C }
+        process(msg)
+    case &lt;-timer.C:
+        handleTimeout()
+    }
+}
+        </div>
+      </div>
+    </div>
   </div>
 </div>

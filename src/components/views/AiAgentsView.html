@@ -470,6 +470,7 @@ if err := decoder.Decode(&amp;params); err != nil {
     w.Header().Set("Cache-Control", "no-cache, no-transform")
     w.Header().Set("Connection", "keep-alive")
     w.Header().Set("X-Accel-Buffering", "no") // Disable Nginx / Cloudflare reverse proxy buffering
+    w.Header().Set("X-Content-Type-Options", "nosniff")
 
     flusher, ok := w.(http.Flusher)
     if !ok {
@@ -1089,6 +1090,11 @@ func handleMCPMethod(req JSONRPCRequest) {
         // MCP Spec: Notifications MUST NOT receive a response
         return
 
+    case "ping":
+        // MCP Spec: ping returns empty result
+        sendResult(req.ID, map[string]any{})
+        return
+
     case "initialize":
         // 1. Protocol Handshake
         sendResult(req.ID, map[string]any{
@@ -1140,11 +1146,14 @@ func handleMCPMethod(req JSONRPCRequest) {
                 "content": []map[string]any{
                     {"type": "text", "text": statsText},
                 },
+                "isError": false,
             })
             return
         }
 
-        sendError(req.ID, -32601, "Method or tool not found")
+        if req.ID != nil {
+            sendError(req.ID, -32601, "Method or tool not found")
+        }
 
     default:
         if req.ID == nil {

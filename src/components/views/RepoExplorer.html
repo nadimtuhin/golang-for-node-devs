@@ -291,7 +291,7 @@ func CreateProduct(c *fiber.Ctx) error {
 
 	collection := client.Database(db.Database).Collection(string(db.ProductsCollection))
 
-	_, err = collection.InsertOne(context.TODO(), product)
+	_, err = collection.InsertOne(c.UserContext(), product)
 
 	if err != nil {
 		return err

@@ -115,7 +115,7 @@
           </p>
           <ul>
             <li>
-              <strong>G (Goroutine):</strong> Represents the executable user-space thread. It contains a 2 KB initial contiguous stack, program counter (PC), CPU registers, stack boundaries, and state flags (<code>_Grunnable</code>, <code>_Grunning</code>, <code>_Gwaiting</code>, <code>_Gsyscall</code>). Unlike OS threads that require 1–8 MB upfront, Goroutine stacks grow dynamically by allocating a larger memory segment and copying stack frames (stack splitting / contiguous stack copying).
+              <strong>G (Goroutine):</strong> Represents the executable user-space thread. It contains a 2 KB initial contiguous stack, program counter (PC), CPU registers, stack boundaries, and state flags (<code>_Gidle</code>, <code>_Grunnable</code>, <code>_Grunning</code>, <code>_Gwaiting</code>, <code>_Gsyscall</code>, <code>_Gcopystack</code>, <code>_Gdead</code>). Unlike OS threads that require 1–8 MB upfront, Goroutine stacks grow dynamically via contiguous stack copying (allocating a 2x segment, adjusting internal pointers, and transitioning through <code>_Gcopystack</code>).
             </li>
             <li>
               <strong>M (Machine / OS Thread):</strong> Represents an actual kernel thread created and managed by the operating system (via <code>pthread_create</code> or <code>clone</code>). The Go runtime can spawn up to 10,000 M instances (default limit), but active running Ms are capped by the number of P contexts.
@@ -147,9 +147,9 @@
             When an OS thread (<code>M</code>) bound to processor (<code>P</code>) finishes executing its current goroutine, it searches for runnable work following a strict 5-step scheduling loop:
           </p>
           <ol style="margin-left: 1.25rem; line-height: 1.7;">
-            <li><strong>Check <code>runnext</code>:</strong> Examines P's 1-slot fast-path pointer. This provides L1/L2 cache locality for immediately unblocked goroutines (e.g. unblocked channel receivers).</li>
+            <li><strong>Fairness Check (Every 61 Ticks):</strong> Every 61 scheduler ticks (<code>sched.ticks % 61 == 0</code>), M checks the <strong>Global Run Queue (GRQ)</strong> first before its local queue. This prevents Goroutines in the GRQ from starving if local queues are saturated.</li>
+            <li><strong>Check <code>runnext</code>:</strong> If not tick 61, examines P's 1-slot fast-path pointer. This provides L1/L2 cache locality for unblocked goroutines (e.g. unblocked channel receivers).</li>
             <li><strong>Check Local Run Queue (LRQ):</strong> Pops from P's lock-free ring buffer (up to 256 Gs).</li>
-            <li><strong>Fairness Check (Every 61 Ticks):</strong> Every 61 scheduler ticks, M checks the <strong>Global Run Queue (GRQ)</strong> first. This prevents Goroutines in the GRQ from starving if local queues are saturated.</li>
             <li><strong>Check Network Poller:</strong> Queries <code>runtime.netpoll</code> (non-blocking <code>epoll</code> on Linux, <code>kqueue</code> on macOS) to retrieve goroutines whose socket I/O completed.</li>
             <li><strong>Work-Stealing:</strong> If LRQ, GRQ, and Netpoller are empty, M enters work-stealing mode. It selects another P at random four times; if a busy P is found, M <strong>steals half of that P's runnable goroutines</strong> and moves them to its own LRQ.</li>
           </ol>

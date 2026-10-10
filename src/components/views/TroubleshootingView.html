@@ -496,6 +496,11 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
           <svg viewBox="0 0 980 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Air hot reload lifecycle diagram" style="font-family: system-ui, -apple-system, sans-serif;">
             <title>Air Hot Reload Lifecycle</title>
             <desc>Diagram showing File Watcher to Debounce window to go build to compiler check to graceful SIGTERM to spawning new binary.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+              </marker>
+            </defs>
 
             <!-- Step 1: Watch -->
             <g transform="translate(15, 20)">
@@ -762,6 +767,20 @@ volumes:
           <svg viewBox="0 0 980 200" width="100%" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Zero downtime socket handoff diagram" style="font-family: system-ui, -apple-system, sans-serif;">
             <title>Zero Downtime Socket Handoff</title>
             <desc>Clients connect to kernel listening socket. Parent passes FD to child. Parent drains and exits.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+              </marker>
+              <marker id="arrow-warn" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+              </marker>
+              <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#a78bfa"/>
+              </marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+              </marker>
+            </defs>
 
             <!-- Clients -->
             <g transform="translate(20, 50)">

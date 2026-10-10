@@ -98,7 +98,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   slice_ops: {
     goParadigm: 'Lightweight 3-word slice header (Data *T, Len int, Cap int) manipulated via append() and sub-slicing s[low:high].',
     nodeEquivalent: 'Array mutations via push(), pop(), shift(), unshift(), and splice() modifying dynamic V8 arrays.',
-    coreTakeaway: 'Slicing creates a zero-copy sub-window over existing memory, avoiding data cloning unless capacity growth requires allocation.'
+    coreTakeaway: 'Slicing creates a zero-copy sub-window over existing memory; note that keeping sub-slices pins the entire backing array in memory.'
   },
   data_types: {
     goParadigm: 'Explicit sized types (int8, int32, int64, float64, byte, rune) matching CPU architecture registers.',
