@@ -131,7 +131,7 @@ func main() {
         num: "B4",
         part: "Part 0: Language Basics",
         title: "Interfaces & Implicit Duck Typing",
-        desc: "In TypeScript, you write 'implements MyInterface'. In Go, interfaces are satisfied IMPLICITLY: if a struct has the required methods, it automatically implements the interface with zero boilerplate.",
+        desc: "In TypeScript, you write 'implements MyInterface'. In Go, interfaces are satisfied IMPLICITLY: if a struct has the required methods, it implements the interface. Key rule: pointer receiver methods (*T) are only satisfied by pointer instances (&T), not value instances (T).",
         nodeCode: "// TypeScript interface with explicit class implementation\ninterface Greeter {\n  greet(): string;\n}\n\nclass Bot implements Greeter {\n  constructor(private model: string) {}\n\n  greet(): string {\n    return `Beep boop, I am model ${this.model}`;\n  }\n}\n\nfunction sendWelcome(service: Greeter) {\n  console.log(service.greet());\n}\n\nsendWelcome(new Bot('GPT-4o'));",
         why: "Implicit interfaces let packages define abstractions without depending on external implementations. If it walks like a duck and quacks like a duck, it's a duck!",
         code: `package main
@@ -919,21 +919,25 @@ type MockDBPool struct {
 	MaxOpenConns int
 	MaxIdleConns int
 	ConnLifetime time.Duration
+	ConnIdleTime time.Duration
 }
 
 func (db *MockDBPool) SetMaxOpenConns(n int) { db.MaxOpenConns = n }
 func (db *MockDBPool) SetMaxIdleConns(n int) { db.MaxIdleConns = n }
 func (db *MockDBPool) SetConnMaxLifetime(d time.Duration) { db.ConnLifetime = d }
+func (db *MockDBPool) SetConnMaxIdleTime(d time.Duration) { db.ConnIdleTime = d }
 
 func main() {
 	db := &MockDBPool{}
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(10)
 	db.SetConnMaxLifetime(5 * time.Minute)
+	db.SetConnMaxIdleTime(2 * time.Minute)
 
 	fmt.Printf("Max Open Connections: %d\\n", db.MaxOpenConns)
 	fmt.Printf("Max Idle Connections: %d\\n", db.MaxIdleConns)
 	fmt.Printf("Max Lifetime:         %v\\n", db.ConnLifetime)
+	fmt.Printf("Max Idle Time:        %v\\n", db.ConnIdleTime)
 	fmt.Println("\\n✓ In Go, *sql.DB is a thread-safe connection pool shared across all Goroutines!")
 }`
       },
@@ -984,6 +988,8 @@ import (
 	"fmt"
 )
 
+var ErrTxDone = errors.New("sql: transaction has already been committed or rolled back")
+
 // MockTx simulates the standard database/sql *sql.Tx
 type MockTx struct {
 	committed bool
@@ -998,13 +1004,20 @@ func (tx *MockTx) Commit() error {
 func (tx *MockTx) Rollback() error {
 	if !tx.committed {
 		fmt.Println("⚠️  tx.Rollback() executed safely via defer!")
+		return nil
 	}
-	return nil
+	// Real database/sql returns sql.ErrTxDone if already committed
+	return ErrTxDone
 }
 
 func transferMoney(from, to string, amount float64) error {
 	tx := &MockTx{}
-	defer tx.Rollback() // Guarantees rollback on error or panic; no-op after Commit()
+	// In production Go, defer rollback is standard; if Commit succeeded, sql.ErrTxDone is ignored
+	defer func() {
+		if err := tx.Rollback(); err != nil && !errors.Is(err, ErrTxDone) {
+			fmt.Printf("Rollback failed: %v\n", err)
+		}
+	}()
 
 	fmt.Printf("ACID transaction: Transfer $%.2f from %s to %s\\n", amount, from, to)
 	if amount > 500 {
@@ -1113,6 +1126,7 @@ func main() {
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -1139,8 +1153,11 @@ func executeWithRetry(job PaymentJob, maxAttempts int, dlq chan<- PaymentJob) {
 			fmt.Printf("✓ Job %s succeeded on attempt %d!\\n", job.ID, job.Attempts)
 			return
 		}
-		fmt.Printf("⚠️ Retrying in %v...\\n", backoff)
-		time.Sleep(backoff)
+		// Jittered backoff prevents Thundering Herd retry storms
+		jitter := time.Duration(rand.Int63n(int64(backoff / 2)))
+		sleepDuration := backoff + jitter
+		fmt.Printf("⚠️ Retrying in %v (with jitter)...\\n", sleepDuration)
+		time.Sleep(sleepDuration)
 		backoff *= 2
 	}
 	fmt.Printf("❌ Job %s failed all %d attempts, routing to DLQ\\n", job.ID, maxAttempts)
@@ -1296,8 +1313,23 @@ import (
 
 var ErrRecordNotFound = errors.New("record not found in database")
 
+// DatabaseError models a structured domain database failure
+type DatabaseError struct {
+	Code    int
+	Message string
+	Err     error
+}
+
+func (e *DatabaseError) Error() string {
+	return fmt.Sprintf("db err [code %d]: %s: %v", e.Code, e.Message, e.Err)
+}
+
+func (e *DatabaseError) Unwrap() error {
+	return e.Err
+}
+
 func repositoryLayer() error {
-	return ErrRecordNotFound
+	return &DatabaseError{Code: 1045, Message: "access denied", Err: ErrRecordNotFound}
 }
 
 func serviceLayer() error {
@@ -1312,8 +1344,17 @@ func main() {
 	err := serviceLayer()
 	fmt.Println("Wrapped Error:", err)
 
+	// errors.Is: checks if any error in the unwrap chain matches the sentinel target
 	if errors.Is(err, ErrRecordNotFound) {
 		fmt.Println("\\n✓ Verified root cause is ErrRecordNotFound -> Returning 404 to HTTP client!")
+	}
+
+	// errors.As: target must be a pointer to a type that implements error.
+	// Since (*DatabaseError).Error() has a pointer receiver, the target variable is *DatabaseError,
+	// and we pass its address (&targetDBErr, which is **DatabaseError) into errors.As.
+	var targetDBErr *DatabaseError
+	if errors.As(err, &targetDBErr) {
+		fmt.Printf("✓ Extracted typed error metadata via errors.As: SQL Code %d (%s)\\n", targetDBErr.Code, targetDBErr.Message)
 	}
 }`
       }
@@ -1470,6 +1511,11 @@ func (u User) Display() string {
 	return fmt.Sprintf("User #%d: %s <%s>", u.ID, u.Name, u.Email)
 }
 
+// Bio calls Display() on the inner User receiver (no virtual dispatch to AdminUser)
+func (u User) Bio() string {
+	return fmt.Sprintf("Bio: %s", u.Display())
+}
+
 // AdminUser embeds User (Composition, no 'extends')
 type AdminUser struct {
 	User        // Anonymous embedded struct: fields & methods promoted!
@@ -1493,6 +1539,9 @@ func main() {
 	fmt.Printf("Direct field access: %s (%s)\\n", admin.Name, admin.Email)
 	fmt.Printf("Admin custom method: %s\\n", admin.Display())
 	fmt.Printf("Original inner method: %s\\n", admin.User.Display())
+	// Crucial distinction from OOP inheritance: admin.Bio() invokes User.Bio(), which
+	// executes u.Display() with User receiver, NOT AdminUser.Display()!
+	fmt.Printf("Inner receiver retention: %s\\n", admin.Bio())
 }`
       },
 
@@ -1542,12 +1591,17 @@ func main() {
         num: "B12",
         part: "Part 0: Language Basics",
         title: "Generics in Go (Type Parameters)",
-        desc: "TypeScript has rich generics like 'function map<T, R>(arr: T[], fn: (x: T) => R): R[]'. Since Go 1.18, Go supports type parameters '[T any]' with compile-time monomorphization.",
+        desc: "TypeScript has rich generics. Since Go 1.18, Go supports type parameters '[T any]' and approximation constraints '~T'. Key rule: Go generic type parameters are valid on standalone functions and types, but struct methods CANNOT declare their own new type parameters.",
         nodeCode: "// TypeScript Generics for type safety\nfunction getFirstItem<T>(items: T[]): T | undefined {\n  if (items.length === 0) return undefined;\n  return items[0];\n}\n\nconst num = getFirstItem([10, 20, 30]); // number\nconst str = getFirstItem(['a', 'b', 'c']); // string",
         why: "Allows reusable algorithms and data structures without dynamic 'any' casting or runtime reflection overhead.",
         code: `package main
 
 import "fmt"
+
+// ~T matches any type whose underlying type is T (e.g. custom ID or type aliases)
+type Number interface {
+	~int | ~int64 | ~float64
+}
 
 // Generic Map function works for any slice element T and result type R
 func Map[T any, R any](items []T, fn func(T) R) []R {

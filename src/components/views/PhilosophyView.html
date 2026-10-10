@@ -590,10 +590,10 @@
     <!-- SECTION 7: THE 6 CORE PROVERBS (PRESERVING INTERACTIVE PLAYGROUNDS) -->
     <section id="core-proverbs" aria-labelledby="proverbs-heading" style="margin-bottom: 2.5rem;">
       <h2 id="proverbs-heading" style="font-size: 1.35rem; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        💡 7. The 6 Core Go Proverbs (Contrasted with Node.js)
+        💡 7. The Core Go Proverbs (Contrasted with Node.js)
       </h2>
       <p style="color: var(--text-body); font-size: 0.95rem; margin-bottom: 1.25rem;">
-        Rob Pike’s famous Go Proverbs encapsulate the mental shift required when moving from dynamic JavaScript to idiomatic Go. Each proverb links to an interactive lesson in our Studio:
+        Delivered by Rob Pike at Gopherfest 2015 (<code>go-proverbs.github.io</code>), the Go Proverbs encapsulate the mental shift required when moving from dynamic JavaScript to idiomatic Go. Each proverb links to an interactive lesson in our Studio:
       </p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
@@ -738,15 +738,19 @@
       <div class="deepdive-box" style="margin-bottom: 0; border-left: 4px solid #16a34a;">
         <h2 id="zen-heading" class="deepdive-title">🧘 9. The Zen of Go (Dave Cheney)</h2>
         <p style="color: var(--text-body); font-size: 0.92rem; margin-bottom: 0.75rem;">
-          Presented at GopherCon Israel 2020 by Dave Cheney, the Zen of Go distills idiomatic Go engineering into ten enduring design values:
+          Presented at GopherCon Israel on February 3, 2020 by Dave Cheney, the Zen of Go distills idiomatic Go engineering into ten enduring design values:
         </p>
         <ul style="color: #475569; font-size: 0.92rem; line-height: 1.8; margin-left: 1.5rem;">
           <li><strong>Each package should have a single purpose:</strong> Packages are units of design, not arbitrary folder dumps. If a package is hard to name, it has too many responsibilities.</li>
           <li><strong>Handle errors gracefully:</strong> Never ignore an error. Check them early and return immediately (guard clauses).</li>
           <li><strong>Avoid package-level state:</strong> Keep globals to an absolute minimum to ensure goroutine safety and clean unit testing. Pass dependencies explicitly.</li>
-          <li><strong>Before you solve a problem, make sure you understand it:</strong> Don't build speculative abstractions or generic factories until you have three real use cases.</li>
+          <li><strong>Generalised solution before specific implementation:</strong> Don't guess, measure. Build specific solutions first, then generalize.</li>
           <li><strong>Simplicity is complicated:</strong> It takes hard work and discipline to keep a codebase simple as it scales. Adding code is easy; keeping it minimal requires mastery.</li>
           <li><strong>Design for concurrency, implement sequentially:</strong> Structure programs as communicating sequential processes rather than interlocking locks.</li>
+          <li><strong>Make the zero value useful:</strong> Types should work immediately upon declaration without requiring initializers.</li>
+          <li><strong>Before you solve a problem, make sure you understand it:</strong> Don't build speculative abstractions or generic factories until you have real use cases.</li>
+          <li><strong>Leave concurrency to the caller:</strong> Packages should rarely start their own hidden background goroutines; let the consumer control lifecycle.</li>
+          <li><strong>Write tests to lock in the behaviour of your package:</strong> Test observable API behaviors rather than internal implementation details.</li>
         </ul>
       </div>
     </section>

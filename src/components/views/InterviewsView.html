@@ -1190,13 +1190,16 @@ func main() {
     shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
     defer cancel()
 
-    // 5. Shutdown stops accepting new requests and drains active in-flight ones
+    // 5. Phase 1: Stop accepting new HTTP requests and drain active in-flight ones
     if err := server.Shutdown(shutdownCtx); err != nil {
         log.Printf("HTTP server forced shutdown: %v", err)
     }
 
-    // 6. Close database connection pools, Redis clients, Kafka producers cleanly
-    // e.g. db.Close()
+    // 6. Phase 2: Signal background worker pools to drain in-flight jobs BEFORE closing DB!
+    // workerPool.StopAndWait() // e.g. close(jobCh) and wg.Wait()
+
+    // 7. Phase 3: Safely flush message producers and close database connection pools
+    // e.g. db.Close(), redisClient.Close()
     log.Println("Graceful shutdown completed successfully.")
 }</pre>
           <div class="qa-pro-tip">

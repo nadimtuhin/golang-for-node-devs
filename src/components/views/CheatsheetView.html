@@ -19,7 +19,7 @@
         <tr>
           <td><code>arr.map(fn)</code></td>
           <td><code>for i, v := range arr</code> or Generic <code>Map[T, R]()</code></td>
-          <td>Pre-allocating slice capacity with <code>make([]R, 0, len(arr))</code> eliminates GC re-allocations.</td>
+          <td>Pre-allocating slice with <code>make([]R, len(arr))</code> for index assignment or <code>make([]R, 0, len(arr))</code> for <code>append</code> avoids GC re-allocations.</td>
         </tr>
         <tr>
           <td><code>arr.filter(fn)</code></td>
@@ -43,18 +43,18 @@
         </tr>
         <tr>
           <td><code>interface User { id: string; opt?: number }</code></td>
-          <td><code>type User struct { ID string; Opt *int }</code></td>
-          <td>Concrete contiguous memory layout. Pointers explicitly model optional fields.</td>
+          <td><code>type User struct { ID string; Opt *int `json:",omitempty"` }</code></td>
+          <td>Concrete contiguous memory layout. Pointers model optional fields; <code>omitempty</code> omits nulls on JSON serialize.</td>
         </tr>
         <tr>
           <td><code>unknown</code> / <code>any</code></td>
           <td><code>any</code> (alias for <code>interface{}</code>)</td>
-          <td>Runtime type-safe unpacked via <code>v, ok := val.(TargetType)</code> comma-ok assertions.</td>
+          <td>2-word header (type + data pointer). Values boxed into <code>any</code> may incur heap allocation; unpacked via <code>v, ok := val.(T)</code>.</td>
         </tr>
         <tr>
           <td><code>class Bot implements Greeter</code></td>
           <td>Implicit duck typing (no <code>implements</code> keyword)</td>
-          <td>Any struct implementing required methods satisfies the interface automatically.</td>
+          <td>Any struct implementing required methods satisfies the interface automatically (*T for pointer receivers).</td>
         </tr>
 
         <!-- Concurrency & Async -->

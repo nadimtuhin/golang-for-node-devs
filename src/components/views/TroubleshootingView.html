@@ -209,7 +209,7 @@
             <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;">
               <strong style="color:#10b981; font-size:0.85rem; display:block; margin-bottom:0.35rem;">🛡️ Bounds Check Elimination (BCE)</strong>
               <p style="font-size:0.82rem; color:#475569; line-height:1.5;">
-                In Go, out-of-bounds slice indexing panics. To enforce this, the compiler generates branch instructions before every read. SSA's BCE analysis mathematically proves when an index is within bounds (e.g. from a loop condition) and eliminates the branch check, speeding up tight loops by up to 30%.
+                In Go, slice indexing panics on out-of-bounds. To enforce safety, the compiler emits branch checks before reads. SSA's BCE analysis mathematically proves when an index is within slice bounds (e.g. <code>_ = s[n-1]</code> establishing an upper bound before an unrolled loop) and eliminates downstream branch checks, improving tight loop throughput by up to 30%.
               </p>
             </div>
             <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;">
@@ -299,11 +299,20 @@ go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
           <span style="color:#64748b;">./main.go:28:13:</span> inlining call to calculateSubtotal<br>
           <span style="color:#64748b;">./main.go:30:14:</span> <span style="color:#fcd34d;">item.Price escapes to heap</span> (passed to interface fmt.Println(a ...any))<br>
           <span style="color:#64748b;">./main.go:32:9:</span> <span style="color:#4ade80;">&user does not escape</span> (allocated on stack!)<br>
-          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#f87171;">Found IsInBounds</span> (BCE warning: bounds check generated! When BCE successfully eliminates a check, the compiler outputs nothing).
+          <span style="color:#64748b;">./main.go:45:12:</span> <span style="color:#f87171;">Found IsInBounds</span> (BCE diagnostic: bounds check generated! When BCE successfully eliminates a check, the compiler outputs nothing).
         </div>
 
-        <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#14532d;">
-          <strong>Node.js Pro-Tip:</strong> In Node.js, every object <code>{ id: 1 }</code> is heap-allocated inside V8's young/old space generation. In Go, structs like <code>user := User{ID: 1}</code> live directly on the goroutine's 2KB contiguous stack unless you return a pointer to them or pass them to an un-inlined interface function. Keeping variables on the stack is the secret to Go's predictable sub-millisecond latencies.
+        <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#14532d; margin-bottom: 0.75rem;">
+          <strong>BCE Hoisting Pattern:</strong> If iterating through a known buffer (e.g., <code>b[0], b[1], b[2], b[3]</code>), checking the maximum capacity upfront with a single throwaway statement <code>_ = b[3]</code> allows the SSA optimizer to prove bounds safety and eliminate all subsequent bounds checks inside the loop.
+        </div>
+
+        <div style="background:#eff6ff; border-left:4px solid #3b82f6; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#1e3a8a;">
+          <strong>Essential Compiler Directives &amp; Pragmas:</strong>
+          <ul style="margin: 0.25rem 0 0; padding-left: 1.25rem; line-height: 1.5;">
+            <li><code>//go:build &lt;tags&gt;</code> (Go 1.17+): Controls conditional file compilation (replaces legacy <code>// +build</code>).</li>
+            <li><code>//go:noinline</code>: Instructs the compiler never to inline a critical benchmark or debugging function.</li>
+            <li><code>//go:generate &lt;command&gt;</code>: Triggers automated code generators (e.g., <code>mockgen</code>, <code>stringer</code>, <code>sqlc</code>) via <code>go generate ./...</code>.</li>
+          </ul>
         </div>
       </div>
 

@@ -603,7 +603,7 @@ func main() {
             <tr>
               <td><strong>Docker Build Impact</strong></td>
               <td>Requires slow <code>RUN npm ci</code> inside every build layer</td>
-              <td><code>COPY vendor/ .</code> allows <strong>instant offline compilation</strong> with <code>go build -mod=vendor</code></td>
+              <td><code>COPY vendor/ .</code> allows <strong>instant offline compilation</strong> (Go 1.14+ automatically defaults to <code>-mod=vendor</code> whenever a <code>vendor/</code> directory is present)</td>
             </tr>
           </tbody>
         </table>
@@ -612,7 +612,7 @@ func main() {
           <strong>Enterprise Air-Gapped Builds:</strong>
           Running <code>go mod vendor</code> copies all required dependencies into a <code>vendor/</code> directory in your project root.
           You can compile your entire application in an air-gapped environment with zero internet access:
-          <code style="background: #ffffff; padding: 0.2rem 0.4rem; border-radius: 4px; color: #1e40af;">go build -mod=vendor ./cmd/server</code>.
+          <code style="background: #ffffff; padding: 0.2rem 0.4rem; border-radius: 4px; color: #1e40af;">go build ./cmd/server</code> (Go automatically uses <code>-mod=vendor</code> if <code>vendor/</code> exists and Go &ge; 1.14).
         </div>
       </div>
     </section>
@@ -721,12 +721,14 @@ func main() {
           Companies cannot publish proprietary backend code to Google's public proxy or checksum database.
           Go provides environment variables to cleanly segregate private code:
         </p>
-        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.83rem; line-height:1.5; overflow-x: auto;"># Direct all company repositories straight to internal Git servers:
-export GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.83rem; line-height:1.5; overflow-x: auto;"># Persistently direct all company repositories straight to internal Git servers:
+go env -w GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
 
-# Setting GOPRIVATE automatically configures:
+# Setting GOPRIVATE automatically configures defaults for:
 # 1. GONOPROXY (bypasses proxy.golang.org)
-# 2. GONOSUMDB (bypasses sum.golang.org)</pre>
+# 2. GONOSUMDB (bypasses sum.golang.org)
+# Note: If your company hosts an internal proxy (e.g. Athens or Artifactory) that computes its own hashes, 
+# set GOPROXY="https://athens.corp.internal,direct" and keep GONOSUMDB="github.com/mycompany/*".</pre>
       </div>
 
       <div class="deepdive-box">

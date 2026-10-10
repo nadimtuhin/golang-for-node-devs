@@ -128,7 +128,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   db_tx: {
     goParadigm: 'Explicit db.BeginTx with idiomatic defer tx.Rollback() guaranteeing automatic rollback on any returned error.',
     nodeEquivalent: 'Manual BEGIN/COMMIT/ROLLBACK queries wrapped in try/catch/finally blocks or ORM transaction callbacks.',
-    coreTakeaway: 'defer tx.Rollback() ensures transactions are never left dangling, because committed transactions make subsequent rollbacks safe no-ops.'
+    coreTakeaway: 'defer tx.Rollback() ensures transactions are never left dangling; calling Rollback() after successful Commit() safely returns sql.ErrTxDone.'
   },
   orm_patterns: {
     goParadigm: 'Compile-time type-safe SQL with sqlc or lightweight ORM with GORM, avoiding heavy runtime reflection.',
@@ -141,9 +141,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'For in-process async processing, Go channels deliver 500,000+ jobs/sec in ~15MB RAM without managing Redis infrastructure.'
   },
   bullmq_retries: {
-    goParadigm: 'Explicit exponential backoff retry loops using time.Sleep and channel routing to a Dead Letter Queue (DLQ).',
+    goParadigm: 'Explicit exponential backoff retry loops with randomized jitter to prevent thundering herds, and routing to a DLQ channel.',
     nodeEquivalent: 'BullMQ job options (attempts: 3, backoff: { type: "exponential" }) orchestrated through Redis Lua scripts.',
-    coreTakeaway: 'Writing retry loops in Go makes failure recovery visible, deterministic, and testable without black-box queue dependencies.'
+    coreTakeaway: 'Adding randomized jitter prevents retry storms when downstream services fail, making backoff resilient without external brokers.'
   },
   promise_all: {
     goParadigm: 'True multi-core parallel execution coordinated via sync.WaitGroup or golang.org/x/sync/errgroup.',
@@ -186,9 +186,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Struct embedding allows code reuse and method promotion without locking types into rigid, fragile object-oriented hierarchies.'
   },
   basic_defer_panic: {
-    goParadigm: 'defer schedules cleanup right at acquisition; panic and recover are reserved strictly for unrecoverable exceptional bugs.',
-    nodeEquivalent: 'try/catch/finally blocks where cleanup in finally is physically separated from resource initialization.',
-    coreTakeaway: 'Placing defer resource.Close() immediately after opening ensures cleanup is never forgotten, regardless of how the function exits.'
+    goParadigm: 'defer schedules LIFO cleanup; recover() must be called directly inside a deferred closure in the SAME goroutine (cross-goroutine recover is impossible).',
+    nodeEquivalent: 'try/catch/finally and process.on("uncaughtException"). In Node, unhandled exceptions can be intercepted globally; in Go, an uncaught panic in any goroutine terminates the process.',
+    coreTakeaway: 'recover() only catches panics within its own goroutine stack. Fatal crashes like concurrent map read/write (runtime.throw) cannot be recovered.'
   },
   basic_generics: {
     goParadigm: 'Compile-time parametric polymorphism via type parameters [T any] and constraints [K comparable] without runtime reflection.',

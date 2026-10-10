@@ -82,7 +82,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build \
     -ldflags="-s -w -X main.Version=1.0.0" \
     -trimpath \
-    -o /app/server ./cmd/main.go
+    -o /app/server ./cmd/server
 
 # --- Stage 2: Final Minimal Runtime (< 15MB) ---
 FROM gcr.io/distroless/static-debian12:nonroot
@@ -145,7 +145,7 @@ ENTRYPOINT ["/server"]</pre>
     <div class="deepdive-box">
       <div class="deepdive-title">📄 3. Production .dockerignore Best Practice</div>
       <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
-        Prevents copying local test binaries, git history, or documentation into the Docker build context:
+        Prevents copying local test binaries, git history, or documentation into the Docker build context (Note: if leveraging vendored dependencies for air-gapped Docker builds, remove <code>vendor/</code> from <code>.dockerignore</code>):
       </p>
       <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1rem; border-radius:8px; font-size:0.85rem;">.git
 .gitignore
