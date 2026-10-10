@@ -469,7 +469,7 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 			// Client closed tab or connection reset; immediately abort upstream call!
 			log.Printf("Client disconnected during stream (step %d); saving upstream tokens", i)
 			return
-		default:
+		case &lt;-time.After(50 * time.Millisecond): // Non-blocking timer respecting context cancellation
 			chunk := StreamChunk{
 				ID:      "chatcmpl-gateway-101",
 				Created: time.Now().Unix(),
@@ -479,10 +479,11 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 
 			payload, _ := json.Marshal(chunk)
 			// Format as standard SSE event chunk: "data: {...}\n\n"
-			fmt.Fprintf(w, "data: %s\n\n", payload)
+			if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
+				log.Printf("TCP socket write error (client closed): %v", err)
+				return
+			}
 			flusher.Flush() // Push chunk immediately across TCP socket!
-
-			time.Sleep(50 * time.Millisecond) // Simulated inference token latency
 		}
 	}
 
@@ -492,9 +493,17 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/v1/chat/completions/stream", SSEStreamHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/chat/completions/stream", SSEStreamHandler)
+	server := &amp;http.Server{
+		Addr:              ":8080",
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,  // Slowloris defense
+		IdleTimeout:       120 * time.Second,
+		// WriteTimeout is 0 to allow infinite streaming; individual deadlines set via ResponseController
+	}
 	log.Println("🚀 High-concurrency LLM SSE Gateway listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(server.ListenAndServe())
 }</code></pre>
         </div>
       </div>

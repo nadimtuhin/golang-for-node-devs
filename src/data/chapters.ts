@@ -479,6 +479,7 @@ func main() {
         code: `package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -509,7 +510,12 @@ func main() {
 		Timeout:   2 * time.Second,
 		Transport: transport,
 	}
-	req, err := http.NewRequest("GET", mockServer.URL, nil)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// In microservices, always use NewRequestWithContext to propagate deadlines and cancellation
+	req, err := http.NewRequestWithContext(ctx, "GET", mockServer.URL, nil)
 	if err != nil {
 		fmt.Println("Invalid request:", err)
 		return
@@ -527,7 +533,10 @@ func main() {
 	}()
 
 	var quote QuoteResponse
-	json.NewDecoder(res.Body).Decode(&quote)
+	if err := json.NewDecoder(res.Body).Decode(&quote); err != nil {
+		fmt.Println("Failed to decode response:", err)
+		return
+	}
 
 	fmt.Printf("Status: %d\\n", res.StatusCode)
 	fmt.Printf("Quote: \\"%s\\" — %s\\n", quote.Quote, quote.Author)
@@ -615,8 +624,8 @@ import (
 )
 
 func getEnv(key, fallback string) string {
-	val := os.Getenv(key)
-	if val == "" {
+	val, exists := os.LookupEnv(key)
+	if !exists {
 		return fallback
 	}
 	return val
@@ -1904,7 +1913,7 @@ func main() {
         num: "DS6",
         part: "Part 2: Data Structures",
         title: "Zero-Allocation Pools (sync.Pool)",
-        desc: "In JS, allocating thousands of objects per second causes V8 Garbage Collector stop-the-world spikes. In Go, sync.Pool recycles temporary buffers across goroutines with lock-free concurrency.",
+        desc: "In JS, allocating thousands of objects per second causes V8 Garbage Collector stop-the-world spikes. In Go, sync.Pool recycles temporary buffers across goroutines using per-P local ring buffers and victim caches (Go 1.13+), mitigating GC pauses.",
         nodeCode: "// Node.js Buffer allocation\n// Buffer.alloc creates GC pressure under high traffic\nfunction handlePayload(data) {\n  const buf = Buffer.alloc(4096);\n  buf.write(data);\n  return buf;\n}",
         why: "sync.Pool is essential for high-throughput HTTP servers and network proxies to eliminate GC pauses.",
         code: `package main
@@ -1925,7 +1934,12 @@ func formatLogMessage(level, message string) string {
 	// 1. Borrow a buffer from the pool (Zero heap allocation!)
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
-	defer bufferPool.Put(buf) // Return buffer to pool for reuse!
+	defer func() {
+		// Guard against memory bloat: drop oversized buffers to avoid pinning excessive heap
+		if buf.Cap() <= 64*1024 {
+			bufferPool.Put(buf)
+		}
+	}()
 
 	buf.WriteString("[")
 	buf.WriteString(level)
@@ -2197,7 +2211,7 @@ func main() {
         num: "LC1",
         part: "Part 7: LeetCode in Go",
         title: "Two Sum (#1) — Hash Map Lookup",
-        desc: "Find indices of two numbers that add up to target. In JS, developers use 'new Map()' or a plain object. In Go, pre-allocating 'make(map[int]int, len(nums))' and the comma-ok idiom solves this in O(N) time and O(N) space with zero memory allocations.",
+        desc: "Find indices of two numbers that add up to target. In JS, developers use 'new Map()' or a plain object. In Go, pre-allocating 'make(map[int]int, len(nums))' and the comma-ok idiom solves this in O(N) time and O(N) space with zero dynamic rehashing reallocations.",
         nodeCode: "const seen = new Map();\nfor (let i = 0; i < nums.length; i++) {\n  const comp = target - nums[i];\n  if (seen.has(comp)) return [seen.get(comp), i];\n  seen.set(nums[i], i);\n}",
         why: "Demonstrates Go map lookups with comma-ok (if idx, ok := seen[comp]; ok), slice index manipulation, and preallocating map capacity to avoid rehashing.",
         code: `package main
@@ -2247,23 +2261,24 @@ import "fmt"
 func isValid(s string) bool {
 	// Stack implemented via slice of runes with pre-allocated capacity
 	stack := make([]rune, 0, len(s))
-	bracketMap := map[rune]rune{
-		')': '(',
-		'}': '{',
-		']': '[',
-	}
 
 	for _, ch := range s {
-		// If it's a closing bracket, check top of stack
-		if openExpected, isClosing := bracketMap[ch]; isClosing {
-			if len(stack) == 0 || stack[len(stack)-1] != openExpected {
+		switch ch {
+		case ')', '}', ']':
+			if len(stack) == 0 {
+				return false
+			}
+			top := stack[len(stack)-1]
+			if (ch == ')' && top != '(') || (ch == '}' && top != '{') || (ch == ']' && top != '[') {
 				return false
 			}
 			// Pop from stack by reslicing (O(1) operation)
 			stack = stack[:len(stack)-1]
-		} else {
+		case '(', '{', '[':
 			// Push opening bracket
 			stack = append(stack, ch)
+		default:
+			// Non-bracket runes (if any) are ignored
 		}
 	}
 

@@ -240,16 +240,22 @@ type Product struct {
 	Title     string             `json:"title" bson:"title" validate:"required,min=12"`
 }
 
+// Package-level cached validator instance (avoids reflection rebuild on every request)
+var validate = validator.New()
+
+type CreateProductDTO struct {
+	Title string `json:"title" validate:"required,min=12"`
+}
+
 type ErrorResponse struct {
 	FailedField string
 	Tag         string
 	Value       string
 }
 
-func ValidateProductStruct(p Product) []*ErrorResponse {
+func ValidateProductDTO(dto CreateProductDTO) []*ErrorResponse {
 	var errors []*ErrorResponse
-	validate := validator.New()
-	err := validate.Struct(p)
+	err := validate.Struct(dto)
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
@@ -258,34 +264,27 @@ func ValidateProductStruct(p Product) []*ErrorResponse {
 			element.Tag = err.Tag()
 			element.Value = err.Param()
 			errors = append(errors, &element)
-
 		}
 	}
 	return errors
 }
 
 func CreateProduct(c *fiber.Ctx) error {
+	var dto CreateProductDTO
+	if err := c.BodyParser(&dto); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	// Validate DTO fields
+	if errors := ValidateProductDTO(dto); len(errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
 	product := Product{
 		ID:        primitive.NewObjectID(),
+		Title:     dto.Title,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-	}
-
-	if err := c.BodyParser(&product); err != nil {
-		return err
-	}
-
-	// Could also be broken down to be
-	// err := c.BodyParser(&product)
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	errors := ValidateProductStruct(product)
-
-	if errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
 	client, err := db.GetMongoClient()

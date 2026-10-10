@@ -1079,11 +1079,15 @@ func main() {
 
         var req JSONRPCRequest
         if err := json.Unmarshal(line, &amp;req); err != nil {
-            sendError(nil, -32700, "Parse error")
+            // JSON-RPC 2.0 §5: Parse errors MUST return id: null, not drop the response
+            sendParseError(-32700, "Parse error")
             continue
         }
 
         handleMCPMethod(req)
+    }
+    if err := scanner.Err(); err != nil {
+        fmt.Fprintf(os.Stderr, "MCP stdin scanner error: %v\n", err)
     }
 }
 
@@ -1180,9 +1184,19 @@ func sendResult(id any, result any) {
     fmt.Printf("%s\n", data)
 }
 
+func sendParseError(code int, msg string) {
+    resp := JSONRPCResponse{
+        JSONRPC: "2.0",
+        ID:      nil, // JSON-RPC 2.0 §5 mandates id: null for parse errors
+        Error:   map[string]any{"code": code, "message": msg},
+    }
+    data, _ := json.Marshal(resp)
+    fmt.Printf("%s\n", data)
+}
+
 func sendError(id any, code int, msg string) {
     if id == nil {
-        return // Notifications must NOT receive a response per JSON-RPC 2.0 §4.1
+        return // Valid notifications with method set must NOT receive a response
     }
     resp := JSONRPCResponse{
         JSONRPC: "2.0",

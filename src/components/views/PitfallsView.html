@@ -282,7 +282,7 @@ _, _ = io.Copy(io.Discard, resp.Body) // Drain to enable HTTP Keep-Alive reuse
     <div class="pitfall-card">
       <div class="pitfall-title">🪤 Pitfall 9: time.After in Loop / Select Leaks Timers</div>
       <p style="color: #475569; font-size: 0.9rem;">
-        <code>time.After(d)</code> allocates a <code>time.Timer</code> that is NOT garbage collected until duration <code>d</code> elapses. Calling it inside a continuous select loop accumulates thousands of uncollected timers in memory.
+        In Go &lt; 1.23, <code>time.After(d)</code> allocates a <code>time.Timer</code> that is NOT garbage collected until duration <code>d</code> elapses. Calling it inside a continuous select loop accumulates thousands of uncollected timers in memory. (Note: Go 1.23+ overhauled the timer runtime so unreferenced timers are immediately garbage collected and channel buffering issues are resolved).
       </p>
       <div class="code-diff-grid">
         <div class="code-box-wrong">
@@ -297,7 +297,8 @@ for {
 }
         </div>
         <div class="code-box-correct">
-          <div class="label-correct">✅ FIX: Reuse time.NewTimer with non-blocking drain and Reset</div>
+          <div class="label-correct">✅ FIX: Reuse time.NewTimer (with drain pre-1.23 or native Reset in 1.23+)</div>
+// Pre-Go 1.23: Explicitly drain timer.C if Stop() returns false before Reset()
 timer := time.NewTimer(30 * time.Second)
 defer timer.Stop()
 for {
@@ -313,6 +314,7 @@ for {
     case &lt;-timer.C:
         handleTimeout()
     }
+    // In Go 1.23+, timer.Reset(d) safely cleans up expired channels automatically!
     timer.Reset(30 * time.Second)
 }
         </div>

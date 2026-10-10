@@ -1383,7 +1383,7 @@ function calculateFee(p: PaymentMethod): number {
         if (!resultBox || !titleEl || !badgeEl || !descEl || !reasonsEl) return;
 
         // Hard constraint override matching architectural flowchart
-        if (workload === 'wasm' || (workload === 'engine' && latency === 'zero')) {
+        if (workload === 'wasm' || latency === 'zero' || (workload === 'engine' && latency !== 'normal')) {
           rustScore = 999;
         }
 

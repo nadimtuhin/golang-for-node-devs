@@ -271,9 +271,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Linear greedy traversal yields optimal O(1) space complexity without requiring auxiliary arrays or dynamic programming matrices.'
   },
   lc_valid_palindrome: {
-    goParadigm: 'Two-pointer approach skipping non-alphanumeric runes in-place without allocating reversed strings.',
+    goParadigm: 'Two-pointer approach over a rune slice skipping non-alphanumeric runes without regex or string reversals.',
     nodeEquivalent: 'Regex string cleaning str.replace(/[^a-z0-9]/gi, \'\') followed by .split(\'\').reverse().join(\'\').',
-    coreTakeaway: 'In-place two-pointer rune comparison avoids the heap allocations of string splitting and reversing entirely.'
+    coreTakeaway: 'Using []rune(s) requires O(N) space for rune decoding, but avoids regex engine overhead and multiple intermediate string allocations.'
   },
   lc_reverse_linked_list: {
     goParadigm: 'Iterative 3-pointer manipulation (prev, curr, next) reversing pointers in-place in O(N) time and O(1) space.',

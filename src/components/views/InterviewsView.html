@@ -188,11 +188,11 @@ go func() {
           </p>
           <ul>
             <li><code>sysmon</code> runs without holding a P and inspects Goroutines every 20μs to 10ms.</li>
-            <li>If a Goroutine has executed on an M for longer than <strong>10 ms</strong>, <code>sysmon</code> sends a POSIX signal (<code>SIGURG</code> on Linux/macOS) to that specific M OS thread.</li>
+            <li>If a Goroutine has executed on an M for longer than <strong>10 ms</strong>, <code>sysmon</code> preempts the thread asynchronously using OS-level mechanisms (<code>SIGURG</code> on Linux/macOS, <code>SuspendThread</code> on Windows) at GC-safe execution points.</li>
             <li>The signal handler intercepts the OS thread, saves CPU register state, inserts an asynchronous preemption point, and calls the scheduler to switch to another runnable G.</li>
           </ul>
           <div class="qa-pro-tip">
-            <strong>Interview Pro-Tip:</strong> In Node.js, there is NO preemption. An infinite synchronous <code>while(true){}</code> loop permanently freezes the V8 event loop. In modern Go, a tight <code>for {}</code> loop will be gracefully preempted every 10ms via <code>SIGURG</code>.
+            <strong>Interview Pro-Tip:</strong> In Node.js, there is NO preemption. An infinite synchronous <code>while(true){}</code> loop permanently freezes the V8 event loop. In modern Go, a tight <code>for {}</code> loop will be gracefully preempted every 10ms via OS-level asynchronous preemption.
           </div>
         </div>
       </div>
@@ -837,8 +837,8 @@ func Produce(ctx context.Context) <-chan int {
                   <td style="padding: 0.6rem; color: #b91c1c;">Holding locks across network calls or long-running disk I/O.</td>
                 </tr>
                 <tr>
-                  <td style="padding: 0.6rem; font-weight: bold; color: #ca8a04;">sync/atomic</td>
-                  <td style="padding: 0.6rem;">Ultra-hot counters (metrics, request counts), lockless flags, Compare-And-Swap (CAS).</td>
+                  <td style="padding: 0.6rem; font-weight: bold; color: #ca8a04;">sync/atomic (Go 1.19+ Types)</td>
+                  <td style="padding: 0.6rem;">Lock-free counters, flags, pointer swapping (<code>atomic.Pointer[T]</code>, <code>atomic.Value</code>). Guarantees sequential consistency and eliminates 32-bit alignment traps.</td>
                   <td style="padding: 0.6rem; color: #b91c1c;">Coordinating multi-step transactions across multiple fields.</td>
                 </tr>
               </tbody>
@@ -846,9 +846,14 @@ func Produce(ctx context.Context) <-chan int {
           </div>
           <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.75rem; margin:0.75rem 0;">
             <div style="font-weight:700; color:#0f172a; font-size:0.85rem;">🔒 Staff Deep-Dive: sync.Mutex Normal vs Starvation Mode (Go 1.9+)</div>
-            <p style="font-size:0.82rem; color:#475569; margin:0.35rem 0 0 0; line-height:1.5;">
+            <p style="font-size:0.82rem; color:#475569; margin:0.35rem 0 0.5rem 0; line-height:1.5;">
               <strong>Normal Mode (Throughput Optimized):</strong> Waiters queue in FIFO order, but a woken-up waiter competes with newly arriving goroutines already scheduled on an OS thread (which possess CPU cache locality). Incoming goroutines can acquire the lock without sleeping.<br/>
               <strong>Starvation Mode (Tail-Latency Guaranteed):</strong> If a waiter fails to acquire the mutex for <strong>&gt; 1 millisecond</strong>, the mutex transitions into Starvation Mode. Incoming goroutines are prohibited from spinning and join the tail of the wait queue. The releasing goroutine hands ownership directly to the front waiter. Once the waiter waited &lt; 1ms or is the last in the queue, it transitions back to Normal Mode.
+            </p>
+            <div style="font-weight:700; color:#0f172a; font-size:0.85rem;">⚠️ sync.RWMutex Writer Preference &amp; Recursive RLock Deadlock</div>
+            <p style="font-size:0.82rem; color:#475569; margin:0.35rem 0 0 0; line-height:1.5;">
+              To prevent <strong>Writer Starvation</strong>, once a writer calls <code>Lock()</code>, all subsequent <code>RLock()</code> calls are blocked until the writer releases the lock.<br/>
+              <strong>Deadlock Hazard:</strong> If a goroutine holding an <code>RLock</code> calls a nested/recursive function that also requests an <code>RLock</code> while a writer is waiting, it will <strong>deadlock permanently</strong>. Never use recursive read locks with <code>sync.RWMutex</code>.
             </p>
           </div>
           <div class="qa-pro-tip">
@@ -1112,7 +1117,9 @@ if errors.As(err, &valErr) {
           </p>
           <ul>
             <li><strong>Cancellation Cascades:</strong> When a parent context is cancelled (e.g. client terminates connection or deadline expires), the runtime cancels all derived child contexts immediately via the closed <code>&lt;-ctx.Done()</code> channel. Downstream database drivers and gRPC clients listening to this channel abort immediately, preventing wasted database CPU cycles.</li>
-            <li><strong>Deadlines & Timeouts:</strong> <code>context.WithTimeout(parent, 2*time.Second)</code> guarantees a hard SLA bound.</li>
+            <li><strong>Deadlines &amp; Timeouts:</strong> <code>context.WithTimeout(parent, 2*time.Second)</code> guarantees a hard SLA bound.</li>
+            <li><strong>Deadline Minimum Rule:</strong> A child context cannot extend a parent context's deadline. If a parent expires in 2s, <code>context.WithTimeout(parent, 10*time.Second)</code> will still expire in 2s.</li>
+            <li><strong>Go 1.21+ context.AfterFunc:</strong> Registers a callback function that runs in its own goroutine when the context finishes, eliminating dedicated watcher goroutines waiting on <code>&lt;-ctx.Done()</code>.</li>
           </ul>
           
           <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:6px; padding:0.75rem; margin:0.75rem 0;">
@@ -1167,11 +1174,12 @@ func main() {
     })
 
     server := &http.Server{
-        Addr:         ":8080",
-        Handler:      mux,
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 10 * time.Second,
-        IdleTimeout:  120 * time.Second,
+        Addr:              ":8080",
+        Handler:           mux,
+        ReadHeaderTimeout: 3 * time.Second,  // Mandatory Slowloris defense (gosec G112)
+        ReadTimeout:       5 * time.Second,
+        WriteTimeout:      10 * time.Second,
+        IdleTimeout:       120 * time.Second,
     }
 
     // 2. Start server in a background Goroutine
