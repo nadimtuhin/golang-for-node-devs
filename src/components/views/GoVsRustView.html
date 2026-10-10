@@ -1031,6 +1031,11 @@ function calculateFee(p: PaymentMethod): number {
         <div class="diagram-subtitle">How modern cloud teams structure high-scale systems:</div>
         <div class="diagram-svg-container">
           <svg viewBox="0 0 880 160" width="100%" height="160" xmlns="http://www.w3.org/2000/svg" style="font-family: system-ui, -apple-system, sans-serif;">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#007d9c"/>
+              </marker>
+            </defs>
             <!-- Client -->
             <rect x="15" y="45" width="120" height="70" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
             <text x="35" y="85" font-size="12" font-weight="bold" fill="#334155">Client Web/App</text>
@@ -1199,7 +1204,7 @@ function calculateFee(p: PaymentMethod): number {
         <div id="recommendationResult" style="margin-top: 1.5rem; padding: 1.25rem; border-radius: var(--radius-sm); background: #f0fdf4; border: 1.5px solid #86efac; display: block;" role="region" aria-live="polite" aria-label="Recommendation Output">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
             <div id="recTitle" style="font-size: 1.2rem; font-weight: 800; color: #166534;">
-              🐹 Recommendation: Go (Golang) — 92% Alignment
+              🐹 Recommendation: Go (Golang) — Optimal Velocity
             </div>
             <span id="recBadge" class="badge" style="background: #dcfce7; color: #166534; border: 1px solid #86efac;">Optimal Fit</span>
           </div>
