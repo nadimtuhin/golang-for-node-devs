@@ -1976,15 +1976,73 @@ main#main-content:not(.playground-column) {
     width: 100%;
     min-height: auto;
   }
+
+  /* Make playground editor adapt naturally on phones without dual scrollbars */
+  .gitbook-sandbox .CodeMirror {
+    height: auto;
+    min-height: 260px;
+    max-height: 440px;
+  }
+
+  .editor-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .editor-tab-group {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .editor-tab {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  .editor-actions {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .console-panel {
+    height: auto;
+    min-height: 160px;
+    max-height: 280px;
+  }
+
+  .console-header {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+  }
 }
 
 @media (max-width: 640px) {
   header {
-    padding: 0.4rem 0.75rem;
-    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    gap: 0.4rem;
+  }
+  .brand {
+    font-size: 0.95rem;
+    gap: 0.4rem;
   }
   .brand .badge {
     display: none;
+  }
+  .header-nav-scroll {
+    gap: 0.25rem;
+  }
+  .tab-toggle {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
+  }
+  .github-link-btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
   }
   .dropdown-menu {
     position: fixed;
@@ -1998,10 +2056,10 @@ main#main-content:not(.playground-column) {
     grid-template-columns: 1fr;
   }
   .gitbook-title {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
   }
   .gitbook-desc {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
   .gitbook-pager {
     grid-template-columns: 1fr;
@@ -2011,7 +2069,16 @@ main#main-content:not(.playground-column) {
     text-align: left;
     align-items: flex-start;
   }
+  .btn-run {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.76rem;
+  }
+  .tool-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.74rem;
+  }
 }
+
 
 
 
