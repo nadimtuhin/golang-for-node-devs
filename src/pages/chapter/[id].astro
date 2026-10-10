@@ -60,8 +60,10 @@ if (pageTitle.length > 60) {
 
   <!-- Client-side Interactive Engine -->
   <script is:inline src="/chapters-data.js"></script>
+  <script is:inline src="/chapter-insights.js"></script>
   <script define:vars={{ initialKey: chapterKey }}>
     var chaptersData = window.chaptersData || {};
+    var chapterInsights = window.chapterInsights || {};
 
     let activeKey = initialKey || 'basic_vars';
     let editor = null;
@@ -294,6 +296,16 @@ if (pageTitle.length > 60) {
       }
 
       document.getElementById('detailGoWhy').innerText = data.why;
+
+      const insightData = chapterInsights[key];
+      if (insightData) {
+        const insightGo = document.getElementById('detailInsightGo');
+        if (insightGo) insightGo.innerText = insightData.goParadigm;
+        const insightNode = document.getElementById('detailInsightNode');
+        if (insightNode) insightNode.innerText = insightData.nodeEquivalent;
+        const insightTakeaway = document.getElementById('detailInsightTakeaway');
+        if (insightTakeaway) insightTakeaway.innerText = insightData.coreTakeaway;
+      }
 
       document.getElementById('editorCurrentFile').innerText = `📄 main.go — ${data.title}`;
       if (editor) {
