@@ -492,10 +492,10 @@ go func() {
           <p>
             A Go slice is a 24-byte struct defined internally as:
           </p>
-          <pre style="background:#1e293b; color:#e2e8f0; padding:0.6rem; border-radius:6px; font-size:0.83rem; margin:0.5rem 0;">type SliceHeader struct {
-    Data uintptr // Pointer to backing array (8 bytes)
-    Len  int     // Number of accessible elements (8 bytes)
-    Cap  int     // Total capacity from slice start to array end (8 bytes)
+          <pre style="background:#1e293b; color:#e2e8f0; padding:0.6rem; border-radius:6px; font-size:0.83rem; margin:0.5rem 0;">type slice struct {
+    array unsafe.Pointer // Pointer to backing array (8 bytes)
+    len   int            // Number of accessible elements (8 bytes)
+    cap   int            // Total capacity from slice start to array end (8 bytes)
 }</pre>
           <p><strong>Pitfall 1: Sub-Slice Memory Leak</strong></p>
           <p>
@@ -1115,9 +1115,14 @@ func main() {
     ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
     defer stop()
 
+    mux := http.NewServeMux()
+    mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+    })
+
     server := &http.Server{
         Addr:         ":8080",
-        Handler:      myRouter,
+        Handler:      mux,
         ReadTimeout:  5 * time.Second,
         WriteTimeout: 10 * time.Second,
         IdleTimeout:  120 * time.Second,
@@ -1144,8 +1149,8 @@ func main() {
         log.Printf("HTTP server forced shutdown: %v", err)
     }
 
-    // 6. Close database pools, Redis clients, Kafka producers cleanly
-    db.Close()
+    // 6. Close database connection pools, Redis clients, Kafka producers cleanly
+    // e.g. db.Close()
     log.Println("Graceful shutdown completed successfully.")
 }</pre>
           <div class="qa-pro-tip">

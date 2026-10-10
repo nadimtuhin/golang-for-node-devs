@@ -250,9 +250,9 @@ func main() {
         num: "⭐",
         part: "Featured: Video Project",
         title: "Express vs Fiber (Video Project)",
-        desc: "Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). Fiber provides an Express-like routing API (app.Get, app.Post, c.JSON) while leveraging the zero-allocation fasthttp engine.",
+        desc: "Express.js is re-architected in Go using Fiber (github.com/gofiber/fiber/v2). For standalone playground execution without third-party module imports, this interactive snippet models the route handlers and JSON serialization with the standard library.",
         nodeCode: "import express from 'express';\nconst app = express();\napp.use(express.json());\n\n// Express routing and JSON handling\napp.get('/api/products', (req, res) => {\n  res.json([\n    { id: 'prod_1', title: 'Mechanical Keyboard' },\n    { id: 'prod_2', title: 'Ultrawide Monitor' }\n  ]);\n});\n\napp.post('/api/products', (req, res) => {\n  const newProduct = { id: `prod_${Date.now()}`, ...req.body };\n  res.status(201).json(newProduct);\n});",
-        why: "Fiber is built on Fasthttp, the fastest HTTP engine in Go. It keeps Express-style routing while executing at 10x-20x the throughput of Node with minimal memory!",
+        why: "Fiber builds directly on the Fasthttp zero-allocation engine. In production apps, it provides Express-like routing with 10x-20x the throughput of Node and sub-20MB memory.",
         code: `package main
 
 import (

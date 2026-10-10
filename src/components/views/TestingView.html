@@ -801,7 +801,13 @@ func TestSessionCache_TTL_TimeTravel(t *testing.T) {
           Use <code>miniredis</code> for 95% of standard unit & cache tests. Switch to <strong>Testcontainers Redis</strong> (<code>testcontainers-go/modules/redis</code>) when testing Redis 7.2+ Consumer Groups / Streams (<code>XREADGROUP</code>), complex Lua scripts (<code>EVALSHA</code>), or Redis Cluster semantics:
         </p>
 
-        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>redisContainer, err := redis.Run(ctx, "redis:7.2-alpine")
+        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0;"><code>import (
+    tcRedis "github.com/testcontainers/testcontainers-go/modules/redis"
+    "github.com/redis/go-redis/v9"
+)
+
+// Spin up isolated ephemeral Redis 7.2 container
+redisContainer, err := tcRedis.Run(ctx, "redis:7.2-alpine")
 require.NoError(t, err)
 t.Cleanup(func() { _ = redisContainer.Terminate(ctx) })
 
