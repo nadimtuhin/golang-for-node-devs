@@ -172,6 +172,7 @@ for _, filename := range files {
 var client *HttpClient
 if env == "prod" {
     client, err := NewProdClient() // SHADOWS client!
+    if err != nil { return err }
 }
 // client is still nil here!
         </div>
@@ -181,6 +182,7 @@ var client *HttpClient
 var err error
 if env == "prod" {
     client, err = NewProdClient() // Assigns to outer client
+    if err != nil { return err }
 }
         </div>
       </div>
@@ -295,18 +297,23 @@ for {
 }
         </div>
         <div class="code-box-correct">
-          <div class="label-correct">✅ FIX: Reuse time.NewTimer with Reset</div>
+          <div class="label-correct">✅ FIX: Reuse time.NewTimer with non-blocking drain and Reset</div>
 timer := time.NewTimer(30 * time.Second)
 defer timer.Stop()
 for {
-    timer.Reset(30 * time.Second)
     select {
     case msg := &lt;-ch:
-        if !timer.Stop() { &lt;-timer.C }
+        if !timer.Stop() {
+            select {
+            case &lt;-timer.C:
+            default:
+            }
+        }
         process(msg)
     case &lt;-timer.C:
         handleTimeout()
     }
+    timer.Reset(30 * time.Second)
 }
         </div>
       </div>

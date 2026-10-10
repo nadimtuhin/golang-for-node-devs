@@ -919,6 +919,8 @@ import (
 	"context"
 	"net"
 	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 // listenReusePort creates a TCP listener with SO_REUSEPORT enabled,
@@ -926,9 +928,11 @@ import (
 func listenReusePort(addr string) (net.Listener, error) {
 	lc := net.ListenConfig{
 		Control: func(network, address string, c syscall.RawConn) error {
-			return c.Control(func(fd uintptr) {
-				_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, 0xf /* SO_REUSEPORT */, 1)
+			var err error
+			c.Control(func(fd uintptr) {
+				err = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, 1)
 			})
+			return err
 		},
 	}
 	return lc.Listen(context.Background(), "tcp", addr)

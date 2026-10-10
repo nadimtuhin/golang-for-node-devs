@@ -499,7 +499,16 @@ func main() {
 	}))
 	defer mockServer.Close()
 
-	client := &http.Client{Timeout: 2 * time.Second}
+	// Production Transport: override MaxIdleConnsPerHost (default is only 2!)
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.MaxIdleConns = 100
+	transport.MaxIdleConnsPerHost = 100
+	transport.IdleConnTimeout = 90 * time.Second
+
+	client := &http.Client{
+		Timeout:   2 * time.Second,
+		Transport: transport,
+	}
 	req, err := http.NewRequest("GET", mockServer.URL, nil)
 	if err != nil {
 		fmt.Println("Invalid request:", err)
@@ -513,7 +522,7 @@ func main() {
 		return
 	}
 	defer func() {
-		io.Copy(io.Discard, res.Body) // Drain body to preserve TCP connection reuse
+		_, _ = io.Copy(io.Discard, io.LimitReader(res.Body, 1<<20)) // Drain up to 1MB to preserve TCP Keep-Alive
 		res.Body.Close()
 	}()
 
@@ -952,6 +961,8 @@ func main() {
 	fmt.Printf("2. db.QueryRow -> Scanned: ID=%d, Email=%s\\n\\n", singleUser.ID, singleUser.Email)
 
 	fmt.Println("3. rows, err := db.Query(\\"SELECT id, email FROM users\\")")
+	// CRITICAL: Always 'defer rows.Close()' to prevent pool connection exhaustion!
+	// CRITICAL: Always check 'if err := rows.Err(); err != nil' after row iteration loop.
 	users := []User{{ID: 1, Email: "admin@system.com"}, {ID: 2, Email: "bob@test.com"}}
 	for _, u := range users {
 		fmt.Printf("   ✓ Row scanned: %+v\\n", u)
@@ -1249,8 +1260,11 @@ import (
 )
 
 func queryWithContext(ctx context.Context) {
+	timer := time.NewTimer(250 * time.Millisecond)
+	defer timer.Stop()
+
 	select {
-	case <-time.After(250 * time.Millisecond):
+	case <-timer.C:
 		fmt.Println("Query completed successfully!")
 	case <-ctx.Done():
 		fmt.Println("❌ Query cancelled by context:", ctx.Err())
@@ -1743,7 +1757,9 @@ func (q *FIFOQueue[T]) Dequeue() (T, error) {
 
 	// Periodically compact memory when head consumes over half of capacity
 	if q.head > 32 && q.head*2 >= len(q.items) {
-		q.items = q.items[q.head:]
+		newItems := make([]T, len(q.items)-q.head)
+		copy(newItems, q.items[q.head:])
+		q.items = newItems
 		q.head = 0
 	}
 	return item, nil
@@ -2319,9 +2335,9 @@ func main() {
         num: "LC125",
         part: "Part 7: LeetCode in Go",
         title: "Valid Palindrome (#125) — In-Place Runes & Two Pointers",
-        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers directly over the string avoids heap allocations completely.",
+        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers over a rune slice handles multi-byte UTF-8 cleanly with zero regex overhead.",
         nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
-        why: "In Node, regex replace creates heavy string copies. In Go, direct two-pointer string indexing with unicode.IsLetter and unicode.ToLower achieves true O(1) space with zero heap allocations.",
+        why: "In Node, regex replace creates multiple intermediate string copies. In Go, a rune slice with unicode.IsLetter and unicode.ToLower runs in a single O(N) pass.",
         code: `package main
 
 import (

@@ -1208,12 +1208,17 @@ func BenchmarkJSONMarshal(b *testing.B) {
           <div style="font-weight: 700; color: #991b1b; font-size: 0.85rem; margin-bottom: 0.4rem;">⚠️ Unsynchronized Concurrent Map Write (Catastrophic Race)</div>
           <pre style="background: #0f172a; color: #f8fafc; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;"><code>func TestRaceCondition(t *testing.T) {
     m := make(map[string]int)
+    var wg sync.WaitGroup
+    wg.Add(2)
     go func() {
+        defer wg.Done()
         m["visitors"]++ // Write 1
     }()
     go func() {
+        defer wg.Done()
         m["visitors"]++ // Concurrent Write 2 -> DATA RACE!
     }()
+    wg.Wait()
 }</code></pre>
           <div style="background: #450a0a; color: #fca5a5; padding: 0.65rem; border-radius: 4px; font-family: monospace; font-size: 0.75rem; margin-top: 0.5rem; line-height: 1.5;">
             ==================<br/>

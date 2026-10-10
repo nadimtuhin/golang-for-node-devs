@@ -156,12 +156,17 @@ const (
 func GetMongoClient() (*mongo.Client, error) {
 	mongoOnce.Do(func() {
 		clientOptions := options.Client().ApplyURI(url)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 
-		client, err := mongo.Connect(context.TODO(), clientOptions)
-
+		client, err := mongo.Connect(ctx, clientOptions)
+		if err != nil {
+			clientInstanceError = err
+			return
+		}
+		// Verify initial connectivity so singleton does not lock into a broken client
+		clientInstanceError = client.Ping(ctx, nil)
 		clientInstance = client
-
-		clientInstanceError = err
 	})
 
 	return clientInstance, clientInstanceError
@@ -317,7 +322,7 @@ func GetAllProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	defer cur.Close(ctx)
+	defer cur.Close(context.Background())
 
 	// In modern MongoDB driver, cur.All decodes the entire cursor into the slice
 	if err := cur.All(ctx, &products); err != nil {

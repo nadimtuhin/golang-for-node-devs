@@ -1157,9 +1157,14 @@ func handleMCPMethod(req JSONRPCRequest) {
             return
         }
 
-        if req.ID != nil {
-            sendError(req.ID, -32601, "Method or tool not found")
-        }
+        // In MCP, unknown tool is returned as tool execution error result
+        sendResult(req.ID, map[string]any{
+            "content": []map[string]any{
+                {"type": "text", "text": fmt.Sprintf("tool '%s' not found", params.Name)},
+            },
+            "isError": true,
+        })
+        return
 
     default:
         if req.ID == nil {
@@ -1176,6 +1181,9 @@ func sendResult(id any, result any) {
 }
 
 func sendError(id any, code int, msg string) {
+    if id == nil {
+        return // Notifications must NOT receive a response per JSON-RPC 2.0 §4.1
+    }
     resp := JSONRPCResponse{
         JSONRPC: "2.0",
         ID:      id,

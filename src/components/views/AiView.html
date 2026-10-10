@@ -449,7 +449,9 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 	// 2. Set strict Server-Sent Events headers
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache, no-transform")
-	w.Header().Set("Connection", "keep-alive")
+	if r.ProtoMajor == 1 {
+		w.Header().Set("Connection", "keep-alive") // HTTP/1.1 only; forbidden in HTTP/2
+	}
 	w.Header().Set("X-Accel-Buffering", "no") // Disables Nginx reverse proxy buffering
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusOK)
