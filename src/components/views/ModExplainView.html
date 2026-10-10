@@ -41,7 +41,7 @@
             <strong>Node (<code>package-lock.json</code>):</strong> A complete graph tree lockfile. Without it, npm re-resolves versions across SemVer ranges.
           </p>
           <p style="font-size: 0.88rem; color: #0f172a;">
-            <strong>Go (<code>go.sum</code>):</strong> NOT a lockfile. A cryptographic SHA-256 Merkle tree ledger validating that downloaded code has never been altered.
+            <strong>Go (<code>go.sum</code>):</strong> NOT a lockfile. A cryptographic SHA-256 integrity log recording <code>h1:</code> hashes for each module, verified against the <code>sum.golang.org</code> transparent Merkle tree ledger.
           </p>
         </div>
 

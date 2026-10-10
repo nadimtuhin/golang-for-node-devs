@@ -1,40 +1,127 @@
 <div id="viewCheatsheet" class="view-container">
-    <div class="view-inner-content">
+  <div class="view-inner-content">
     <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #0f172a;">⚡ Node.js ➔ Go Backend Rosetta Stone</h2>
-    <p style="color: var(--text-body); margin-bottom: 1.5rem;">Direct code mappings for arrays, types, databases, queues, and concurrency.</p>
+    <p style="color: var(--text-body); margin-bottom: 1.5rem;">Direct code mappings for arrays, types, error handling, databases, queues, and concurrency.</p>
 
     <table class="diff-table">
       <thead>
         <tr>
           <th>JavaScript / Node Concept</th>
           <th>Go Equivalent</th>
-          <th>Why Go is Different</th>
+          <th>Architectural Advantage in Go</th>
         </tr>
       </thead>
       <tbody>
+        <!-- Arrays & Collections -->
+        <tr>
+          <td colspan="3" style="background:#f1f5f9; font-weight:bold; color:#0369a1; padding:0.5rem 0.75rem;">📦 Arrays & Collections</td>
+        </tr>
         <tr>
           <td><code>arr.map(fn)</code></td>
           <td><code>for i, v := range arr</code> or Generic <code>Map[T, R]()</code></td>
-          <td>Pre-allocating slice capacity eliminates GC allocations.</td>
+          <td>Pre-allocating slice capacity with <code>make([]R, 0, len(arr))</code> eliminates GC re-allocations.</td>
         </tr>
         <tr>
           <td><code>arr.filter(fn)</code></td>
           <td><code>for _, v := range arr { if fn(v) append }</code></td>
-          <td>Explicit and transparent with zero hidden function wrapper overhead.</td>
+          <td>Explicit and transparent with zero hidden closure wrapper overhead.</td>
         </tr>
         <tr>
           <td><code>arr.sort((a,b) => a - b)</code></td>
           <td><code>slices.Sort(arr)</code> or <code>slices.SortFunc()</code></td>
-          <td>Built-in pdqsort (pattern-defeating quicksort), ultra fast.</td>
+          <td>Standard library pdqsort (Pattern-Defeating Quicksort) with zero boxing allocations.</td>
         </tr>
         <tr>
           <td><code>new Set([1, 2, 2])</code></td>
           <td><code>map[T]struct{}</code> (empty struct set)</td>
-          <td>Empty struct <code>struct{}</code> occupies zero bytes in memory.</td>
+          <td>Empty struct <code>struct{}</code> occupies literally zero bytes of RAM.</td>
+        </tr>
+
+        <!-- Types & Structs -->
+        <tr>
+          <td colspan="3" style="background:#f1f5f9; font-weight:bold; color:#0369a1; padding:0.5rem 0.75rem;">🏷️ Types, Nullability & Interfaces</td>
+        </tr>
+        <tr>
+          <td><code>interface User { id: string; opt?: number }</code></td>
+          <td><code>type User struct { ID string; Opt *int }</code></td>
+          <td>Concrete contiguous memory layout. Pointers explicitly model optional fields.</td>
+        </tr>
+        <tr>
+          <td><code>unknown</code> / <code>any</code></td>
+          <td><code>any</code> (alias for <code>interface{}</code>)</td>
+          <td>Runtime type-safe unpacked via <code>v, ok := val.(TargetType)</code> comma-ok assertions.</td>
+        </tr>
+        <tr>
+          <td><code>class Bot implements Greeter</code></td>
+          <td>Implicit duck typing (no <code>implements</code> keyword)</td>
+          <td>Any struct implementing required methods satisfies the interface automatically.</td>
+        </tr>
+
+        <!-- Concurrency & Async -->
+        <tr>
+          <td colspan="3" style="background:#f1f5f9; font-weight:bold; color:#0369a1; padding:0.5rem 0.75rem;">⚡ Concurrency & Asynchronous Flow</td>
+        </tr>
+        <tr>
+          <td><code>async function worker()</code> / <code>fn()</code></td>
+          <td><code>go worker()</code> (Goroutine)</td>
+          <td>True multi-core parallelism using ~2KB dynamic stacks instead of event-loop ticks.</td>
+        </tr>
+        <tr>
+          <td><code>Promise.all([p1, p2, p3])</code></td>
+          <td><code>sync.WaitGroup</code> or <code>errgroup.Group</code></td>
+          <td>Executes tasks simultaneously across OS threads; <code>errgroup</code> cancels on first failure.</td>
+        </tr>
+        <tr>
+          <td><code>Promise.race([p1, p2])</code></td>
+          <td><code>select { case <-ch1: ... case <-ch2: ... }</code></td>
+          <td>Language-level multiplexing without Promise wrapper object allocations.</td>
+        </tr>
+        <tr>
+          <td><code>AbortController</code> / <code>signal</code></td>
+          <td><code>context.WithTimeout(ctx, duration)</code></td>
+          <td>Universal standard propagated across the entire HTTP, DB, and gRPC call stack.</td>
+        </tr>
+
+        <!-- Errors & Control Flow -->
+        <tr>
+          <td colspan="3" style="background:#f1f5f9; font-weight:bold; color:#0369a1; padding:0.5rem 0.75rem;">🛡️ Error Handling</td>
+        </tr>
+        <tr>
+          <td><code>throw new Error("msg")</code></td>
+          <td><code>return nil, errors.New("msg")</code></td>
+          <td>Errors are regular values; no performance penalty from call-stack unwinding.</td>
+        </tr>
+        <tr>
+          <td><code>try { ... } catch (err) { ... }</code></td>
+          <td><code>if err != nil { return err }</code></td>
+          <td>Explicit control flow eliminates uncaught exceptions and crashes.</td>
+        </tr>
+        <tr>
+          <td><code>err instanceof CustomError</code></td>
+          <td><code>errors.As(err, &target)</code> or <code>errors.Is()</code></td>
+          <td>Unwraps through nested <code>%w</code> wrapped error chains with type safety.</td>
+        </tr>
+
+        <!-- Databases & Queues -->
+        <tr>
+          <td colspan="3" style="background:#f1f5f9; font-weight:bold; color:#0369a1; padding:0.5rem 0.75rem;">🗄️ Databases & Background Queues</td>
+        </tr>
+        <tr>
+          <td><code>new Pool({ max: 20 })</code> (pg-pool)</td>
+          <td><code>db.SetMaxOpenConns(20)</code> (database/sql)</td>
+          <td>Single thread-safe pool shared across all goroutines without PM2 cluster duplication.</td>
+        </tr>
+        <tr>
+          <td><code>Prisma</code> / <code>TypeORM</code></td>
+          <td><code>sqlc</code> or <code>GORM</code></td>
+          <td><code>sqlc</code> compiles SQL queries to zero-reflection, hyper-fast native Go structs.</td>
+        </tr>
+        <tr>
+          <td><code>BullMQ</code> + Redis (in-process jobs)</td>
+          <td>Buffered Channels + Worker Goroutines</td>
+          <td>Processes 500,000+ jobs/sec in ~15MB memory without external Redis dependency.</td>
         </tr>
       </tbody>
     </table>
   </div>
-
-  
-  <!-- VIEW 5: GO PHILOSOPHY & ZEN OF GO -->
+</div>

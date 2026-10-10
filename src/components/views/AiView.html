@@ -610,7 +610,8 @@ func main() {
 	}
 
 	// 2. Define chat request with streaming callback
-	req := &amp;api.ChatRequest{
+	streamTrue := true
+	req := &api.ChatRequest{
 		Model: "llama3.2:latest", // or "mistral", "deepseek-r1"
 		Messages: []api.Message{
 			{
@@ -622,7 +623,7 @@ func main() {
 				Content: "Why does Go have negligible memory overhead for 10,000 concurrent streaming connections?",
 			},
 		},
-		Stream: new(bool), // true by default
+		Stream: &streamTrue, // Explicitly enable real-time streaming
 	}
 
 	fmt.Print("🤖 Ollama: ")

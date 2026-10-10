@@ -54,9 +54,9 @@
 
     <!-- Pitfall 1: Loop Variable Capture in Goroutines -->
     <div class="pitfall-card">
-      <div class="pitfall-title">🪤 Pitfall 1: Loop Variable Capture in Goroutines</div>
+      <div class="pitfall-title">🪤 Pitfall 1: Loop Variable Capture in Goroutines (Pre-Go 1.22)</div>
       <p style="color: #475569; font-size: 0.9rem;">
-        In older Go (pre-1.22) and many concurrent patterns, closures in goroutines capture the reference of the loop variable, not its value at iteration time!
+        In Go &lt; 1.22, closures inside goroutines captured the memory address of the shared loop variable! While <strong>Go 1.22+ officially fixed this</strong> by scoping variables per-iteration, passing arguments explicitly remains the universal best practice for backward compatibility.
       </p>
       <div class="code-diff-grid">
         <div class="code-box-wrong">
@@ -213,6 +213,42 @@ bytes, _ := json.Marshal(User{"Tom", "t@t.com"})
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- VIEW 8: TROUBLESHOOTING & DEBUGGING WORKFLOWS -->
+    <!-- Pitfall 7: The Nil Interface Trap (Typed Nil Pointer) -->
+    <div class="pitfall-card">
+      <div class="pitfall-title">🪤 Pitfall 7: The Nil Interface Trap (Typed nil != nil)</div>
+      <p style="color: #475569; font-size: 0.9rem;">
+        An interface in Go consists of two 8-byte words: <code>(type, value)</code>. An interface is <strong>only equal to <code>nil</code></strong> if BOTH its type and value are nil. Returning a typed nil pointer satisfies the interface but makes <code>err != nil</code> evaluate to <code>true</code>!
+      </p>
+      <div class="code-diff-grid">
+        <div class="code-box-wrong">
+          <div class="label-wrong">❌ BUGGY: err != nil triggers even though pointer is nil!</div>
+type CustomErr struct{}
+func (e *CustomErr) Error() string { return "custom fail" }
+
+func Validate() error {
+    var err *CustomErr = nil
+    return err // Returns interface: (Type: *CustomErr, Value: nil)
+}
+
+if Validate() != nil {
+    // 💥 TRIGGERS! The interface holds a concrete type!
+}
+        </div>
+        <div class="code-box-correct">
+          <div class="label-correct">✅ FIX: Return untyped nil explicitly</div>
+type CustomErr struct{}
+func (e *CustomErr) Error() string { return "custom fail" }
+
+func Validate() error {
+    // Return untyped nil directly on success
+    return nil // Returns interface: (Type: nil, Value: nil)
+}
+
+if Validate() != nil {
+    // ✓ Evaluates to false as expected!
+}
+        </div>
+      </div>
+    </div>
+  </div>

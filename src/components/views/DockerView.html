@@ -102,7 +102,8 @@ ENTRYPOINT ["/app/server"]</pre>
       </p>
       <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># Builder stage
 FROM golang:1.23-alpine AS builder
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates && \
+    adduser -D -u 10001 -g "" appuser
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
@@ -111,6 +112,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server .
 
 # Final stage: completely empty scratch container
 FROM scratch
+
+# Copy unprivileged user
+COPY --from=builder /etc/passwd /etc/passwd
+USER appuser:appuser
 
 # Copy SSL certificates for outbound HTTPS calls
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
@@ -139,5 +144,3 @@ tmp/
 vendor/</pre>
     </div>
   </div>
-
-  <!-- VIEW: LEETCODE EASY IN GO -->

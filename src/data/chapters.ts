@@ -1891,15 +1891,17 @@ func main() {
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 // In Node, developers npm install 'left-pad' (11 lines of code)
 // In Go: 'A little copying is better than a little dependency.'
 func LeftPad(s string, length int, pad rune) string {
-	if len(s) >= length {
+	runeCount := utf8.RuneCountInString(s)
+	if runeCount >= length {
 		return s
 	}
-	return strings.Repeat(string(pad), length-len(s)) + s
+	return strings.Repeat(string(pad), length-runeCount) + s
 }
 
 func Slugify(s string) string {

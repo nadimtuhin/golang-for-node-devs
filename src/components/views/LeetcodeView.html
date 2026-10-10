@@ -70,7 +70,7 @@
           <strong>JS Approach:</strong> Regex replace <code>replace(/[^a-z0-9]/g, '')</code>, reverse and join.
         </p>
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
-          <strong>Go Approach:</strong> Two-pointer scan over <code>[]rune</code> with <code>unicode.IsLetter</code> and <code>unicode.ToLower</code>.
+          <strong>Go Approach:</strong> In-place two-pointer scan with <code>unicode.IsLetter(r) || unicode.IsDigit(r)</code> and <code>unicode.ToLower</code>.
         </p>
         <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(1) Extra Space • Zero Regex Overhead</div>
         <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/lc_valid_palindrome" >🚀 Run in Studio Playground</a>

@@ -957,9 +957,13 @@ func main() {
         })
     }
 
-    // 4. Index Chunks into Vector Store
-    // (Using in-memory vector store for demonstration; interchangeable with pgvector / Qdrant)
-    store := memory.New()
+    // 4. Index Chunks into Vector Store with Embedder
+    // (Using in-memory vector store with embeddings; interchangeable with pgvector / Qdrant)
+    embedder, err := openai.NewEmbedder(openai.WithModel("text-embedding-3-small"))
+    if err != nil {
+        log.Fatalf("Failed to initialize embedder: %v", err)
+    }
+    store := memory.New(memory.WithEmbedder(embedder))
     _, err = store.AddDocuments(ctx, docs)
     if err != nil {
         log.Fatalf("Vector store indexing failed: %v", err)
@@ -1056,6 +1060,9 @@ type ToolSchema struct {
 
 func main() {
     scanner := bufio.NewScanner(os.Stdin)
+    // Configure buffer capacity up to 16MB (MCP payloads with tool schemas/embeddings often exceed default 64KB)
+    scanBuf := make([]byte, 64*1024)
+    scanner.Buffer(scanBuf, 16*1024*1024)
 
     for scanner.Scan() {
         line := scanner.Bytes()
