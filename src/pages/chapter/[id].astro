@@ -39,6 +39,7 @@ if (pageTitle.length > 60) {
 
   <!-- GitBook Book Reader Layout -->
   <div id="viewStudio" class="studio-container gitbook-container">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()" aria-hidden="true"></div>
     <Sidebar chapterKey={chapterKey} />
     <main id="main-content" class="gitbook-main-scroll" role="main" aria-label="Chapter Reading and Interactive Playground">
       <div class="gitbook-article-wrap">
@@ -319,6 +320,7 @@ if (pageTitle.length > 60) {
       
       updateNavButtons(key);
       scrollToTop();
+      closeMobileSidebar();
 
       // Update browser URL to clean /chapter/key path
       if (history.replaceState) {
@@ -423,11 +425,22 @@ if (pageTitle.length > 60) {
     function toggleSidebar() {
       const container = document.getElementById('viewStudio');
       if (container) {
-        container.classList.toggle('sidebar-collapsed');
-        const isCollapsed = container.classList.contains('sidebar-collapsed');
-        try {
-          localStorage.setItem('go_book_sidebar_collapsed', isCollapsed ? '1' : '0');
-        } catch (e) {}
+        if (window.innerWidth <= 860) {
+          container.classList.toggle('mobile-sidebar-open');
+        } else {
+          container.classList.toggle('sidebar-collapsed');
+          const isCollapsed = container.classList.contains('sidebar-collapsed');
+          try {
+            localStorage.setItem('go_book_sidebar_collapsed', isCollapsed ? '1' : '0');
+          } catch (e) {}
+        }
+      }
+    }
+
+    function closeMobileSidebar() {
+      const container = document.getElementById('viewStudio');
+      if (container && container.classList.contains('mobile-sidebar-open')) {
+        container.classList.remove('mobile-sidebar-open');
       }
     }
 
@@ -459,6 +472,7 @@ if (pageTitle.length > 60) {
 
     // Make functions available on window
     window.toggleSidebar = toggleSidebar;
+    window.closeMobileSidebar = closeMobileSidebar;
     window.selectChapter = selectChapter;
     window.filterLessons = filterLessons;
     window.clearLessonSearch = clearLessonSearch;

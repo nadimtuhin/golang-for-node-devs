@@ -13,6 +13,7 @@ import { chaptersData } from '../data/chapters';
 
   <!-- GitBook Book Reader Layout -->
   <div id="viewStudio" class="studio-container gitbook-container">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()" aria-hidden="true"></div>
     <Sidebar />
     <main id="main-content" class="gitbook-main-scroll" role="main" aria-label="Chapter Reading and Interactive Playground">
       <div class="gitbook-article-wrap">
@@ -294,6 +295,7 @@ import { chaptersData } from '../data/chapters';
       
       updateNavButtons(key);
       scrollToTop();
+      closeMobileSidebar();
 
       // Update browser URL to clean /chapter/:id path
       if (history.replaceState) {
@@ -398,11 +400,22 @@ import { chaptersData } from '../data/chapters';
     function toggleSidebar() {
       const container = document.getElementById('viewStudio');
       if (container) {
-        container.classList.toggle('sidebar-collapsed');
-        const isCollapsed = container.classList.contains('sidebar-collapsed');
-        try {
-          localStorage.setItem('go_book_sidebar_collapsed', isCollapsed ? '1' : '0');
-        } catch (e) {}
+        if (window.innerWidth <= 860) {
+          container.classList.toggle('mobile-sidebar-open');
+        } else {
+          container.classList.toggle('sidebar-collapsed');
+          const isCollapsed = container.classList.contains('sidebar-collapsed');
+          try {
+            localStorage.setItem('go_book_sidebar_collapsed', isCollapsed ? '1' : '0');
+          } catch (e) {}
+        }
+      }
+    }
+
+    function closeMobileSidebar() {
+      const container = document.getElementById('viewStudio');
+      if (container && container.classList.contains('mobile-sidebar-open')) {
+        container.classList.remove('mobile-sidebar-open');
       }
     }
 
@@ -434,6 +447,7 @@ import { chaptersData } from '../data/chapters';
 
     // Make selectChapter available on window for onclick attributes
     window.toggleSidebar = toggleSidebar;
+    window.closeMobileSidebar = closeMobileSidebar;
     window.selectChapter = selectChapter;
     window.filterLessons = filterLessons;
     window.clearLessonSearch = clearLessonSearch;

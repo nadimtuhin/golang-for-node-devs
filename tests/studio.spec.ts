@@ -119,4 +119,39 @@ test.describe('Interactive Studio Functional Tests', () => {
 
     await expect(page.locator('#statusTag')).toContainText('Copied Node Snippet');
   });
+
+  test('should display clean GitBook format on mobile without dual scrollbars', async ({ page }) => {
+    // Emulate iPhone / mobile screen
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    const mainScroll = page.locator('.gitbook-main-scroll');
+    await expect(mainScroll).toBeVisible();
+
+    // Verify main scroll container is 100% width and full height
+    const scrollBox = await mainScroll.boundingBox();
+    expect(scrollBox?.width).toBeGreaterThanOrEqual(370);
+
+    const sidebar = page.locator('.chapters-sidebar');
+    // On mobile, sidebar is off-canvas (fixed positioned, translated off-screen)
+    const sidebarTransform = await sidebar.evaluate(el => window.getComputedStyle(el).transform);
+    expect(sidebarTransform).not.toBe('none');
+
+    // Click TOC toggle button
+    const tocBtn = page.locator('#sidebarExpandBtn');
+    await expect(tocBtn).toBeVisible();
+    await tocBtn.click();
+
+    // Container should now have mobile-sidebar-open class
+    const container = page.locator('#viewStudio');
+    await expect(container).toHaveClass(/mobile-sidebar-open/);
+
+    // Clicking a lesson item in the drawer closes the drawer and updates lesson
+    const nextLessonItem = page.locator('.chapter-nav-item[data-id="basic_funcs"]');
+    await nextLessonItem.click();
+
+    await expect(container).not.toHaveClass(/mobile-sidebar-open/);
+    await expect(page.locator('#detailTitle')).toContainText('Functions');
+  });
 });
+

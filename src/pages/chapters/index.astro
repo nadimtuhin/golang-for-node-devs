@@ -44,12 +44,16 @@ const architectureGuides = [
 
   <!-- GitBook Book Reader Shell -->
   <div id="viewStudio" class="studio-container gitbook-container">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()" aria-hidden="true"></div>
     <Sidebar />
     <main id="main-content" class="curriculum-main-scroll gitbook-main-scroll" role="main" aria-label="Curriculum and Chapters Directory">
       <div class="curriculum-container">
       <!-- Hero Header -->
     <section class="curriculum-hero" aria-labelledby="curriculum-heading">
-      <div class="hero-badge">📖 The Interactive Book</div>
+      <div style="display: flex; justify-content: center; gap: 0.6rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+        <span class="hero-badge" style="margin-bottom: 0;">📖 The Interactive Book</span>
+        <button id="chaptersMobileTocBtn" class="sidebar-expand-btn chapters-mobile-toc-btn" onclick="toggleSidebar()" aria-label="Toggle Table of Contents drawer" title="Toggle Table of Contents">☰ Table of Contents</button>
+      </div>
       <h1 id="curriculum-heading" class="curriculum-title">Go for Node.js Developers — All Chapters</h1>
       <p class="curriculum-subtitle">
         A hands-on, chapter-by-chapter programming book for JavaScript and TypeScript developers learning Go. Features 56 interactive chapters runnable directly in your browser, paired with 13 comprehensive production architecture guides.
@@ -137,7 +141,11 @@ const architectureGuides = [
     function toggleSidebar() {
       const studio = document.getElementById('viewStudio');
       if (studio) {
-        studio.classList.toggle('sidebar-collapsed');
+        if (window.innerWidth <= 860) {
+          studio.classList.toggle('mobile-sidebar-open');
+        } else {
+          studio.classList.toggle('sidebar-collapsed');
+        }
       }
     }
 
@@ -467,6 +475,18 @@ const architectureGuides = [
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .chapters-mobile-toc-btn {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .chapters-mobile-toc-btn {
+      display: inline-flex;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+    }
   }
 
   @media (max-width: 768px) {
