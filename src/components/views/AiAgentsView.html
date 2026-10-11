@@ -1185,13 +1185,8 @@ func handleMCPMethod(req JSONRPCRequest) {
             return
         }
 
-        // In MCP, unknown tool is returned as tool execution error result
-        sendResult(req.ID, map[string]any{
-            "content": []map[string]any{
-                {"type": "text", "text": fmt.Sprintf("tool '%s' not found", params.Name)},
-            },
-            "isError": true,
-        })
+        // MCP Spec: Unknown tool is a protocol-level error (-32601), not a successful result with isError
+        sendError(req.ID, -32601, fmt.Sprintf("tool '%s' not found", params.Name))
         return
 
     default:

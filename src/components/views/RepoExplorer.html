@@ -180,7 +180,9 @@ func GetMongoClient() (*mongo.Client, error) {
 
 	// Verify initial connectivity; if ping fails, close client so resources do not leak
 	if err := client.Ping(ctx, nil); err != nil {
-		_ = client.Disconnect(ctx)
+		disconnectCtx, disconnectCancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer disconnectCancel()
+		_ = client.Disconnect(disconnectCtx)
 		clientInstanceError = err
 		return nil, err
 	}
@@ -253,8 +255,8 @@ import (
 
 type Product struct {
 	ID        primitive.ObjectID `json:"_id" bson:"_id" validate:"required"`
-	CreatedAt time.Time          `json:"createdAt" bson:"created_at" validate:"required"`
-	UpdatedAt time.Time          `json:"updatedAt" bson:"updated_at" validate:"required"`
+	CreatedAt time.Time          `json:"createdAt" bson:"createdAt" validate:"required"`
+	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt" validate:"required"`
 	Title     string             `json:"title" bson:"title" validate:"required,min=12"`
 }
 

@@ -791,7 +791,7 @@ type Product struct {
 }
 
 func Filter[T any](items []T, predicate func(T) bool) []T {
-	result := make([]T, 0)
+	result := make([]T, 0, len(items)) // Preallocate capacity to avoid repeated reallocations
 	for _, item := range items {
 		if predicate(item) {
 			result = append(result, item)
@@ -2504,7 +2504,7 @@ func main() {
         num: "LC21",
         part: "Part 7: LeetCode in Go",
         title: "Merge Two Sorted Lists (#21) — Dummy Pointers",
-        desc: "Merge two sorted linked lists into one sorted list. In JS, nodes are objects with 'val' and 'next'. In Go, we use pointers to structs (*ListNode) and a dummy head node to eliminate special-case code for the list head.",
+        desc: "Merge two sorted linked lists into one sorted list in O(N + M) time and O(1) auxiliary space. In JS, nodes are objects with 'val' and 'next'. In Go, we use pointers to structs (*ListNode) and a dummy head node to eliminate special-case code for the list head.",
         nodeCode: "let dummy = new ListNode(0);\nlet tail = dummy;\nwhile (l1 && l2) {\n  if (l1.val <= l2.val) { tail.next = l1; l1 = l1.next; }\n  else { tail.next = l2; l2 = l2.next; }\n  tail = tail.next;\n}\ntail.next = l1 || l2;\nreturn dummy.next;",
         why: "Classic demonstration of Go pointer ergonomics: *ListNode struct pointers, referencing fields directly without arrow syntax (l1.Val, not l1->Val).",
         code: `package main

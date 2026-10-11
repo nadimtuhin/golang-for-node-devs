@@ -51,7 +51,7 @@
     </div>
 
     <!-- Template 1: Production Distroless (Recommended) -->
-    <div class="deepdive-box">
+    <div id="sec-distroless" class="deepdive-box">
       <div class="deepdive-title">🏆 1. Gold Standard: Google Distroless Multi-Stage Dockerfile</div>
       <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
         Recommended for enterprise production. Runs as a non-root user (UID 65532), includes official CA certificates for outbound HTTPS calls, and tzdata for timezones.
@@ -109,8 +109,9 @@ ENTRYPOINT ["/server"]</pre>
 FROM --platform=$BUILDPLATFORM golang:1.23-alpine AS builder
 ARG TARGETOS TARGETARCH
 RUN apk --no-cache add ca-certificates tzdata && \
-    addgroup -g 10001 appgroup && \
-    adduser -D -u 10001 -G appgroup appuser
+    echo "appuser:x:10001:10001:appuser:/:/sbin/nologin" > /etc/passwd.minimal && \
+    echo "appgroup:x:10001:" > /etc/group.minimal && \
+    mkdir -m 0777 /tmp-dir
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
@@ -121,9 +122,9 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -
 # Final stage: completely empty scratch container (<15MB)
 FROM scratch
 
-# Copy unprivileged user and group mappings
-COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder /etc/group /etc/group
+# Copy minimal unprivileged user and group mappings (no shadow alpine accounts)
+COPY --from=builder /etc/passwd.minimal /etc/passwd
+COPY --from=builder /etc/group.minimal /etc/group
 USER 10001:10001
 
 # Copy SSL certificates for outbound HTTPS calls
@@ -132,6 +133,9 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # Optional: copy timezone data if loading timezones via time.LoadLocation
 # (Or compile with blank import: _ "time/tzdata")
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo/
+
+# Provide /tmp for os.CreateTemp and multipart file uploads
+COPY --from=builder /tmp-dir /tmp
 
 # Copy binary with matching unprivileged ownership
 COPY --chown=10001:10001 --from=builder /app/server /server

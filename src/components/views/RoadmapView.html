@@ -218,7 +218,7 @@
               <h3 class="roadmap-card-title">Slice Internals &amp; Capacity Growth</h3>
             </div>
             <p class="roadmap-card-text">
-              Runtime 24-byte slice header: <code>Data</code> pointer, <code>Len</code>, and <code>Cap</code>. Go 1.18+ formula <code>(newcap + 3*256)/4</code> for smooth capacity scaling beyond 256 elements.
+              Runtime 24-byte slice header: <code>Data</code> pointer, <code>Len</code>, and <code>Cap</code>. Go 1.18+ formula <code>newcap += (newcap + 3*256)/4</code> for smooth capacity scaling beyond 256 elements.
             </p>
             <div class="roadmap-tags">
               <span class="roadmap-tag">Slice Header</span>
@@ -262,7 +262,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/ds_struct_memory" class="roadmap-btn primary">Playground DS3 →</a>
-              <a href="/interviews#q5" class="roadmap-btn secondary">Interview Q5 (Padding) →</a>
+              <a href="/interviews#section-datastructs" class="roadmap-btn secondary">Alignment &amp; Structs →</a>
             </div>
           </div>
 
@@ -298,7 +298,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/ds_sync_pool" class="roadmap-btn primary">Playground DS6 →</a>
-              <a href="/interviews#q12" class="roadmap-btn secondary">Interview Q12 (Pool) →</a>
+              <a href="/interviews#section-memory" class="roadmap-btn secondary">Memory &amp; GC (Sec 2) →</a>
             </div>
           </div>
 
@@ -333,8 +333,8 @@
               <span class="roadmap-tag">2KB Initial Stack</span>
             </div>
             <div class="roadmap-actions">
-              <a href="/chapter/channels_basics" class="roadmap-btn primary">Playground W9 →</a>
-              <a href="/interviews#q1" class="roadmap-btn secondary">Interview Q1 (GMP) →</a>
+              <a href="/chapter/channels_basics" class="roadmap-btn primary">Playground (25) →</a>
+              <a href="/interviews#section-gmp" class="roadmap-btn secondary">GMP Architecture (Q1) →</a>
             </div>
           </div>
 
@@ -351,8 +351,8 @@
               <span class="roadmap-tag">CSP Primitives</span>
             </div>
             <div class="roadmap-actions">
-              <a href="/chapter/channels_basics" class="roadmap-btn primary">Channels W9 →</a>
-              <a href="/interviews#q13" class="roadmap-btn secondary">Interview Q13 (Channels) →</a>
+              <a href="/chapter/channels_basics" class="roadmap-btn primary">Channels (25) →</a>
+              <a href="/interviews#section-channels" class="roadmap-btn secondary">Channel Semantics (Sec 4) →</a>
             </div>
           </div>
 
@@ -388,7 +388,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/promise_all" class="roadmap-btn primary">Promise.all (21) →</a>
-              <a href="/interviews#q11" class="roadmap-btn secondary">Mutex Starvation Q11 →</a>
+              <a href="/interviews#section-channels" class="roadmap-btn secondary">Mutex Starvation (Q13) →</a>
             </div>
           </div>
 
@@ -406,7 +406,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/abort_controller" class="roadmap-btn primary">AbortController (23) →</a>
-              <a href="/chapter/graceful_shutdown" class="roadmap-btn secondary">Shutdown W10 →</a>
+              <a href="/chapter/graceful_shutdown" class="roadmap-btn secondary">Shutdown (26) →</a>
             </div>
           </div>
 
@@ -459,7 +459,7 @@
               <span class="roadmap-tag">Go 1.22 Wildcards</span>
             </div>
             <div class="roadmap-actions">
-              <a href="/chapter/http_routing" class="roadmap-btn primary">Routing W7 →</a>
+              <a href="/chapter/http_routing" class="roadmap-btn primary">Routing (W7) →</a>
               <a href="/chapter/http_api" class="roadmap-btn secondary">HTTP API (01) →</a>
             </div>
           </div>
@@ -496,7 +496,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/middleware" class="roadmap-btn primary">Middleware (02) →</a>
-              <a href="/chapter/structured_logging" class="roadmap-btn secondary">log/slog W8 →</a>
+              <a href="/chapter/structured_logging" class="roadmap-btn secondary">log/slog (W8) →</a>
             </div>
           </div>
 
@@ -531,7 +531,7 @@
               <span class="roadmap-tag">Zero Allocation</span>
             </div>
             <div class="roadmap-actions">
-              <a href="/chapter/structured_logging" class="roadmap-btn primary">log/slog W8 →</a>
+              <a href="/chapter/structured_logging" class="roadmap-btn primary">log/slog (W8) →</a>
               <a href="/chapter/env_vars" class="roadmap-btn secondary">Env Config (06) →</a>
             </div>
           </div>
@@ -604,7 +604,7 @@
             </div>
             <div class="roadmap-actions">
               <a href="/chapter/db_tx" class="roadmap-btn primary">Transactions (17) →</a>
-              <a href="/interviews#q16" class="roadmap-btn secondary">Interview Q16 (Tx) →</a>
+              <a href="/testing#topic-databases" class="roadmap-btn secondary">Tx Testing Guide →</a>
             </div>
           </div>
 

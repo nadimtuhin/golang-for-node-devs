@@ -255,7 +255,7 @@ if Validate() != nil {
     </div>
 
     <!-- Pitfall 8: Unclosed or Undrained HTTP Response Body -->
-    <div class="pitfall-card">
+    <div id="pitfall-resp-body" class="pitfall-card">
       <div class="pitfall-title">🪤 Pitfall 8: Unclosed HTTP resp.Body Leaks TCP Sockets</div>
       <p style="color: #475569; font-size: 0.9rem;">
         In Node.js, fetch/axios automatically cleans up socket connections. In Go, failing to close <code>resp.Body</code> prevents TCP connection reuse, causing connection exhaustion under load. Also, calling <code>defer resp.Body.Close()</code> BEFORE checking <code>err != nil</code> will panic!
@@ -277,13 +277,13 @@ defer func() {
     _, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20))
     resp.Body.Close()
 }()
-body, err := io.ReadAll(resp.Body) // Safely read body before defer drains remainder!
+body, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20)) // Enforce 10MB limit to prevent OOM!
         </div>
       </div>
     </div>
 
     <!-- Pitfall 9: time.After Memory Leak in Long Loops -->
-    <div class="pitfall-card">
+    <div id="pitfall-time-after" class="pitfall-card">
       <div class="pitfall-title">🪤 Pitfall 9: time.After in Loop / Select Leaks Timers</div>
       <p style="color: #475569; font-size: 0.9rem;">
         In Go &lt; 1.23, <code>time.After(d)</code> allocates a <code>time.Timer</code> that is NOT garbage collected until duration <code>d</code> elapses. Calling it inside a continuous select loop accumulates thousands of uncollected timers in memory. (Note: Go 1.23+ overhauled the timer runtime so unreferenced timers are immediately garbage collected and channel buffering issues are resolved).
