@@ -108,7 +108,7 @@
               <rect x="0" y="0" width="180" height="36" rx="8" fill="#059669"/>
               <text x="90" y="23" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">3. SSA & OPTIMIZE</text>
               <text x="15" y="60" font-size="11" font-weight="bold" fill="#6ee7b7">Package: ssa</text>
-              <text x="15" y="80" font-size="10" fill="#94a3b8">• Function inlining (~80 cost)</text>
+              <text x="15" y="80" font-size="10" fill="#94a3b8">• SSA Lowering & Rewrites</text>
               <text x="15" y="100" font-size="10" fill="#94a3b8">• Dead code elimination</text>
               <text x="15" y="120" font-size="10" fill="#94a3b8">• Nil check elimination</text>
               <text x="15" y="140" font-size="10" fill="#94a3b8">• Bounds check elimination</text>
@@ -201,9 +201,9 @@
           </p>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
             <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;">
-              <strong style="color:#0284c7; font-size:0.85rem; display:block; margin-bottom:0.35rem;">⚡ Function Inlining</strong>
+              <strong style="color:#0284c7; font-size:0.85rem; display:block; margin-bottom:0.35rem;">⚡ Common Subexpression Elimination & Rewrites</strong>
               <p style="font-size:0.82rem; color:#475569; line-height:1.5;">
-                Replaces function calls with the function's body. Eliminates call overhead (stack frame creation, register saving, jump instructions). Go uses a budget heuristic of ~80 AST node cost. Inlining unlocks further optimizations across caller-callee boundaries.
+                Replaces duplicate expressions with single computations and simplifies algebraic identities across basic blocks. (Note: Function inlining with its ~80 AST node budget and escape analysis run earlier in the IR pipeline prior to SSA generation).
               </p>
             </div>
             <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;">
@@ -287,7 +287,7 @@ go build -gcflags="-m" ./...
 go build -gcflags="-m -m" ./...
 
 # Inspect Bounds Check Elimination (BCE) decisions
-go build -gcflags="-d=ssa/check_bce" ./...</pre>
+go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
         </div>
 
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">
@@ -303,7 +303,7 @@ go build -gcflags="-d=ssa/check_bce" ./...</pre>
         </div>
 
         <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#14532d; margin-bottom: 0.75rem;">
-          <strong>BCE Hoisting Pattern:</strong> If iterating through a known buffer (e.g., <code>b[0], b[1], b[2], b[3]</code>), checking the maximum capacity upfront with a single throwaway statement <code>_ = b[3]</code> allows the SSA optimizer to prove bounds safety and eliminate all subsequent bounds checks inside the loop.
+          <strong>BCE Hoisting Pattern:</strong> If iterating through a known buffer (e.g., <code>b[0], b[1], b[2], b[3]</code>), checking the maximum index / length upfront with a single throwaway statement <code>_ = b[3]</code> (proving <code>len(b) &gt; 3</code>) allows the SSA optimizer to prove bounds safety and eliminate all subsequent bounds checks inside the loop.
         </div>
 
         <div style="background:#eff6ff; border-left:4px solid #3b82f6; padding:0.75rem 1rem; border-radius:0 6px 6px 0; font-size:0.86rem; color:#1e3a8a;">

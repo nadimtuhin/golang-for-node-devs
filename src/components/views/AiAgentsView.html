@@ -470,7 +470,7 @@ if err := decoder.Decode(&amp;params); err != nil {
     if r.ProtoMajor == 1 {
         w.Header().Set("Connection", "keep-alive") // HTTP/1.1 only; forbidden in HTTP/2
     }
-    w.Header().Set("X-Accel-Buffering", "no") // Disable Nginx / Cloudflare reverse proxy buffering
+    w.Header().Set("X-Accel-Buffering", "no") // Disable Nginx reverse proxy response buffering
     w.Header().Set("X-Content-Type-Options", "nosniff")
 
     flusher, ok := w.(http.Flusher)
@@ -1175,7 +1175,7 @@ func handleMCPMethod(req JSONRPCRequest) {
         if req.ID == nil {
             return // Notifications do not have IDs and must be ignored without error
         }
-        sendError(req.ID, -32601, "Unsupported method")
+        sendError(req.ID, -32601, "Method not found")
     }
 }
 

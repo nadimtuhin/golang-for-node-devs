@@ -23,7 +23,7 @@
         </tr>
         <tr>
           <td><code>arr.filter(fn)</code></td>
-          <td><code>for _, v := range arr { if fn(v) append }</code></td>
+          <td><code>for _, v := range arr { if fn(v) { res = append(res, v) } }</code></td>
           <td>Explicit and transparent with zero hidden closure wrapper overhead.</td>
         </tr>
         <tr>
@@ -43,7 +43,7 @@
         </tr>
         <tr>
           <td><code>interface User { id: string; opt?: number }</code></td>
-          <td><code>type User struct { ID string; Opt *int `json:",omitempty"` }</code></td>
+          <td><code>type User struct { ID string `json:"id"`; Opt *int `json:"opt,omitempty"` }</code></td>
           <td>Concrete contiguous memory layout. Pointers model optional fields; <code>omitempty</code> omits nulls on JSON serialize.</td>
         </tr>
         <tr>
@@ -78,7 +78,7 @@
         </tr>
         <tr>
           <td><code>AbortController</code> / <code>signal</code></td>
-          <td><code>context.WithTimeout(ctx, duration)</code></td>
+          <td><code>context.WithCancel(ctx)</code> or <code>context.WithTimeout(ctx, d)</code></td>
           <td>Universal standard propagated across the entire HTTP, DB, and gRPC call stack.</td>
         </tr>
 
@@ -98,7 +98,7 @@
         </tr>
         <tr>
           <td><code>err instanceof CustomError</code></td>
-          <td><code>errors.As(err, &target)</code> or <code>errors.Is()</code></td>
+          <td><code>errors.As(err, &target)</code> (type) / <code>errors.Is(err, sentinel)</code> (value)</td>
           <td>Unwraps through nested <code>%w</code> wrapped error chains with type safety.</td>
         </tr>
 

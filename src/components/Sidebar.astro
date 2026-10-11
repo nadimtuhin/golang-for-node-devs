@@ -10,7 +10,7 @@ const { chapterKey = 'basic_vars' } = Astro.props;
         <div class="sidebar-title-row">
           <div style="display: flex; align-items: center; gap: 0.4rem;">
             <span class="sidebar-title">📖 Table of Contents</span>
-            <span class="sidebar-badge-count" id="sidebarCountBadge">56 Lessons</span>
+            <span class="sidebar-badge-count" id="sidebarCountBadge">60 Lessons</span>
           </div>
           <button id="sidebarCollapseBtn" class="sidebar-collapse-btn" onclick="toggleSidebar()" aria-label="Collapse Table of Contents sidebar" title="Collapse sidebar">◀</button>
         </div>
@@ -104,6 +104,14 @@ const { chapterKey = 'basic_vars' } = Astro.props;
       <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson env_vars" data-id="env_vars" onclick="selectChapter('env_vars')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('env_vars');}">
         <span class="chapter-num">06</span>
         <span>process.env & Config</span>
+      </div>
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson http_routing" data-id="http_routing" onclick="selectChapter('http_routing')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('http_routing');}">
+        <span class="chapter-num">07</span>
+        <span>Go 1.22+ Methods & Wildcards</span>
+      </div>
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson structured_logging" data-id="structured_logging" onclick="selectChapter('structured_logging')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('structured_logging');}">
+        <span class="chapter-num">08</span>
+        <span>log/slog vs Pino/Winston</span>
       </div>
 
       <div class="sidebar-part-label">Part 2: Data Structures & Algorithms</div>
@@ -208,6 +216,14 @@ const { chapterKey = 'basic_vars' } = Astro.props;
       <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson error_wrapping" data-id="error_wrapping" onclick="selectChapter('error_wrapping')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('error_wrapping');}">
         <span class="chapter-num">24</span>
         <span>Error Wrapping & errors.Is</span>
+      </div>
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson channels_basics" data-id="channels_basics" onclick="selectChapter('channels_basics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('channels_basics');}">
+        <span class="chapter-num">25</span>
+        <span>Channels & Goroutine Handoff</span>
+      </div>
+      <div class="chapter-nav-item" role="button" tabindex="0" aria-label="Select lesson graceful_shutdown" data-id="graceful_shutdown" onclick="selectChapter('graceful_shutdown')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectChapter('graceful_shutdown');}">
+        <span class="chapter-num">26</span>
+        <span>Graceful Shutdown & SIGTERM</span>
       </div>
 
       <div class="sidebar-part-label">Part 6: Go Philosophy & The Zen of Go</div>

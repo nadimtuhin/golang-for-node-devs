@@ -637,9 +637,103 @@ func main() {
 	port := getEnv("PORT", "3000")
 	dbHost := getEnv("DATABASE_HOST", "127.0.0.1:5432")
 
-	fmt.Printf("App Name: %s\\n", appName)
-	fmt.Printf("Port:     %s\\n", port)
-	fmt.Printf("DB Host:  %s\\n", dbHost)
+	fmt.Printf("App Name: %s\n", appName)
+	fmt.Printf("Port:     %s\n", port)
+	fmt.Printf("DB Host:  %s\n", dbHost)
+}`
+      },
+
+      http_routing: {
+        num: "07",
+        part: "Part 1: Web APIs",
+        title: "Go 1.22+ Routing: Methods & Wildcards",
+        desc: "In Node, Express popularized method routing ('app.get') and path parameters ('/users/:id'). Since Go 1.22, standard library http.NewServeMux supports HTTP methods and path wildcards natively without third-party routers!",
+        nodeCode: "// Express / Fastify style route parameters and method routing\nimport express from 'express';\nconst app = express();\n\n// Path wildcards and method routing built into Express\napp.get('/api/users/:id', (req, res) => {\n  const userId = req.params.id;\n  res.json({ id: userId, role: 'admin' });\n});\n\napp.post('/api/users', (req, res) => {\n  res.status(201).json({ message: 'User created' });\n});",
+        why: "Prior to Go 1.22, developers needed external routers like Chi or Gorilla Mux. Modern Go provides method-matching and wildcard extraction (r.PathValue) out of the box with zero third-party dependencies.",
+        code: `package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+)
+
+func main() {
+	// Standard library router in Go 1.22+ supports HTTP methods and wildcards!
+	mux := http.NewServeMux()
+
+	// 1. Method-specific matching + wildcard parameter: "GET /api/users/{id}"
+	mux.HandleFunc("GET /api/users/{id}", func(w http.ResponseWriter, r *http.Request) {
+		// Extract URL path wildcard cleanly with r.PathValue()
+		userID := r.PathValue("id")
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"userId": userID,
+			"source": "Go 1.22 standard http.ServeMux",
+		})
+	})
+
+	// 2. Method-specific matching: "POST /api/users"
+	mux.HandleFunc("POST /api/users", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintln(w, "User created successfully")
+	})
+
+	// Simulate incoming GET request to test route matching
+	req := httptest.NewRequest("GET", "/api/users/42", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	fmt.Printf("HTTP Status: %d\\n", rec.Code)
+	fmt.Printf("Response Body: %s", rec.Body.String())
+}`
+      },
+
+      structured_logging: {
+        num: "08",
+        part: "Part 1: Web APIs",
+        title: "log/slog vs Winston & Pino",
+        desc: "In Node, high-throughput backends use Pino for structured JSON logging. Go 1.21 introduced standard library log/slog for high-performance, structured, leveled JSON logging with zero external dependencies.",
+        nodeCode: "// Structured JSON logging in Node.js using Pino\nimport pino from 'pino';\nconst logger = pino({ level: 'info' });\n\n// Emits structured JSON log lines for Datadog / CloudWatch\nlogger.info({\n  userId: 'usr_882',\n  endpoint: '/checkout',\n  latencyMs: 14.2,\n  status: 200\n}, 'Transaction processed successfully');",
+        why: "log/slog standardizes structured logging across the entire Go ecosystem, eliminating fragmentation between Zap, Zerolog, and Logrus with zero-allocation performance.",
+        code: `package main
+
+import (
+	"context"
+	"log/slog"
+	"os"
+)
+
+func main() {
+	// 1. Initialize JSON Handler outputting to stdout (ideal for Docker / K8s)
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+	logger := slog.New(handler)
+
+	// Set as global default logger
+	slog.SetDefault(logger)
+
+	// 2. Structured log with strongly typed key-value pairs
+	logger.Info("Payment transaction processed",
+		slog.String("userId", "usr_882"),
+		slog.String("currency", "USD"),
+		slog.Float64("amount", 99.50),
+		slog.Int("statusCode", 200),
+	)
+
+	// 3. Contextual logger with pre-bound service attributes
+	reqLogger := logger.With(
+		slog.String("service", "payment-gateway"),
+		slog.String("traceId", "trc-98234-xyz"),
+	)
+
+	reqLogger.WarnContext(context.Background(), "Downstream retry attempted",
+		slog.Int("attempt", 2),
+		slog.String("endpoint", "https://bank.internal/v1/charge"),
+	)
 }`
       },
 
@@ -1363,11 +1457,112 @@ func main() {
 	// and we pass its address (&targetDBErr, which is **DatabaseError) into errors.As.
 	var targetDBErr *DatabaseError
 	if errors.As(err, &targetDBErr) {
-		fmt.Printf("✓ Extracted typed error metadata via errors.As: SQL Code %d (%s)\\n", targetDBErr.Code, targetDBErr.Message)
+		fmt.Printf("✓ Extracted typed error metadata via errors.As: SQL Code %d (%s)\n", targetDBErr.Code, targetDBErr.Message)
 	}
 }`
-      }
-    ,
+      },
+
+      channels_basics: {
+        num: "25",
+        part: "Part 5: Concurrency & Async",
+        title: "Channels: Unbuffered, Buffered & Closing",
+        desc: "In Node, async coordination uses Promises or EventEmitter. In Go, Channels (chan T) are typed conduits for passing data between goroutines, synchronizing execution without shared-memory locks.",
+        nodeCode: "// Event signaling in Node.js with EventEmitter\nimport { EventEmitter } from 'events';\nconst bus = new EventEmitter();\n\nbus.on('task_done', (data) => {\n  console.log('Received payload:', data);\n});\n\nsetTimeout(() => {\n  bus.emit('task_done', { id: 101, status: 'completed' });\n}, 100);",
+        why: "Channels embody the Go philosophy: 'Do not communicate by sharing memory; instead, share memory by communicating.' Unbuffered channels synchronize; buffered channels decouple producer/consumer rates.",
+        code: `package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func worker(id int, jobs <-chan int, results chan<- int) {
+	for j := range jobs {
+		fmt.Printf("Worker %d processing job %d\\n", id, j)
+		time.Sleep(20 * time.Millisecond) // Simulate work
+		results <- j * 2                  // Send result into channel
+	}
+}
+
+func main() {
+	// 1. Buffered channel: sends do not block until buffer (size 3) is full
+	jobs := make(chan int, 5)
+	results := make(chan int, 5)
+
+	// 2. Launch 2 worker goroutines
+	for w := 1; w <= 2; w++ {
+		go worker(w, jobs, results)
+	}
+
+	// 3. Sender owns the channel: enqueue jobs and CLOSE when done
+	for j := 1; j <= 5; j++ {
+		jobs <- j
+	}
+	close(jobs) // Closing signals to workers: "no more jobs will ever arrive"
+
+	// 4. Collect results
+	for a := 1; a <= 5; a++ {
+		res := <-results
+		fmt.Printf("Collected Result: %d\\n", res)
+	}
+	fmt.Println("All channel tasks cleanly synchronized!")
+}`
+      },
+
+      graceful_shutdown: {
+        num: "26",
+        part: "Part 5: Concurrency & Async",
+        title: "Graceful Shutdown & Signal Handling",
+        desc: "In Node, production apps intercept process.on('SIGTERM') to drain in-flight HTTP requests. In Go, signal.NotifyContext and http.Server.Shutdown(ctx) cleanly drain active connections before container termination.",
+        nodeCode: `// Graceful shutdown in Node.js Express / Fastify\nconst server = app.listen(3000);\n\nprocess.on('SIGTERM', () => {\n  console.log('SIGTERM received: Draining connections...');\n  server.close(() => {\n    console.log('HTTP server closed cleanly.');\n    process.exit(0);\n  });\n});`,
+        why: "In Kubernetes, pods receive SIGTERM during rolling updates. Without graceful shutdown, active HTTP requests and database transactions are abruptly killed with 502 Bad Gateway errors.",
+        code: `package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"time"
+)
+
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
+	})
+
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second, // Slowloris defense
+	}
+
+	// Simulate background server launch
+	go func() {
+		fmt.Println("HTTP server listening on :8080")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("Listen error: %v\\n", err)
+		}
+	}()
+
+	// Simulate OS SIGTERM signal handling
+	time.Sleep(50 * time.Millisecond) // Server warm-up
+	fmt.Println("\\n[Signal Simulation] SIGTERM received! Starting graceful shutdown...")
+
+	// Create shutdown context with 5-second deadline
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Shutdown stops accepting new connections and waits for active requests to finish
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		fmt.Printf("Server forced to shutdown: %v\\n", err)
+	} else {
+		fmt.Println("Server cleanly drained all connections. Safe exit (Exit 0)!")
+	}
+}`
+      },
+
       // ==========================================
       // PART 0 EXPANSIONS: LANGUAGE BASICS DEEP-DIVE
       // ==========================================
@@ -2403,8 +2598,8 @@ func main() {
       lc_valid_palindrome: {
         num: "LC125",
         part: "Part 7: LeetCode in Go",
-        title: "Valid Palindrome (#125) — In-Place Runes & Two Pointers",
-        desc: "Determine if a string is a palindrome after converting to lowercase and stripping non-alphanumeric characters. In JS, devs regex-replace and reverse. In Go, two pointers over a rune slice handles multi-byte UTF-8 cleanly with zero regex overhead.",
+        title: "Valid Palindrome (#125) — Runes & Two Pointers",
+        desc: "Determine if a string is a palindrome. In JS, devs regex-replace and reverse (allocating multiple strings). In Go, converting to '[]rune(s)' takes O(N) time and O(N) auxiliary space for UTF-8 runes, while direct byte indexing achieves true O(1) auxiliary space for ASCII.",
         nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
         why: "In Node, regex replace creates multiple intermediate string copies. In Go, a rune slice with unicode.IsLetter and unicode.ToLower runs in a single O(N) pass.",
         code: `package main

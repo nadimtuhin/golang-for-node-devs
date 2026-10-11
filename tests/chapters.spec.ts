@@ -17,7 +17,7 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
     await expect(statsBar).toBeVisible();
 
     const lessonCount = statsBar.locator('.stat-card', { hasText: 'Coding Lessons' }).locator('.stat-number');
-    await expect(lessonCount).toHaveText('56');
+    await expect(lessonCount).toHaveText('60');
 
     const guideCount = statsBar.locator('.stat-card', { hasText: 'Architecture Guides' }).locator('.stat-number');
     await expect(guideCount).toHaveText('13');
@@ -67,7 +67,7 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
       { href: '/philosophy', title: 'Genesis, History & The Zen of Go' },
       { href: '/pitfalls', title: 'Common Go Pitfalls & Footguns' },
       { href: '/leetcode', title: 'LeetCode in Go (JS vs Go)' },
-      { href: '/cheatsheet', title: 'Rosetta Code Syntax Cheatsheet' },
+      { href: '/cheatsheet', title: 'Rosetta Code Syntax Cheatsheet' }
     ];
 
     for (const guide of expectedGuides) {
@@ -77,12 +77,12 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
     }
   });
 
-  test('should render all 56 interactive coding lessons grouped by part', async ({ page }) => {
+  test('should render all 60 interactive coding lessons grouped by part', async ({ page }) => {
     const lessonsSection = page.locator('section[aria-labelledby="lessons-heading"]');
     await expect(lessonsSection).toBeVisible();
 
     const lessonCards = lessonsSection.locator('.lesson-link-card');
-    await expect(lessonCards).toHaveCount(56);
+    await expect(lessonCards).toHaveCount(60);
 
     // Verify part groups exist
     const partGroups = lessonsSection.locator('.curriculum-part-group');

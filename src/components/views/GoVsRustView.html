@@ -310,7 +310,7 @@
             <br/>If you attempt to share a non-thread-safe type (like <code>Rc&lt;T&gt;</code> or raw pointers) across threads, your code will fail to compile with an informative compiler error.
           </li>
           <li><strong>No Mandatory Runtime:</strong> Rust has no runtime scheduler included in the language. For high-scale async I/O, the community relies on <strong>Tokio</strong> (or async-std).</li>
-          <li><strong>Zero-Cost Futures:</strong> Unlike JavaScript Promises (which execute immediately upon instantiation and allocate heap microtasks), Rust Futures do nothing until explicitly polled (<code>.await</code>). They compile down to compact finite state machines on the stack!</li>
+          <li><strong>Zero-Cost Stackless Futures:</strong> Unlike JavaScript Promises (eager heap microtasks), Rust Futures are lazy state machines. Local futures inline on the stack, while tasks spawned across worker threads via <code>tokio::spawn</code> require a single heap task allocation. Unlike Go's preemptive stackful GMP scheduler, Tokio tasks are strictly cooperative and cannot be preempted during tight CPU loops without <code>yield_now()</code>.</li>
           <li><strong>The Cognitive Overhead:</strong> Async Rust introduces subtleties that confuse Node.js developers:
             <br/>• Lifetime bounds across await points (<code>'static</code> requirements in spawned tasks).
             <br/>• <code>Pin&lt;Box&lt;dyn Future&gt;&gt;</code> when dealing with recursive async functions or traits.
@@ -449,7 +449,7 @@
             </tr>
             <tr>
               <td><strong>Memory Safety Mechanism</strong></td>
-              <td><strong>Runtime GC:</strong> Safe from dangling pointers and use-after-free, but <strong>NOT data-race free</strong> at compile time (requires <code>-race</code> detector).</td>
+              <td><strong>Runtime GC:</strong> Prevents dangling pointers and use-after-free from manual deallocation, but <strong>NOT data-race free</strong>. Data races on multi-word slice/interface headers cause torn writes and memory corruption (requires <code>-race</code> detector).</td>
               <td><strong>Compile-Time Proof:</strong> In Safe Rust, guaranteed safe from dangling pointers, use-after-free, AND <strong>100% data-race free</strong> at compile time via <code>Send</code>/<code>Sync</code>.</td>
             </tr>
             <tr>

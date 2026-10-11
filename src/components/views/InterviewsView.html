@@ -569,7 +569,7 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
     overflow *bmap         // Linked list pointer to overflow bucket if >8 collisions
 }</pre>
           <p>
-            <strong>Incremental Evacuation (Rehashing):</strong> If the load factor exceeds 6.5, the map doubles its bucket count ($2^{B+1}$). If the load factor is under 6.5 but there are too many overflow buckets (specifically <code>noverflow &ge; 1&lt;&lt;B</code> for $B \le 15$ or <code>noverflow &ge; 1024</code> for $B &gt; 15$), the map performs a <em>same-size growth</em> ($2^B$) to compact sparse buckets and reclaim memory from deleted keys. Rehashing does <em>not</em> stop the world; whenever a key is written or deleted, the runtime incrementally evacuates 1–2 buckets from the old array to the new one.
+            <strong>Incremental Evacuation (Rehashing):</strong> If the load factor exceeds 6.5, the map doubles its bucket count ($2^{B+1}$). If the load factor is under 6.5 but there are too many overflow buckets (specifically <code>noverflow &ge; 1&lt;&lt;B</code> for $B \le 15$ or <code>noverflow &ge; 1&lt;&lt;15</code> (32,768) for $B &gt; 15$), the map performs a <em>same-size growth</em> ($2^B$) to compact sparse buckets and reclaim memory from deleted keys. Rehashing does <em>not</em> stop the world; whenever a key is written or deleted, the runtime incrementally evacuates 1–2 buckets from the old array to the new one.
           </p>
           <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:6px; padding:0.75rem; margin:0.75rem 0;">
             <div style="font-weight:700; color:#991b1b; font-size:0.88rem;">⚠️ Why Concurrent Writes Cause Fatal Crashes (`fatal` vs `panic`):</div>
@@ -759,12 +759,11 @@ for ch1 != nil || ch2 != nil {
             &nbsp;&nbsp;dataqsiz uint           <span style="color:#64748b;">// Buffer capacity: make(chan T, cap)</span><br/>
             &nbsp;&nbsp;buf      unsafe.Pointer <span style="color:#64748b;">// Points to contiguous backing array ring buffer</span><br/>
             &nbsp;&nbsp;sendx    uint           <span style="color:#64748b;">// Buffer index to send next element</span><br/>
-            &nbsp;&nbsp;recvx    uint           <span style="color:#64748b;">// Buffer index to receive next element</span><br/>
-            &nbsp;&nbsp;recvq    waitq          <span style="color:#64748b;">// Linked list of waiting receivers (wrapped in sudog)</span><br/>
-            &nbsp;&nbsp;sendq    waitq          <span style="color:#64748b;">// Linked list of waiting senders (wrapped in sudog)</span><br/>
-            &nbsp;&nbsp;lock     mutex          <span style="color:#64748b;">// Spinlock guarding all channel operations</span><br/>
+            &nbsp;&nbsp;recvq    waitq          <span style="color:#64748b;">// Linked list of waiting receivers (wrapped in sudog; pooled via p.sudogcache)</span><br/>
+            &nbsp;&nbsp;sendq    waitq          <span style="color:#64748b;">// Linked list of waiting senders (sudog decoupling allows 1 goroutine in multiple select queues)</span><br/>
+            &nbsp;&nbsp;lock     mutex          <span style="color:#64748b;">// Runtime mutex (brief spin + OS futex/sema sleep)</span><br/>
             }<br/>
-            <span style="color:#4ade80;">// Zero-Copy Stack Optimization: If a receiver is already waiting in recvq, sender writes directly into receiver goroutine stack memory via runtime.memmove (executing write barriers if GC is marking), bypassing hchan.buf entirely!</span>
+            <span style="color:#4ade80;">// Zero-Copy Direct Stack Moves: On unbuffered channels, sender writes directly to waiting receiver stack (sendDirect) or receiver reads from sender stack (recvDirect) via runtime.memmove (executing write barriers if GC is marking), completely bypassing hchan.buf!</span>
           </div>
         </div>
       </div>

@@ -46,7 +46,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'sync.Once guarantees database handshakes happen exactly once at hardware level, even under thousands of simultaneous boot requests.'
   },
   http_api: {
-    goParadigm: 'HTTP/1.1 and HTTP/2 server built directly into standard library net/http with goroutine-per-request concurrency; requires explicit http.Server timeouts (ReadHeaderTimeout, ReadTimeout, WriteTimeout) to prevent Slowloris attacks.',
+    goParadigm: 'HTTP/1.1 and HTTP/2 server built directly into standard library net/http with goroutine-per-request concurrency; requires explicit http.Server.ReadHeaderTimeout to defend against Slowloris header-stalling attacks.',
     nodeEquivalent: 'Requires external dependencies like Express, Fastify, or Koa, clustered across CPU cores via PM2 or Node cluster mode.',
     coreTakeaway: 'Go eliminates external web framework dependencies, but raw http.ListenAndServe uses zero-timeouts by default. Always instantiate &http.Server with explicit ReadHeaderTimeout and IdleTimeout.'
   },
@@ -58,7 +58,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   http_client: {
     goParadigm: 'Standard library http.Client featuring native connection pooling, HTTP/2 multiplexing, and deadline cancellation via context.Context.',
     nodeEquivalent: 'External libraries like axios, node-fetch, or undici to get reliable timeouts and pooling.',
-    coreTakeaway: 'Built-in connection reuse and context timeouts prevent outbound connection pool exhaustion during cascading microservice downstream outages.'
+    coreTakeaway: 'Built-in connection reuse requires draining/closing resp.Body and overriding Transport.MaxIdleConnsPerHost (default is only 2), preventing TCP socket churn under microservice loads.'
   },
   json: {
     goParadigm: 'Type-safe serialization with struct tags (e.g. `json:"user_id"`) enforcing compile-time schema contracts.',
@@ -74,6 +74,16 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     goParadigm: 'Standard library os.Getenv reading OS environment variables directly with zero external dependencies.',
     nodeEquivalent: 'process.env populated at startup often requiring third-party libraries like dotenv.',
     coreTakeaway: '12-Factor app configurations read environment variables directly from container orchestrators with simple typed fallback functions.'
+  },
+  http_routing: {
+    goParadigm: 'Method-specific routing and path parameter wildcards ({id}) built into Go 1.22+ standard http.ServeMux.',
+    nodeEquivalent: 'Express or Fastify route matching (app.get("/users/:id")) requiring third-party web frameworks.',
+    coreTakeaway: 'Go 1.22+ eliminates third-party routers: standard http.ServeMux matches HTTP methods and extracts path wildcards with r.PathValue().'
+  },
+  structured_logging: {
+    goParadigm: 'High-performance, leveled, structured JSON logging standardized across the ecosystem via Go 1.21 log/slog.',
+    nodeEquivalent: 'Pino or Winston emitting JSON log objects formatted for CloudWatch, Datadog, or Elasticsearch.',
+    coreTakeaway: 'log/slog unifies logging across all Go packages with zero-allocation attributes (slog.String, slog.Int) and built-in contextual tracing.'
   },
   slice_map: {
     goParadigm: 'Explicit pre-allocated slice loop make([]R, 0, len(items)) or generic Map helper to avoid GC reallocation.',
@@ -164,6 +174,16 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     goParadigm: 'Errors as values wrapped with %w, checked via errors.Is (sentinel identity) and errors.As (typed unwrapping).',
     nodeEquivalent: 'Throwing exceptions (throw new CustomError()) caught with try/catch and instanceof checks.',
     coreTakeaway: 'Errors are regular values inspected without breaking execution control flow or paying the performance penalty of stack unwinding.'
+  },
+  channels_basics: {
+    goParadigm: 'Typed memory communication conduits (chan T) synchronizing producer and consumer goroutines without mutexes.',
+    nodeEquivalent: 'Async queue structures, EventEmitter events, or Promise deferred pipelines.',
+    coreTakeaway: 'Channels pass data ownership between concurrent routines; unbuffered channels synchronize immediately while buffered channels decouple throughput.'
+  },
+  graceful_shutdown: {
+    goParadigm: 'Clean server draining with signal.NotifyContext and http.Server.Shutdown(ctx) allowing active HTTP requests to complete.',
+    nodeEquivalent: 'Intercepting process.on("SIGTERM") to close HTTP listeners and pool connections before process.exit().',
+    coreTakeaway: 'In containerized Kubernetes deployments, graceful shutdown prevents dropped TCP sockets and 502 Bad Gateway errors during rolling updates.'
   },
   basic_pointers: {
     goParadigm: 'Distinguishing pass-by-value (safe copy) from pass-by-reference (*T) to control mutation and allocation.',

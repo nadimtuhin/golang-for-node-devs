@@ -38,7 +38,7 @@ const architectureGuides = [
 
 <Layout 
   title="Complete Curriculum & Chapters Directory | Go"
-  description="Explore all 56 interactive Go lessons and 13 production architecture guides organized into structured chapters."
+  description="Explore all 60 interactive Go lessons and 13 production architecture guides organized into structured chapters."
 >
   <Header />
 
@@ -56,12 +56,12 @@ const architectureGuides = [
       </div>
       <h1 id="curriculum-heading" class="curriculum-title">Go for Node.js Developers — All Chapters</h1>
       <p class="curriculum-subtitle">
-        A hands-on, chapter-by-chapter programming book for JavaScript and TypeScript developers learning Go. Features 56 interactive chapters runnable directly in your browser, paired with 13 comprehensive production architecture guides.
+        A hands-on, chapter-by-chapter programming book for JavaScript and TypeScript developers learning Go. Features 60 interactive chapters runnable directly in your browser, paired with 13 comprehensive production architecture guides.
       </p>
 
       <div class="curriculum-stats-bar">
         <div class="stat-card">
-          <span class="stat-number">56</span>
+          <span class="stat-number">60</span>
           <span class="stat-label">Coding Lessons</span>
         </div>
         <div class="stat-card">
@@ -83,9 +83,9 @@ const architectureGuides = [
     <section class="curriculum-section" aria-labelledby="lessons-heading">
       <div class="section-header">
         <h2 id="lessons-heading" class="section-title">
-          <span class="section-icon">📖</span> Book Table of Contents (56 Interactive Chapters)
+          <span class="section-icon">📖</span> Book Table of Contents (60 Interactive Chapters)
         </h2>
-        <span class="section-count">56 Chapters</span>
+        <span class="section-count">60 Chapters</span>
       </div>
 
       {Object.entries(groupedChapters).map(([partName, lessons]) => (
@@ -174,7 +174,7 @@ const architectureGuides = [
       });
 
       const badge = document.getElementById('sidebarCountBadge');
-      if (badge) badge.innerText = q ? `${visibleCount} Found` : '56 Lessons';
+      if (badge) badge.innerText = q ? `${visibleCount} Found` : '60 Lessons';
     }
 
     function clearLessonSearch() {

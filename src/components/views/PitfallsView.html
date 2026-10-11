@@ -269,11 +269,15 @@ if err != nil { return err }
 body, _ := io.ReadAll(resp.Body)
         </div>
         <div class="code-box-correct">
-          <div class="label-correct">✅ FIX: Check error first, defer close, drain body</div>
-resp, err := http.Get("https://api.com")
+          <div class="label-correct">✅ FIX: Check error first, read body, defer drain and close</div>
+resp, err := client.Do(req)
 if err != nil { return err }
-defer resp.Body.Close()
-_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20)) // Bound drain to 1MB to preserve Keep-Alive without hang hazards
+defer func() {
+    // Drain unread trailing bytes to preserve Keep-Alive socket pooling
+    _, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20))
+    resp.Body.Close()
+}()
+body, err := io.ReadAll(resp.Body) // Safely read body before defer drains remainder!
         </div>
       </div>
     </div>
