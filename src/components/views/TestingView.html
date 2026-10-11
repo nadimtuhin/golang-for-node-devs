@@ -672,7 +672,7 @@ func setupPostgresContainer(t *testing.T) *sql.DB {
         <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
           <strong>The Problem in Node.js:</strong> When testing against real databases in Node, tests often run <code>TRUNCATE TABLE users CASCADE</code> in <code>beforeEach()</code>. This destroys test speed (200ms+ per test) and prevents parallel test execution.
           <br/><br/>
-          <strong>The Go Solution:</strong> Start a database transaction at the start of each subtest, execute all queries inside that transaction, and register <code>defer tx.Rollback()</code>. The test runs against real PostgreSQL engine rules, but <strong>zero rows ever persist</strong>. Tests run in under 2ms and can execute in parallel!
+          <strong>The Go Solution:</strong> Start a database transaction at the start of each subtest, execute all queries inside that transaction, and register <code>defer tx.Rollback()</code>. The test runs against real PostgreSQL engine rules, but <strong>zero rows ever persist</strong>. Tests run in under 2ms! <em>Note: If enabling <code>t.Parallel()</code> across transactional rollback tests on a shared database, ensure fixtures use unique keys (e.g. <code>fmt.Sprintf("%s@example.com", t.Name())</code>) to prevent row-lock blocking or unique constraint collisions before rollback.</em>
         </p>
 
         <div style="background: #0f172a; border-radius: 8px; padding: 1rem; margin: 1rem 0;">

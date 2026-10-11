@@ -200,7 +200,7 @@ window.CHAPTER_INSIGHTS = {
     "coreTakeaway": "Struct embedding allows code reuse and method promotion without locking types into rigid, fragile object-oriented hierarchies."
   },
   "basic_defer_panic": {
-    "goParadigm": "defer schedules LIFO cleanup (inlined via Go 1.14+ open-coded defers); recover() must be called directly inside a deferred closure in the SAME goroutine (cross-goroutine recover is impossible).",
+    "goParadigm": "defer schedules LIFO cleanup (up to 8 static defers inlined via Go 1.14+ open-coded defers; loop defers use stack/heap deferpool); recover() must be called directly inside a deferred closure in the SAME goroutine (cross-goroutine recover is impossible).",
     "nodeEquivalent": "try/catch/finally and process.on(\"uncaughtException\"). In Node, unhandled exceptions can be intercepted globally; in Go, an uncaught panic in any goroutine terminates the process.",
     "coreTakeaway": "recover() only catches panics within its own goroutine stack. Fatal crashes like concurrent map read/write or stack overflow (runtime.throw) abort immediately and cannot be recovered."
   },
@@ -210,12 +210,12 @@ window.CHAPTER_INSIGHTS = {
     "coreTakeaway": "Go generics deliver reusable data structures and algorithms while maintaining full compile-time static type verification."
   },
   "ds_slice_internals": {
-    "goParadigm": "Under the hood, a slice is a 24-byte struct with a pointer to backing array, length, and capacity.",
+    "goParadigm": "Under the hood, a slice is a 24-byte struct (on 64-bit platforms: Data pointer, Len, Cap) with a pointer to backing array, length, and capacity.",
     "nodeEquivalent": "V8 JS Arrays implemented as dynamic Fast Elements or Dictionary Elements with complex hidden classes.",
     "coreTakeaway": "Understanding slice capacity prevents silent reallocation copies and avoids unintended mutations when taking sub-slices."
   },
   "ds_map_internals": {
-    "goParadigm": "Hash table built of 8-slot buckets with incremental rehashing; iteration order is intentionally randomized by Go runtime.",
+    "goParadigm": "Hash table built of 8-slot buckets (or Go 1.24 Swiss Tables); runtime randomizes iteration by selecting a pseudo-random start bucket and slot offset via fastrand() to prevent key order dependency.",
     "nodeEquivalent": "JS Objects and Maps maintain insertion order by specification, adding runtime maintenance overhead.",
     "coreTakeaway": "Go intentionally randomizes map iteration to prevent developers from relying on non-deterministic key ordering."
   },

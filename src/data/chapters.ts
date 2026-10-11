@@ -1612,7 +1612,7 @@ func main() {
         num: "B8",
         part: "Part 0: Language Basics",
         title: "Type Assertions & Type Switches",
-        desc: "In JS, you use 'typeof x' or 'x instanceof Clazz' on dynamic variables. In Go, when dealing with 'any' (interface{}), you use type assertion 'v.(T)' or type switch 'switch v := x.(type)'.",
+        desc: "In JS, you use 'typeof x' or 'x instanceof Clazz'. In Go, extracting concrete types or interface satisfaction from 'any' requires the comma-ok idiom 'v, ok := x.(T)' (single-value 'v := x.(T)' panics on mismatch) or type switch 'switch v := x.(type)'.",
         nodeCode: "// Type narrowing in TypeScript / JavaScript\nfunction processValue(val) {\n  if (typeof val === 'string') {\n    // Narrowed to string\n    return val.toUpperCase();\n  } else if (typeof val === 'number') {\n    // Narrowed to number\n    return val.toFixed(2);\n  }\n  return String(val);\n}\n\nconsole.log(processValue('gopher'));\nconsole.log(processValue(42.3456));",
         why: "Type assertions enforce runtime safety while retaining static compiler guarantees. The comma-ok idiom prevents runtime panics.",
         code: `package main
@@ -1701,7 +1701,7 @@ func main() {
         title: "Struct Embedding (Composition over Inheritance)",
         desc: "In JS/TS, code reuse uses 'class Admin extends User' with super(). Go deliberately omits classes and inheritance. It uses struct embedding where inner fields and methods are automatically promoted.",
         nodeCode: "// OOP inheritance in JavaScript via 'extends'\nclass BaseUser {\n  constructor(name) {\n    this.name = name;\n  }\n  getDisplayName() {\n    return `User: ${this.name}`;\n  }\n}\n\nclass AdminUser extends BaseUser {\n  constructor(name, permissions) {\n    super(name);\n    this.permissions = permissions;\n  }\n}",
-        why: "Avoids the fragile base class problem. Outer structs can promote inner methods or override them cleanly without virtual dispatch overhead.",
+        why: "Avoids the fragile base class problem. Outer structs promote inner methods or shadow them cleanly without virtual dispatch overhead.",
         code: `package main
 
 import "fmt"
@@ -1728,7 +1728,7 @@ type AdminUser struct {
 	Level       int
 }
 
-// Shadow / override User's Display method
+// Shadow User's Display method (selector shadowing, not OOP virtual overriding)
 func (a AdminUser) Display() string {
 	return fmt.Sprintf("[ADMIN Level %d] %s", a.Level, a.User.Display())
 }
@@ -1754,7 +1754,7 @@ func main() {
         num: "B11",
         part: "Part 0: Language Basics",
         title: "Defer, Panic & Recover",
-        desc: "In JS, cleanups use 'try { ... } finally { close() }'. In Go, 'defer' schedules cleanups to run immediately when the function returns (LIFO order, with Go 1.14+ open-coded inlining for near-zero overhead). 'panic' is reserved for unrecoverable errors.",
+        desc: "In JS, cleanups use 'try { ... } finally { close() }'. In Go, 'defer' schedules cleanups to run immediately when the function returns (LIFO order; up to 8 static defers not in loops are inlined via Go 1.14+ open-coded bitmasks, while loop defers fall back to stack/heap deferpool). 'panic' is reserved for unrecoverable errors.",
         nodeCode: "// Resource cleanup in Node.js using try/finally\nasync function processReport(dbClient) {\n  try {\n    await dbClient.connect();\n    console.log('Processing critical transaction...');\n    throw new Error('Simulated database write error');\n  } catch (err) {\n    console.error('Caught exception:', err.message);\n  } finally {\n    // Cleanup runs no matter what\n    await dbClient.close();\n    console.log('Database connection cleanly closed.');\n  }\n}",
         why: "Defer keeps cleanup logic adjacent to resource allocation (e.g., file opens, mutex locks), preventing memory and descriptor leaks.",
         code: `package main

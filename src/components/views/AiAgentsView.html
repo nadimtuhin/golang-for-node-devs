@@ -490,7 +490,9 @@ if err := decoder.Decode(&amp;params); err != nil {
             if !ok {
                 return // Stream complete
             }
-            fmt.Fprintf(w, "data: %s\n\n", token)
+            // WHATWG SSE Spec: multi-line tokens must prefix each newline with 'data: '
+            escapedToken := strings.ReplaceAll(token, "\n", "\ndata: ")
+            fmt.Fprintf(w, "data: %s\n\n", escapedToken)
             _ = rc.Flush() // Push chunk immediately to client (fallback: w.(http.Flusher).Flush())
         }
     }
@@ -923,17 +925,19 @@ import (
     "log"
     "strings"
 
+    "github.com/tmc/langchaingo/embeddings"
     "github.com/tmc/langchaingo/llms"
     "github.com/tmc/langchaingo/llms/openai"
     "github.com/tmc/langchaingo/schema"
     "github.com/tmc/langchaingo/textsplitter"
+    "github.com/tmc/langchaingo/vectorstores"
     "github.com/tmc/langchaingo/vectorstores/memory"
 )
 
 func main() {
     ctx := context.Background()
 
-    // 1. Initialize OpenAI Model &amp; Embedder
+    // 1. Initialize OpenAI Model & Embedder
     model, err := openai.New(openai.WithModel("gpt-4o-mini"))
     if err != nil {
         log.Fatalf("Failed to initialize model: %v", err)
@@ -971,11 +975,11 @@ func main() {
 
     // 4. Index Chunks into Vector Store with Embedder
     // (Using in-memory vector store with embeddings; interchangeable with pgvector / Qdrant)
-    embedder, err := openai.NewEmbedder(openai.WithModel("text-embedding-3-small"))
+    embedder, err := embeddings.NewEmbedder(model)
     if err != nil {
         log.Fatalf("Failed to initialize embedder: %v", err)
     }
-    store := memory.New(memory.WithEmbedder(embedder))
+    store := memory.New(vectorstores.WithEmbedder(embedder))
     _, err = store.AddDocuments(ctx, docs)
     if err != nil {
         log.Fatalf("Vector store indexing failed: %v", err)
@@ -1185,8 +1189,8 @@ func handleMCPMethod(req JSONRPCRequest) {
             return
         }
 
-        // MCP Spec: Unknown tool is a protocol-level error (-32601), not a successful result with isError
-        sendError(req.ID, -32601, fmt.Sprintf("tool '%s' not found", params.Name))
+        // MCP Spec: Unknown tool name in tools/call is an Invalid params protocol error (-32602)
+        sendError(req.ID, -32602, fmt.Sprintf("tool '%s' not found", params.Name))
         return
 
     default:

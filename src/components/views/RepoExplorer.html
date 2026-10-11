@@ -312,7 +312,7 @@ func CreateProduct(c *fiber.Ctx) error {
 	client, err := db.GetMongoClient()
 
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, "Database connection unavailable")
 	}
 
 	collection := client.Database(db.Database).Collection(string(db.ProductsCollection))
@@ -320,7 +320,7 @@ func CreateProduct(c *fiber.Ctx) error {
 	_, err = collection.InsertOne(c.UserContext(), product)
 
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create product")
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(product)
@@ -333,7 +333,7 @@ func GetAllProducts(c *fiber.Ctx) error {
 	products := make([]*Product, 0)
 
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, "Database connection unavailable")
 	}
 
 	collection := client.Database(db.Database).Collection(string(db.ProductsCollection))
@@ -341,13 +341,15 @@ func GetAllProducts(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to query products")
 	}
-	defer cur.Close(context.Background())
+	closeCtx, closeCancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer closeCancel()
+	defer cur.Close(closeCtx)
 
 	// In modern MongoDB driver, cur.All decodes the entire cursor into the slice
 	if err := cur.All(ctx, &products); err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to decode products")
 	}
 
 	return c.JSON(products)

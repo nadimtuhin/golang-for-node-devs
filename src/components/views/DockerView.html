@@ -134,8 +134,8 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # (Or compile with blank import: _ "time/tzdata")
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo/
 
-# Provide /tmp for os.CreateTemp and multipart file uploads
-COPY --from=builder /tmp-dir /tmp
+# Provide /tmp with non-root ownership for os.CreateTemp and multipart file uploads
+COPY --chown=10001:10001 --from=builder /tmp-dir /tmp
 
 # Copy binary with matching unprivileged ownership
 COPY --chown=10001:10001 --from=builder /app/server /server
