@@ -358,7 +358,7 @@ github.com/gin-gonic/gin v1.10.0/go.mod h1:1q5C6D7E8F9G...=</pre>
             <strong>Minimum Version Elevation (Upgrade Override):</strong> If your direct dependency <code>A</code> requires transitive dependency <code>B v1.1.0</code>, but you explicitly run <code>go get B@v1.4.0</code> to patch a bug or security issue, Go must record <code>B v1.4.0 // indirect</code> in your root <code>go.mod</code> so MVS knows to select <code>v1.4.0</code> instead of <code>v1.1.0</code>.
           </li>
           <li>
-            <strong>Module Graph Pruning (Go 1.17+):</strong> Under Go 1.17+ pruned module graphs, <code>go.mod</code> explicitly records any transitive dependency that provides packages directly imported by the main module (or needed to avoid downloading the entire transitive closure of <code>go.mod</code> files).
+            <strong>Module Graph Pruning (Go 1.17+):</strong> Under Go 1.17+ pruned module graphs, <code>go.mod</code> explicitly records any transitive dependency that provides packages indirectly imported by the main module (or that changes the selected version of another dependency), avoiding the need to download the full transitive closure of unused <code>go.mod</code> files.
           </li>
         </ol>
 

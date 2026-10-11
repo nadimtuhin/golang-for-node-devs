@@ -307,7 +307,10 @@ timer := time.NewTimer(30 * time.Second)
 defer timer.Stop()
 for {
     select {
-    case msg := &lt;-ch:
+    case msg, ok := &lt;-ch:
+        if !ok {
+            return // Channel closed: exit cleanly to prevent 100% CPU spinning busy loop
+        }
         if !timer.Stop() {
             select {
             case &lt;-timer.C:

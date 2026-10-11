@@ -186,7 +186,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'In containerized Kubernetes deployments, graceful shutdown prevents dropped TCP sockets and 502 Bad Gateway errors during rolling updates.'
   },
   basic_pointers: {
-    goParadigm: 'Distinguishing pass-by-value (safe copy) from pass-by-reference (*T) to control mutation and allocation.',
+    goParadigm: 'Distinguishing pass-by-value (safe copy) from passing pointer values (*T) to control mutation and allocation.',
     nodeEquivalent: 'Hidden object reference mutation bugs where passing an object to a function unexpectedly alters parent state.',
     coreTakeaway: 'Pass-by-value guarantees local isolation by default, while explicit pointers signal intentional mutation or large struct sharing.'
   },
@@ -278,7 +278,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
   lc_valid_parentheses: {
     goParadigm: 'Slice-based LIFO stack appending closing brackets and popping top elements in O(N) time and O(N) space.',
     nodeEquivalent: 'Array-based stack using .push() and .pop() with dynamic array allocation.',
-    coreTakeaway: 'A pre-allocated []rune slice acts as an optimal stack with reslicing for matching bracket pairs in linear time.'
+    coreTakeaway: 'A pre-allocated []byte slice acts as an optimal stack with reslicing for matching ASCII bracket pairs in linear time.'
   },
   lc_merge_lists: {
     goParadigm: 'Dummy head pointer node traversing both linked lists and wiring Next pointers in O(N) time and O(1) space.',

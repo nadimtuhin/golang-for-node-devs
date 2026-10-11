@@ -199,7 +199,7 @@
               <br/>• <em>Black:</em> Visited and all referenced children verified reachable.
             </li>
             <li><strong>Concurrent Execution:</strong> Go's GC runs alongside active goroutines on dedicated CPU cores. Stop-The-World (STW) phases last only a few microseconds for write-barrier synchronization.</li>
-            <li><strong>The Trade-off:</strong> Go pays ~15% to 30% memory overhead over raw data size to allow GC pacing (<code>GOGC=100</code>).</li>
+            <li><strong>The Trade-off:</strong> By default, Go targets up to 100% heap growth headroom over live data before triggering GC (<code>GOGC=100</code>), plus ~15%–30% allocator metadata and fragmentation overhead (tunable via <code>GOMEMLIMIT</code> in Go 1.19+).</li>
           </ul>
         </div>
 

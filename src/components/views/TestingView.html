@@ -1176,17 +1176,15 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	// 2. Reset timer to discard setup overhead
 	b.ResetTimer()
 
-	var r []byte
 	// 3. b.N is dynamically tuned by the Go runtime (e.g. 1,000,000 iterations)
 	for i := 0; i < b.N; i++ {
 		var err error
-		r, err = json.Marshal(event)
+		// Sink variable prevents compiler dead-code elimination of serialization
+		benchSink, err = json.Marshal(event)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
-	// Sink variable prevents compiler dead-code elimination of serialization
-	benchSink = r
 }</code></pre>
         </div>
 

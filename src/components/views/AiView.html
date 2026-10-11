@@ -439,12 +439,8 @@ type StreamChunk struct {
 
 // SSEStreamHandler handles high-concurrency LLM token streaming
 func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Verify response writer supports HTTP flushing (SSE requirement)
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming unsupported by client", http.StatusInternalServerError)
-		return
-	}
+	// 1. Go 1.20+ ResponseController automatically unwraps middleware and manages deadlines
+	rc := http.NewResponseController(w)
 
 	// 2. Set strict Server-Sent Events headers
 	w.Header().Set("Content-Type", "text/event-stream")
@@ -455,7 +451,9 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Accel-Buffering", "no") // Disables Nginx reverse proxy buffering
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusOK)
-	flusher.Flush()
+	if err := rc.Flush(); err != nil {
+		return // Streaming unsupported or client disconnected
+	}
 
 	// 3. Client disconnect detection: context cancellation
 	ctx := r.Context()
@@ -482,18 +480,19 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 			chunk.Delta.Content = token
 
 			payload, _ := json.Marshal(chunk)
-			// Format as standard SSE event chunk: "data: {...}\n\n"
+			// Refresh write deadline per emitted chunk to defend against client socket starvation
+			_ = rc.SetWriteDeadline(time.Now().Add(10 * time.Second))
 			if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
 				log.Printf("TCP socket write error (client closed): %v", err)
 				return
 			}
-			flusher.Flush() // Push chunk immediately across TCP socket!
+			_ = rc.Flush() // Push chunk immediately across TCP socket!
 		}
 	}
 
 	// 4. Send standard OpenAI termination token
 	fmt.Fprintf(w, "data: [DONE]\n\n")
-	flusher.Flush()
+	_ = rc.Flush()
 }
 
 func main() {

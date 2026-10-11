@@ -298,7 +298,7 @@ go func() {
               <strong>Stack Allocation:</strong> Ultra-fast. Memory is reserved by adjusting the CPU stack pointer register (<code>RSP</code>). When the function returns, the memory is reclaimed instantly with zero garbage collection overhead.
             </li>
             <li>
-              <strong>Heap Allocation:</strong> Slower. Managed by the runtime memory allocator (based on Google's <code>tcmalloc</code> with thread-local caches <code>mcache</code>, central spans <code>mcentral</code>, and arenas <code>mheap</code>). Heap objects must be traced and swept by the Tricolor GC.
+              <strong>Heap Allocation:</strong> Slower. Managed by the runtime memory allocator (based on Google's <code>tcmalloc</code> architecture with per-P local caches <code>mcache</code>, central span lists <code>mcentral</code>, and heap arenas <code>mheap</code>). Heap objects must be traced and swept by the Tricolor GC.
             </li>
           </ul>
           <p><strong>Primary Escape Triggers:</strong></p>

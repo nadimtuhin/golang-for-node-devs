@@ -1964,7 +1964,7 @@ type InefficientUser struct {
 type OptimizedUser struct {
 	Age     int64  // 8 bytes
 	IsAdmin bool   // 1 byte
-	Active  bool   // 1 byte + 6 bytes padding gap
+	Active  bool   // 1 byte (+ 6 bytes trailing struct padding to align to 8B boundary)
 }
 
 func main() {
@@ -2600,8 +2600,8 @@ func main() {
       lc_valid_palindrome: {
         num: "LC125",
         part: "Part 7: LeetCode in Go",
-        title: "Valid Palindrome (#125) — Runes & Two Pointers",
-        desc: "Determine if a string is a palindrome. In JS, devs regex-replace and reverse (allocating multiple strings). In Go, converting to '[]rune(s)' takes O(N) time and O(N) auxiliary space for UTF-8 runes, while direct byte indexing achieves true O(1) auxiliary space for ASCII.",
+        title: "Valid Palindrome (#125) — In-Place Two-Pointer Traversal",
+        desc: "Determine if a string is a palindrome. In JS, devs regex-replace and reverse (allocating multiple intermediate strings). In Go, direct two-pointer byte indexing achieves true O(1) auxiliary space for ASCII, while utf8.DecodeRuneInString enables O(1) space Unicode streaming without allocating a []rune slice.",
         nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
         why: "In Node, regex replace creates multiple intermediate string copies. In Go, direct two-pointer byte indexing achieves a single O(N) pass with true O(1) auxiliary space.",
         code: `package main

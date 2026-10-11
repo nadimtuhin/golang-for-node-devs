@@ -708,13 +708,16 @@ _, err = llms.GenerateFromSinglePrompt(ctx, openAILLM, "Explain Goroutines vs No
           In Go, we coordinate these events cleanly using a single <code>select</code> block:
         </p>
 
-        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.2rem; border-radius:8px; font-size:0.83rem; line-height:1.6; overflow-x: auto;">select {
+        <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.2rem; border-radius:8px; font-size:0.83rem; line-height:1.6; overflow-x: auto;">stepTimer := time.NewTimer(30 * time.Second)
+defer stepTimer.Stop()
+
+select {
 case &lt;-ctx.Done():
     // 1. User clicked "Stop" or HTTP client disconnected
     return nil, ctx.Err()
 
-case &lt;-time.After(30 * time.Second):
-    // 2. Hard timeout circuit-breaker
+case &lt;-stepTimer.C:
+    // 2. Hard timeout circuit-breaker (avoids heap timer leak from time.After)
     return nil, errors.New("agent step timed out after 30s")
 
 case approved := &lt;-approvalChan:
@@ -1098,7 +1101,8 @@ func main() {
             continue
         }
         if req.JSONRPC != "2.0" {
-            sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
+            // JSON-RPC 2.0 §5: If request is invalid and id cannot be determined, return id: null
+            sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
             continue
         }
 
