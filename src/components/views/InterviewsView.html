@@ -147,7 +147,7 @@
             When an OS thread (<code>M</code>) bound to processor (<code>P</code>) finishes executing its current goroutine, it searches for runnable work following a strict 5-step scheduling loop:
           </p>
           <ol style="margin-left: 1.25rem; line-height: 1.7;">
-            <li><strong>Fairness Check (Every 61 Ticks):</strong> Every 61 scheduler ticks (<code>sched.ticks % 61 == 0</code>), M checks the <strong>Global Run Queue (GRQ)</strong> first before its local queue. This prevents Goroutines in the GRQ from starving if local queues are saturated.</li>
+            <li><strong>Fairness Check (Every 61 Ticks):</strong> Every 61 scheduler ticks on the local P (<code>pp.schedtick % 61 == 0</code>), M checks the <strong>Global Run Queue (GRQ)</strong> first before its local queue. This prevents Goroutines in the GRQ from starving if local queues are saturated.</li>
             <li><strong>Check <code>runnext</code>:</strong> If not tick 61, examines P's 1-slot fast-path pointer. This provides L1/L2 cache locality for unblocked goroutines (e.g. unblocked channel receivers).</li>
             <li><strong>Check Local Run Queue (LRQ):</strong> Pops from P's lock-free ring buffer (up to 256 Gs).</li>
             <li><strong>Check Network Poller:</strong> Queries <code>runtime.netpoll</code> (non-blocking <code>epoll</code> on Linux, <code>kqueue</code> on macOS) to retrieve goroutines whose socket I/O completed.</li>

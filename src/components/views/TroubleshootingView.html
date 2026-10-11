@@ -940,11 +940,14 @@ import (
 func listenReusePort(addr string) (net.Listener, error) {
 	lc := net.ListenConfig{
 		Control: func(network, address string, c syscall.RawConn) error {
-			var err error
-			c.Control(func(fd uintptr) {
-				err = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, 1)
+			var sockErr error
+			err := c.Control(func(fd uintptr) {
+				sockErr = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, 1)
 			})
-			return err
+			if err != nil {
+				return err
+			}
+			return sockErr
 		},
 	}
 	return lc.Listen(context.Background(), "tcp", addr)
@@ -1118,9 +1121,9 @@ func listenReusePort(addr string) (net.Listener, error) {
           &nbsp;&nbsp;&nbsp;&nbsp;log.Println(http.ListenAndServe("localhost:6060", nil))<br>
           }()<br><br>
           # Inspect live goroutine stack traces in terminal:<br>
-          curl http://localhost:6060/debug/pprof/goroutine?debug=1<br><br>
+          curl http://localhost:6060/debug/pprof/goroutine?debug=2<br><br>
           # Capture 30-second CPU profile and analyze with interactive UI:<br>
-          go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30<br><br>
+          go tool pprof -http=:8081 http://localhost:6060/debug/pprof/profile?seconds=30<br><br>
           # Execution Trace Viewer (visualize Goroutine scheduling, GC STW, and Netpoller events on microsecond timeline):<br>
           curl -o trace.out http://localhost:6060/debug/pprof/trace?seconds=5<br>
           go tool trace trace.out

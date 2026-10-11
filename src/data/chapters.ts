@@ -1485,7 +1485,7 @@ func worker(id int, jobs <-chan int, results chan<- int) {
 }
 
 func main() {
-	// 1. Buffered channel: sends do not block until buffer (size 3) is full
+	// 1. Buffered channel: sends do not block until buffer (size 5) is full
 	jobs := make(chan int, 5)
 	results := make(chan int, 5)
 
@@ -1520,6 +1520,7 @@ func main() {
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -1541,7 +1542,7 @@ func main() {
 	// Simulate background server launch
 	go func() {
 		fmt.Println("HTTP server listening on :8080")
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			fmt.Printf("Listen error: %v\\n", err)
 		}
 	}()
@@ -2446,7 +2447,7 @@ func main() {
         num: "LC20",
         part: "Part 7: LeetCode in Go",
         title: "Valid Parentheses (#20) — Slice Stack",
-        desc: "Determine if string parentheses '()[]{}' are valid. In JS, Array.push() and Array.pop() act as a stack. In Go, we use a slice of runes '[]rune' with sub-slicing stack[:len(stack)-1] for an ultra-fast, zero-overhead LIFO stack.",
+        desc: "Determine if string parentheses '()[]{}' are valid. In JS, Array.push() and Array.pop() act as a stack. In Go, we use a slice of bytes '[]byte' with sub-slicing stack[:len(stack)-1] for an ultra-fast, zero-overhead LIFO stack.",
         nodeCode: "const stack = [];\nconst pairs = { ')': '(', '}': '{', ']': '[' };\nfor (const char of s) {\n  if (pairs[char]) {\n    if (stack.pop() !== pairs[char]) return false;\n  } else {\n    stack.push(char);\n  }\n}\nreturn stack.length === 0;",
         why: "Teaches how Go slices naturally represent stacks without needing specialized container classes or npm packages.",
         code: `package main
@@ -2602,13 +2603,10 @@ func main() {
         title: "Valid Palindrome (#125) — Runes & Two Pointers",
         desc: "Determine if a string is a palindrome. In JS, devs regex-replace and reverse (allocating multiple strings). In Go, converting to '[]rune(s)' takes O(N) time and O(N) auxiliary space for UTF-8 runes, while direct byte indexing achieves true O(1) auxiliary space for ASCII.",
         nodeCode: "const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\nreturn clean === clean.split('').reverse().join('');",
-        why: "In Node, regex replace creates multiple intermediate string copies. In Go, a rune slice with unicode.IsLetter and unicode.ToLower runs in a single O(N) pass.",
+        why: "In Node, regex replace creates multiple intermediate string copies. In Go, direct two-pointer byte indexing achieves a single O(N) pass with true O(1) auxiliary space.",
         code: `package main
 
-import (
-	"fmt"
-	"unicode"
-)
+import "fmt"
 
 func isPalindrome(s string) bool {
 	// True O(1) auxiliary space in-place traversal via ASCII byte indexing

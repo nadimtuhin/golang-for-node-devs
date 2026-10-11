@@ -292,7 +292,7 @@
             <br/>• <strong>G (Goroutine):</strong> Represents the lightweight thread of execution and its stack.
             <br/>• <strong>M (Machine):</strong> An actual OS thread managed by the operating system kernel.
             <br/>• <strong>P (Processor):</strong> A logical context representing a CPU core (default: <code>GOMAXPROCS</code>).
-            <br/>When a goroutine blocks on a network socket or channel, it parks via the netpoller without detaching P; the M stays with its P and runs the next ready G. P only detaches from M during blocking OS syscalls (e.g. file I/O or cgo).
+            <br/>When a goroutine blocks on network I/O, it parks via the netpoller; when blocking on channels, it parks directly on channel wait queues (sudog). In both cases, P does not detach from M. P only detaches from M during blocking OS syscalls (e.g. file I/O or cgo).
           </li>
           <li><strong>Channels &amp; Select:</strong> Communication between goroutines uses type-safe channels (<code>ch := make(chan int)</code>) and non-blocking multiplexed selection via <code>select</code>.</li>
         </ul>
@@ -358,7 +358,7 @@
             <strong>Go: Sub-Second Builds</strong>
           </p>
           <p style="font-size: 0.88rem; color: #334155; line-height: 1.55;">
-            Go uses a custom single-pass compiler specifically designed for blazing speed. Even codebases with hundreds of thousands of lines compile in under 3 seconds.
+            Go uses a custom SSA-based compiler tailored specifically for fast builds. Even codebases with hundreds of thousands of lines compile in under 3 seconds without LLVM overhead.
           </p>
           <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
             <p style="font-size: 0.88rem; color: #9a3412; margin-bottom: 0.5rem;">
@@ -434,7 +434,7 @@
             </tr>
             <tr>
               <td><strong>Compilation Speed</strong></td>
-              <td><strong>Sub-second (⚡⚡⚡):</strong> Fast feedback loops; single-pass compiler without LLVM.</td>
+              <td><strong>Sub-second (⚡⚡⚡):</strong> Fast feedback loops; custom SSA multi-pass compiler without LLVM.</td>
               <td><strong>Moderate to Slow:</strong> LLVM optimization, monomorphization, and borrow analysis take time.</td>
             </tr>
             <tr>
@@ -1155,6 +1155,7 @@ function calculateFee(p: PaymentMethod): number {
             <select id="q-workload" class="quiz-select" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
               <option value="microservice">Networked Microservice (REST, gRPC, DB)</option>
               <option value="engine">Low-level Engine (Database kernel, Game, Audio)</option>
+              <option value="embedded">Embedded / Microcontrollers (no_std)</option>
               <option value="wasm">Browser WebAssembly (Client-side Canvas/Crypto)</option>
               <option value="infra">Cloud Infra / Kubernetes Operator / Tooling</option>
               <option value="cli">Desktop CLI Tool / Code Bundler</option>
@@ -1265,7 +1266,7 @@ function calculateFee(p: PaymentMethod): number {
             The difference comes from their compiler architectures and optimization strategies:
           </p>
           <ul>
-            <li><strong>Go's Compiler:</strong> Go uses a custom single-pass compiler that does minimal inlining and eschews heavy LLVM optimization passes. Its primary design goal is <em>instant developer feedback</em>. A 50,000-line Go project compiles in ~1.5 seconds.</li>
+            <li><strong>Go's Compiler:</strong> Go uses a custom SSA compiler that focuses on high-speed code generation rather than exhaustive LLVM optimization pipelines. Its primary design goal is <em>instant developer feedback</em>. A 50,000-line Go project compiles in ~1.5 seconds.</li>
             <li><strong>Rust's Compiler (rustc):</strong> Rust's compile pipeline is a multi-stage powerhouse:
               <br/>1. Macro expansion and AST generation.
               <br/>2. Mid-level Intermediate Representation (MIR) borrow checker verification (proving all lifetime constraints).
@@ -1357,6 +1358,7 @@ function calculateFee(p: PaymentMethod): number {
 
         // Workload scoring
         if (workload === 'wasm') rustScore += 65; // Rust is universally superior for in-browser client Wasm
+        else if (workload === 'embedded') rustScore += 70; // Embedded/no_std requires manual memory control
         else if (workload === 'engine') rustScore += 50;
         else if (workload === 'cli') { rustScore += 25; goScore += 25; }
         else if (workload === 'infra') goScore += 40;
@@ -1386,7 +1388,7 @@ function calculateFee(p: PaymentMethod): number {
         if (!resultBox || !titleEl || !badgeEl || !descEl || !reasonsEl) return;
 
         // Hard constraint override matching architectural flowchart
-        if (workload === 'wasm' || latency === 'zero' || (workload === 'engine' && latency !== 'normal')) {
+        if (workload === 'wasm' || workload === 'embedded' || latency === 'zero' || (workload === 'engine' && latency !== 'normal')) {
           rustScore = 999;
         }
 

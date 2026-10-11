@@ -88,7 +88,7 @@
         </tr>
         <tr>
           <td><code>throw new Error("msg")</code></td>
-          <td><code>return nil, errors.New("msg")</code></td>
+          <td><code>return zeroVal, errors.New("msg")</code> (or <code>nil, err</code> for pointers/slices)</td>
           <td>Errors are regular values; no performance penalty from call-stack unwinding.</td>
         </tr>
         <tr>

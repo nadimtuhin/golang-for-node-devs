@@ -1161,6 +1161,8 @@ type LogEvent struct {
 	UserID  int64  `json:"user_id"`
 }
 
+var benchSink []byte
+
 func BenchmarkJSONMarshal(b *testing.B) {
 	event := LogEvent{
 		Level:   "info",
@@ -1174,13 +1176,17 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	// 2. Reset timer to discard setup overhead
 	b.ResetTimer()
 
+	var r []byte
 	// 3. b.N is dynamically tuned by the Go runtime (e.g. 1,000,000 iterations)
 	for i := 0; i < b.N; i++ {
-		_, err := json.Marshal(event)
+		var err error
+		r, err = json.Marshal(event)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
+	// Sink variable prevents compiler dead-code elimination of serialization
+	benchSink = r
 }</code></pre>
         </div>
 

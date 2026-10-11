@@ -621,7 +621,7 @@
         </div>
 
         <div class="deepdive-box" style="margin-bottom: 0;">
-          <div class="deepdive-title">🛡️ 3. "Errors are values, not exceptions."</div>
+          <div class="deepdive-title">🛡️ 3. "Errors are values."</div>
           <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
             <strong>In Node.js:</strong> <code>throw new Error()</code> bypasses function return signatures, causes invisible execution jumps, and leads to crashes if an unhandled promise rejection slips through.
           </p>
@@ -741,16 +741,16 @@
           Presented at GopherCon Israel on February 3, 2020 by Dave Cheney, the Zen of Go distills idiomatic Go engineering into ten enduring design values:
         </p>
         <ul style="color: #475569; font-size: 0.92rem; line-height: 1.8; margin-left: 1.5rem;">
-          <li><strong>Each package should have a single purpose:</strong> Packages are units of design, not arbitrary folder dumps. If a package is hard to name, it has too many responsibilities.</li>
-          <li><strong>Handle errors gracefully:</strong> Never ignore an error. Check them early and return immediately (guard clauses).</li>
-          <li><strong>Avoid package-level state:</strong> Keep globals to an absolute minimum to ensure goroutine safety and clean unit testing. Pass dependencies explicitly.</li>
-          <li><strong>Generalised solution before specific implementation:</strong> Don't guess, measure. Build specific solutions first, then generalize.</li>
-          <li><strong>Simplicity is complicated:</strong> It takes hard work and discipline to keep a codebase simple as it scales. Adding code is easy; keeping it minimal requires mastery.</li>
-          <li><strong>Design for concurrency, implement sequentially:</strong> Structure programs as communicating sequential processes rather than interlocking locks.</li>
-          <li><strong>Make the zero value useful:</strong> Types should work immediately upon declaration without requiring initializers.</li>
-          <li><strong>Before you solve a problem, make sure you understand it:</strong> Don't build speculative abstractions or generic factories until you have real use cases.</li>
-          <li><strong>Leave concurrency to the caller:</strong> Packages should rarely start their own hidden background goroutines; let the consumer control lifecycle.</li>
-          <li><strong>Write tests to lock in the behaviour of your package:</strong> Test observable API behaviors rather than internal implementation details.</li>
+          <li><strong>Each package fulfils a single purpose:</strong> A well-designed Go package provides a single idea, a cohesive set of related behaviours.</li>
+          <li><strong>Handle errors explicitly:</strong> Robust programs handle failure cases at the point where they occur rather than passing the buck.</li>
+          <li><strong>Return early rather than nesting deeply:</strong> Keep the happy path aligned to the left using guard clauses.</li>
+          <li><strong>Leave concurrency to the caller:</strong> Let the caller choose if they want to run your library asynchronously; don't force goroutines upon them.</li>
+          <li><strong>Before you launch a goroutine, know when it will stop:</strong> Goroutines own resources; the sure-fire way to free those resources is to cleanly terminate the owning goroutine.</li>
+          <li><strong>Avoid package-level state:</strong> Keep globals to an absolute minimum to guarantee goroutine safety and clean unit testing. Pass dependencies explicitly.</li>
+          <li><strong>Simplicity matters:</strong> Simple doesn't mean crude; it means readable and maintainable. When choosing between cleverness and simplicity, always choose simple.</li>
+          <li><strong>Write tests to lock in the behaviour of your package’s API:</strong> Tests are the contract guarantees that consumers observe and rely on.</li>
+          <li><strong>If you think it’s slow, first prove it with a benchmark:</strong> So many crimes against maintainability are committed in the name of unproven micro-optimizations.</li>
+          <li><strong>Moderation is a virtue:</strong> Use goroutines, channels, locks, interfaces, and embedding in moderation.</li>
         </ul>
       </div>
     </section>

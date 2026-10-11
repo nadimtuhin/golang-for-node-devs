@@ -87,10 +87,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # --- Stage 2: Final Minimal Runtime (< 15MB) ---
 FROM gcr.io/distroless/static-debian12:nonroot
 
-WORKDIR /app
-
 # Copy binary from builder with non-root ownership
-COPY --chown=65532:65532 --from=builder /app/server /app/server
+COPY --chown=65532:65532 --from=builder /app/server /server
 
 # Expose HTTP port
 EXPOSE 8080
@@ -98,7 +96,7 @@ EXPOSE 8080
 # Run as non-root user (Numeric UID 65532 compliant with K8s runAsNonRoot)
 USER 65532:65532
 
-ENTRYPOINT ["/app/server"]</pre>
+ENTRYPOINT ["/server"]</pre>
     </div>
 
     <!-- Template 2: Scratch Dockerfile -->

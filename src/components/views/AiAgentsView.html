@@ -1048,12 +1048,22 @@ type JSONRPCRequest struct {
     Params  json.RawMessage `json:"params,omitempty"`
 }
 
-// JSONRPCResponse represents our server reply
-type JSONRPCResponse struct {
+type JSONRPCSuccess struct {
     JSONRPC string `json:"jsonrpc"`
     ID      any    `json:"id"`
-    Result  any    `json:"result,omitempty"`
-    Error   any    `json:"error,omitempty"`
+    Result  any    `json:"result"`
+}
+
+type RPCError struct {
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    Data    any    `json:"data,omitempty"`
+}
+
+type JSONRPCError struct {
+    JSONRPC string   `json:"jsonrpc"`
+    ID      any      `json:"id"`
+    Error   RPCError `json:"error"`
 }
 
 // MCP Tool Definition Schema
@@ -1085,6 +1095,10 @@ func main() {
         if err := json.Unmarshal(line, &amp;req); err != nil {
             // JSON-RPC 2.0 §5: Parse errors MUST return id: null, not drop the response
             sendParseError(-32700, "Parse error")
+            continue
+        }
+        if req.JSONRPC != "2.0" {
+            sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
             continue
         }
 
@@ -1186,16 +1200,16 @@ func sendResult(id any, result any) {
     if id == nil {
         return // JSON-RPC 2.0 notifications must never receive a response
     }
-    resp := JSONRPCResponse{JSONRPC: "2.0", ID: id, Result: result}
+    resp := JSONRPCSuccess{JSONRPC: "2.0", ID: id, Result: result}
     data, _ := json.Marshal(resp)
     fmt.Printf("%s\n", data)
 }
 
 func sendParseError(code int, msg string) {
-    resp := JSONRPCResponse{
+    resp := JSONRPCError{
         JSONRPC: "2.0",
         ID:      nil, // JSON-RPC 2.0 §5 mandates id: null for parse errors
-        Error:   map[string]any{"code": code, "message": msg},
+        Error:   RPCError{Code: code, Message: msg},
     }
     data, _ := json.Marshal(resp)
     fmt.Printf("%s\n", data)
@@ -1205,10 +1219,10 @@ func sendError(id any, code int, msg string) {
     if id == nil {
         return // Valid notifications with method set must NOT receive a response
     }
-    resp := JSONRPCResponse{
+    resp := JSONRPCError{
         JSONRPC: "2.0",
         ID:      id,
-        Error:   map[string]any{"code": code, "message": msg},
+        Error:   RPCError{Code: code, Message: msg},
     }
     data, _ := json.Marshal(resp)
     fmt.Printf("%s\n", data)

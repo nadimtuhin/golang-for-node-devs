@@ -31,7 +31,7 @@
           <strong>JS Approach:</strong> <code>const stack = []</code> with <code>push()</code> and <code>pop()</code>.
         </p>
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.75rem;">
-          <strong>Go Approach:</strong> <code>stack := make([]rune, 0, len(s))</code>, pop via <code>stack[:len(stack)-1]</code>.
+          <strong>Go Approach:</strong> <code>stack := make([]byte, 0, len(s))</code> (1-byte ASCII stack), pop via <code>stack[:len(stack)-1]</code>.
         </p>
         <div style="font-size: 0.8rem; color: #166534; font-weight: 700; margin-bottom: 0.75rem;">O(N) Time • O(N) Space • Reslicing Stack</div>
         <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/lc_valid_parentheses" >🚀 Run in Studio Playground</a>

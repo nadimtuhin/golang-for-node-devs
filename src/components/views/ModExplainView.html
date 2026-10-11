@@ -348,7 +348,7 @@ github.com/gin-gonic/gin v1.10.0/go.mod h1:1q5C6D7E8F9G...=</pre>
 )</pre>
 
         <p style="color: #334155; margin-top: 1rem; margin-bottom: 0.75rem;">
-          Go records a dependency as <code>// indirect</code> in your root <code>go.mod</code> under two specific circumstances:
+          Go records a dependency as <code>// indirect</code> in your root <code>go.mod</code> under three specific circumstances:
         </p>
         <ol style="color: #334155; margin-left: 1.5rem; margin-bottom: 1.25rem; line-height: 1.6;">
           <li>
@@ -356,6 +356,9 @@ github.com/gin-gonic/gin v1.10.0/go.mod h1:1q5C6D7E8F9G...=</pre>
           </li>
           <li>
             <strong>Minimum Version Elevation (Upgrade Override):</strong> If your direct dependency <code>A</code> requires transitive dependency <code>B v1.1.0</code>, but you explicitly run <code>go get B@v1.4.0</code> to patch a bug or security issue, Go must record <code>B v1.4.0 // indirect</code> in your root <code>go.mod</code> so MVS knows to select <code>v1.4.0</code> instead of <code>v1.1.0</code>.
+          </li>
+          <li>
+            <strong>Module Graph Pruning (Go 1.17+):</strong> Under Go 1.17+ pruned module graphs, <code>go.mod</code> explicitly records any transitive dependency that provides packages directly imported by the main module (or needed to avoid downloading the entire transitive closure of <code>go.mod</code> files).
           </li>
         </ol>
 
@@ -922,7 +925,7 @@ go env -w GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
           <ul>
             <li><strong>Always Commit:</strong> Both <code>go.mod</code> and <code>go.sum</code> MUST be committed to Git. Never git-ignore <code>go.sum</code>.</li>
             <li><strong>Optional Commit (<code>vendor/</code>):</strong> Commit <code>vendor/</code> if your organization requires air-gapped CI/CD builds with no external internet access, or if you need 100% self-contained compliance archives. Otherwise, omitting <code>vendor/</code> and letting CI fetch from the Go module proxy is standard practice.</li>
-            <li><strong>Never Commit:</strong> Never commit <code>go.work</code> or <code>go.work.sum</code> to shared repositories. Keep <code>go.work</code> in your global <code>.gitignore</code>.</li>
+            <li><strong>Workspace Commits (<code>go.work</code>):</strong> Git-ignore <code>go.work</code> for local multi-repo development workflows; commit <code>go.work</code> in unified multi-module monorepos where modules are versioned together.</li>
           </ul>
         </div>
       </div>
