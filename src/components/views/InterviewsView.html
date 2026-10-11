@@ -151,7 +151,7 @@
             <li><strong>Check <code>runnext</code>:</strong> If not tick 61, examines P's 1-slot fast-path pointer. This provides L1/L2 cache locality for unblocked goroutines (e.g. unblocked channel receivers).</li>
             <li><strong>Check Local Run Queue (LRQ):</strong> Pops from P's lock-free ring buffer (up to 256 Gs).</li>
             <li><strong>Check Network Poller:</strong> Queries <code>runtime.netpoll</code> (non-blocking <code>epoll</code> on Linux, <code>kqueue</code> on macOS) to retrieve goroutines whose socket I/O completed.</li>
-            <li><strong>Work-Stealing:</strong> If LRQ, GRQ, and Netpoller are empty, M enters work-stealing mode. It selects another P at random four times; if a busy P is found, M <strong>steals half of that P's runnable goroutines</strong> and moves them to its own LRQ.</li>
+            <li><strong>Work-Stealing:</strong> If LRQ, GRQ, and Netpoller are empty, M enters work-stealing mode. It performs <strong>up to 4 passes over all Ps</strong> in a randomized permutation order (via coprime <code>stealOrder</code>); if a busy P is found, M <strong>steals half of that P's runnable goroutines</strong> and moves them to its own LRQ.</li>
           </ol>
           <div class="qa-mental-model">
             <strong>Key Contrast with Node.js Libuv:</strong> Libuv executes a phased FIFO event loop tick (Timers → Pending Callbacks → Idle/Prepare → Poll → Check → Close). If a single callback performs heavy synchronous CPU calculations (e.g. JSON parsing a 50MB payload), it freezes the entire thread, halting all other timers and network requests. In Go, that heavy Goroutine occupies only 1 P; other Ps continue executing requests on other CPU cores, and idle Ps steal pending Goroutines.
@@ -373,8 +373,8 @@ go func() {
           <p><strong>Execution Phases:</strong></p>
           <ol style="margin-left: 1.25rem; line-height: 1.7;">
             <li><strong>Sweep Termination (STW, ~10–20μs):</strong> Ensures previous sweep finished and enables write barriers.</li>
-            <li><strong>Concurrent Mark (25% CPU):</strong> 25% of <code>GOMAXPROCS</code> (e.g., 2 out of 8 cores) are dedicated to GC background workers. Concurrently, user goroutines continue serving HTTP requests! The <em>Hybrid Write Barrier</em> intercepts any pointer updates so no live object is shaded white under a black object.</li>
-            <li><strong>Mark Termination (STW, ~30–50μs):</strong> Completes remaining grey marks and disables write barrier.</li>
+            <li><strong>Concurrent Mark (25% CPU):</strong> 25% of <code>GOMAXPROCS</code> (e.g., 2 out of 8 cores) are dedicated to GC background workers. Concurrently, user goroutines continue serving HTTP requests! The <em>Hybrid Write Barrier</em> (Go 1.8+) shades overwritten pointers and new heap allocations, allowing stacks to remain black without write barriers.</li>
+            <li><strong>Mark Termination (STW, ~30–50μs):</strong> Completes remaining grey marks and disables write barrier. <strong>Crucially:</strong> Because the Hybrid Write Barrier keeps stacks black, <em>zero stack re-scanning is required during STW</em>, keeping pause times strictly sub-millisecond.</li>
             <li><strong>Concurrent Sweep:</strong> Memory spans are lazily reclaimed and returned to the allocator as new allocations occur.</li>
           </ol>
           <div class="qa-pro-tip">
@@ -537,7 +537,7 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
             <strong>Modern Go (1.17/1.20+):</strong> <code>reflect.SliceHeader</code> is officially deprecated due to unsafe pointer-misuse risks. Modern Go code should use <code>unsafe.Slice(ptr, len)</code> and <code>unsafe.SliceData(s)</code> for pointer-slice conversions without struct-casting hazards.
           </div>
           <div class="qa-pro-tip" style="margin-top:0.5rem;">
-            <strong>Capacity Growth Formula:</strong> In Go 1.18+, when appending past capacity: if <code>cap &lt; 256</code>, capacity doubles. Above 256, it transitions smoothly to growing by <code>(cap + 3*256)/4</code> (~1.25x growth) rounded up to size classes, minimizing memory fragmentation.
+            <strong>Capacity Growth Formula:</strong> In Go 1.18+ (<code>growslice</code>), if <code>cap &lt; 256</code>, capacity doubles. Above 256, it transitions smoothly via <code>newcap += (newcap + 3*256)/4</code> (giving 2.0x at 256, tapering to ~1.25x for large slices) before rounding up to the memory allocator's size classes.
           </div>
         </div>
       </div>

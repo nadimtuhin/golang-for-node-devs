@@ -4,6 +4,7 @@ const routes = [
   { path: '/', titleExpected: /Go for Node\.js/i, navName: 'Studio' },
   { path: '/chapters', titleExpected: /Curriculum|Chapters/i, navName: 'Chapters' },
   { path: '/chapter/basic_flow', titleExpected: /Go for Node\.js/i, navName: 'Studio' },
+  { path: '/roadmap', titleExpected: /Roadmap|Golang/i, navName: 'Go Roadmap' },
   { path: '/ai', titleExpected: /AI|LLM/i, navName: 'AI & LLMs' },
   { path: '/ai-agents', titleExpected: /AI|Agent/i, navName: 'AI & Agents' },
   { path: '/microservice', titleExpected: /Microservice/i, navName: 'Microservice' },
@@ -48,7 +49,7 @@ test.describe('Multi-page Routes & Navigation', () => {
     });
   }
 
-  test('guides dropdown menu opens on click and contains all 13 architecture guides', async ({ page }) => {
+  test('guides dropdown menu opens on click and contains all 14 architecture guides', async ({ page }) => {
     await page.goto('/');
 
     const dropdownBtn = page.locator('#guidesDropdownBtn');
@@ -61,6 +62,6 @@ test.describe('Multi-page Routes & Navigation', () => {
     await expect(dropdownMenu).toBeVisible();
 
     const menuItems = dropdownMenu.locator('a[role="menuitem"]');
-    await expect(menuItems).toHaveCount(13);
+    await expect(menuItems).toHaveCount(14);
   });
 });

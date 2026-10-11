@@ -1,0 +1,1099 @@
+<div id="viewRoadmap" class="view-container">
+  <div class="view-inner-content">
+
+    <!-- Hero Banner -->
+    <header class="view-hero-banner" role="region" aria-label="Go Developer Roadmap Overview">
+      <div class="view-hero-tag">🗺️ Interactive Learning Path</div>
+      <h1 class="view-hero-title">Go Developer Roadmap (roadmap.sh)</h1>
+      <p class="view-hero-desc">
+        The definitive community-standard <strong>roadmap.sh/golang</strong> learning curriculum mapped directly to our <strong>60 interactive chapters</strong>, runnable code playgrounds, and <strong>13 production architecture guides</strong>. Transition smoothly from Node.js &amp; TypeScript into idiomatic, high-scale Go engineering.
+      </p>
+    </header>
+
+    <!-- Quick Stats & Filter Bar -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; padding: 1rem 1.25rem; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+      <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+        <div>
+          <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; display: block;">Total Stages</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">7 Core Milestones</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: var(--border);"></div>
+        <div>
+          <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; display: block;">Curriculum Topics</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #007d9c;">36+ Key Topics</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: var(--border);"></div>
+        <div>
+          <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; display: block;">Coverage</span>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #16a34a;">100% Book Integrated</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Quick Filter:</span>
+        <button type="button" class="roadmap-filter-btn active" data-filter="all" onclick="filterRoadmap('all', this)">All</button>
+        <button type="button" class="roadmap-filter-btn" data-filter="core" onclick="filterRoadmap('core', this)">Core Basics</button>
+        <button type="button" class="roadmap-filter-btn" data-filter="concurrency" onclick="filterRoadmap('concurrency', this)">Concurrency</button>
+        <button type="button" class="roadmap-filter-btn" data-filter="web" onclick="filterRoadmap('web', this)">Web &amp; Microservices</button>
+        <button type="button" class="roadmap-filter-btn" data-filter="advanced" onclick="filterRoadmap('advanced', this)">Internals &amp; Systems</button>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Jump Bar -->
+    <nav class="test-quicknav" aria-label="Roadmap Milestones Navigation" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:2.5rem; padding:0.75rem 1rem; background:#f8fafc; border:1px solid var(--border); border-radius:8px;">
+      <span style="font-size:0.8rem; font-weight:700; color:#475569; display:flex; align-items:center; margin-right:0.5rem;">⚡ MILESTONES:</span>
+      <a href="#stage-1" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">1. Fundamentals &amp; Syntax</a>
+      <a href="#stage-2" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">2. Data Structures &amp; Memory</a>
+      <a href="#stage-3" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">3. Concurrency &amp; Channels</a>
+      <a href="#stage-4" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">4. Web APIs &amp; Microservices</a>
+      <a href="#stage-5" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">5. Storage &amp; Background Queues</a>
+      <a href="#stage-6" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">6. Testing &amp; Toolchain</a>
+      <a href="#stage-7" class="action-btn" style="font-size:0.75rem; padding:0.25rem 0.6rem;">7. Production &amp; AI Systems</a>
+    </nav>
+
+    <!-- Visual Interactive Roadmap Tree -->
+    <div class="roadmap-timeline">
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 1: FUNDAMENTALS & SYNTAX -->
+      <!-- =================================================================== -->
+      <section id="stage-1" class="roadmap-stage" data-category="core">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 01</div>
+          <h2 class="roadmap-stage-title">Fundamentals, Syntax &amp; Language Primitives</h2>
+          <span class="roadmap-stage-status">Essential Starting Point</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Unlearn JavaScript/TypeScript dynamic typing quirks (undefined, NaN, hoisting, prototype pollution). Learn Go's static compilation, short variable declarations, deterministic zero values, and capitalization-based package exports.
+        </p>
+
+        <div class="roadmap-grid">
+          
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🏷️</span>
+              <h3 class="roadmap-card-title">Variables, Zero Values &amp; Types</h3>
+            </div>
+            <p class="roadmap-card-text">
+              <code>var</code>, short declaration <code>:=</code>, static primitives (<code>int</code>, <code>float64</code>, <code>rune</code>, <code>byte</code>), and guaranteed zero initialization eliminating uninitialized crashes.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Static Typing</span>
+              <span class="roadmap-tag">No Undefined</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_vars" class="roadmap-btn primary">Playground B1 →</a>
+              <a href="/chapter/data_types" class="roadmap-btn secondary">Lesson 12 (Types) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">↩️</span>
+              <h3 class="roadmap-card-title">Functions &amp; Multiple Returns</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Natively returning <code>(value, error)</code> on the stack without wrapper objects or tuple allocations. Blank identifier <code>_</code> and named return conventions.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Multiple Returns</span>
+              <span class="roadmap-tag">Stack Unrolling</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_funcs" class="roadmap-btn primary">Playground B2 →</a>
+              <a href="/chapter/error_wrapping" class="roadmap-btn secondary">Error Wrapping (24) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🏛️</span>
+              <h3 class="roadmap-card-title">Structs &amp; Receiver Methods</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Composition over inheritance. Eliminates JS <code>this</code> binding confusion with explicit value receivers <code>(u User)</code> and pointer receivers <code>(u *User)</code>.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">No 'this'</span>
+              <span class="roadmap-tag">Structs</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_structs" class="roadmap-btn primary">Playground B3 →</a>
+              <a href="/chapter/basic_embedding" class="roadmap-btn secondary">Composition (B10) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🦆</span>
+              <h3 class="roadmap-card-title">Interfaces &amp; Implicit Duck Typing</h3>
+            </div>
+            <p class="roadmap-card-text">
+              No <code>implements</code> keyword needed. Types satisfy interfaces implicitly. Consumer-side interface design ("Accept interfaces, return structs").
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Implicit Interfaces</span>
+              <span class="roadmap-tag">Duck Typing</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_interfaces" class="roadmap-btn primary">Playground B4 →</a>
+              <a href="/chapter/basic_type_assertions" class="roadmap-btn secondary">Assertions (B8) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🔁</span>
+              <h3 class="roadmap-card-title">Control Structures &amp; Loops</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Go only has ONE loop keyword: <code>for</code>. Inline variable scoping in <code>if</code>, and <code>switch</code> without fallthrough breaks. Go 1.22 per-iteration loop var scoping.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">for / range</span>
+              <span class="roadmap-tag">switch / case</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_flow" class="roadmap-btn primary">Playground B5 →</a>
+              <a href="/pitfalls" class="roadmap-btn secondary">Loop Var Pitfall →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📦</span>
+              <h3 class="roadmap-card-title">Packages &amp; Export Visibility</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Visibility is determined entirely by capitalization: <code>PascalCase</code> is exported (public), <code>camelCase</code> is unexported (package-private).
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Capitalization</span>
+              <span class="roadmap-tag">No Export Keyword</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_packages" class="roadmap-btn primary">Playground B6 →</a>
+              <a href="/go-mod-vs-npm" class="roadmap-btn secondary">go.mod Guide →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 2: DATA STRUCTURES & MEMORY -->
+      <!-- =================================================================== -->
+      <section id="stage-2" class="roadmap-stage" data-category="advanced">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 02</div>
+          <h2 class="roadmap-stage-title">Data Structures, Pointers &amp; Memory Alignment</h2>
+          <span class="roadmap-stage-status">Runtime Architecture</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Understand how Go lays out data in hardware memory compared to V8 garbage-collected heap objects. Master slice 3-word headers (pointer, length, capacity), hash map buckets, struct memory padding, and pointer semantics.
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🎯</span>
+              <h3 class="roadmap-card-title">Pointers: <code>*T</code> and <code>&amp;T</code></h3>
+            </div>
+            <p class="roadmap-card-text">
+              Differentiate value semantics (pass-by-copy) from reference semantics (pass-by-pointer). Learn escape analysis and stack allocation vs heap escapes.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Value vs Ref</span>
+              <span class="roadmap-tag">Escape Analysis</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_pointers" class="roadmap-btn primary">Playground B7 →</a>
+              <a href="/chapter/pointers" class="roadmap-btn secondary">Lesson 14 (Pointers) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📊</span>
+              <h3 class="roadmap-card-title">Slice Internals &amp; Capacity Growth</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Runtime 24-byte slice header: <code>Data</code> pointer, <code>Len</code>, and <code>Cap</code>. Go 1.18+ formula <code>(newcap + 3*256)/4</code> for smooth capacity scaling beyond 256 elements.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Slice Header</span>
+              <span class="roadmap-tag">growslice</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/ds_slice_internals" class="roadmap-btn primary">Playground DS1 →</a>
+              <a href="/chapter/slice_ops" class="roadmap-btn secondary">append vs push (11) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🗺️</span>
+              <h3 class="roadmap-card-title">Map Buckets, Hashing &amp; Random Order</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Go map internals: 8-slot <code>bmap</code> buckets, tophash comparison, 6.5 load factor growth, and intentional randomized iteration order. Go 1.24 Swiss Table notes.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">hmap / bmap</span>
+              <span class="roadmap-tag">Random Iteration</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/ds_map_internals" class="roadmap-btn primary">Playground DS2 →</a>
+              <a href="/chapter/maps_sets" class="roadmap-btn secondary">map[K]V vs Object (13) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📐</span>
+              <h3 class="roadmap-card-title">Struct Memory Alignment &amp; Padding</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Hardware natural alignment rules. How reordering struct fields from largest to smallest saves 30% to 50% RAM by eliminating CPU padding bytes.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Natural Alignment</span>
+              <span class="roadmap-tag">Cache Line Efficiency</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/ds_struct_memory" class="roadmap-btn primary">Playground DS3 →</a>
+              <a href="/interviews#q5" class="roadmap-btn secondary">Interview Q5 (Padding) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🧬</span>
+              <h3 class="roadmap-card-title">Generics &amp; Type Parameters</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Type parameters <code>[T any]</code>, constraints, approximation constraint <code>~T</code>, and generic data structures (caches, stacks, queues).
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Generics (Go 1.18+)</span>
+              <span class="roadmap-tag">~T Approximation</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/basic_generics" class="roadmap-btn primary">Playground B12 →</a>
+              <a href="/chapter/ds_stacks_queues" class="roadmap-btn secondary">Generic Stack DS4 →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">♻️</span>
+              <h3 class="roadmap-card-title">sync.Pool &amp; Memory Allocation Recycling</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Per-P local victim cache recycling expensive heap allocations (byte buffers, JSON decoders). Eliminates GC pressure in high-throughput microservices.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Victim Cache</span>
+              <span class="roadmap-tag">Zero Allocation</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/ds_sync_pool" class="roadmap-btn primary">Playground DS6 →</a>
+              <a href="/interviews#q12" class="roadmap-btn secondary">Interview Q12 (Pool) →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 3: CONCURRENCY & CHANNELS -->
+      <!-- =================================================================== -->
+      <section id="stage-3" class="roadmap-stage" data-category="concurrency">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 03</div>
+          <h2 class="roadmap-stage-title">Concurrency, Goroutines, Channels &amp; Context</h2>
+          <span class="roadmap-stage-status">Go's Core Superpower</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Replace single-threaded Node.js event-loop workers and async/await with 2KB Goroutines, typed CSP Channels, and cooperative M:N scheduling (GMP model).
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🐹</span>
+              <h3 class="roadmap-card-title">Goroutines vs OS Threads &amp; Node Event Loop</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Spawning 100,000+ lightweight user-space threads with 2KB dynamic stacks. M:N cooperative preemptive scheduler (Syscall handoff, Network Poller parking).
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">GMP Runtime</span>
+              <span class="roadmap-tag">2KB Initial Stack</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/channels_basics" class="roadmap-btn primary">Playground W9 →</a>
+              <a href="/interviews#q1" class="roadmap-btn secondary">Interview Q1 (GMP) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🚰</span>
+              <h3 class="roadmap-card-title">Channels: Buffered vs Unbuffered</h3>
+            </div>
+            <p class="roadmap-card-text">
+              CSP channel semantics: unbuffered synchronous handoffs (zero-copy direct stack writes), buffered ring buffers, <code>hchan</code> struct, and closed channel states.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">hchan Struct</span>
+              <span class="roadmap-tag">CSP Primitives</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/channels_basics" class="roadmap-btn primary">Channels W9 →</a>
+              <a href="/interviews#q13" class="roadmap-btn secondary">Interview Q13 (Channels) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🎛️</span>
+              <h3 class="roadmap-card-title">Multiplexing with <code>select</code> &amp; Timers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Non-blocking channel reads, pseudo-random case evaluation, timeout cancellation, and avoiding the <code>time.After</code> heap leak in select loops.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">select</span>
+              <span class="roadmap-tag">time.NewTimer</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/promise_race" class="roadmap-btn primary">Promise.race (22) →</a>
+              <a href="/pitfalls#pitfall-time-after" class="roadmap-btn secondary">time.After Pitfall →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🚦</span>
+              <h3 class="roadmap-card-title">Sync Primitives: WaitGroup &amp; Mutexes</h3>
+            </div>
+            <p class="roadmap-card-text">
+              <code>sync.WaitGroup</code> for fan-out synchronization, <code>sync.Mutex</code>, <code>sync.RWMutex</code>, starvation mode (1ms threshold), and atomic operations.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">sync.WaitGroup</span>
+              <span class="roadmap-tag">sync.Mutex</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/promise_all" class="roadmap-btn primary">Promise.all (21) →</a>
+              <a href="/interviews#q11" class="roadmap-btn secondary">Mutex Starvation Q11 →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🛑</span>
+              <h3 class="roadmap-card-title">Context Propagation: Deadlines &amp; Cancellation</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Go's <code>context.Context</code> replaces Node's <code>AbortController</code>. Tree-based cancellation, propagation across microservice RPC boundaries, and request timeouts.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">context.WithTimeout</span>
+              <span class="roadmap-tag">Graceful Shutdown</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/abort_controller" class="roadmap-btn primary">AbortController (23) →</a>
+              <a href="/chapter/graceful_shutdown" class="roadmap-btn secondary">Shutdown W10 →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🛠️</span>
+              <h3 class="roadmap-card-title">Concurrency Patterns &amp; errgroup</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Worker pool architectures, pipelines, rate limiters, fan-in/fan-out, and <code>golang.org/x/sync/errgroup</code> for coordinated fail-fast parallel jobs.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Worker Pools</span>
+              <span class="roadmap-tag">errgroup</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/ai-agents#heading-sec-5" class="roadmap-btn primary">errgroup Agent →</a>
+              <a href="/chapter/bullmq_basic" class="roadmap-btn secondary">Worker Queue (19) →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 4: WEB APIS & MICROSERVICES -->
+      <!-- =================================================================== -->
+      <section id="stage-4" class="roadmap-stage" data-category="web">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 04</div>
+          <h2 class="roadmap-stage-title">Web APIs, Routing, Protocols &amp; Frameworks</h2>
+          <span class="roadmap-stage-status">Backend Microservices</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Build high-performance REST APIs, real-time SSE token streamers, and gRPC microservices. Learn why Go standard library <code>net/http</code> scales to 50k+ connections per process.
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🌐</span>
+              <h3 class="roadmap-card-title">Standard Library <code>net/http</code> &amp; Go 1.22 Routing</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Native pattern routing with HTTP methods and path wildcards (<code>GET /items/{id}</code>), Slowloris timeout matrix (<code>ReadHeaderTimeout</code>), and zero third-party routers.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">net/http</span>
+              <span class="roadmap-tag">Go 1.22 Wildcards</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/http_routing" class="roadmap-btn primary">Routing W7 →</a>
+              <a href="/chapter/http_api" class="roadmap-btn secondary">HTTP API (01) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">⚡</span>
+              <h3 class="roadmap-card-title">Express vs Fiber (Video Project)</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Rebuilding Express.js applications with <code>gofiber/fiber</code> atop fasthttp: zero-allocation byte buffers, sub-millisecond response latency, and familiar route middleware.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Fiber v2</span>
+              <span class="roadmap-tag">Express Mapping</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/fiber_api" class="roadmap-btn primary">Featured Fiber ⭐ →</a>
+              <a href="/microservice" class="roadmap-btn secondary">Microservice Repo →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🛡️</span>
+              <h3 class="roadmap-card-title">HTTP Middleware &amp; Context Chaining</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Idiomatic middleware decorator pattern: <code>func(http.Handler) http.Handler</code>. Request logging, auth token validation, CORS, and request-scoped context injection.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Middleware</span>
+              <span class="roadmap-tag">context.WithValue</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/middleware" class="roadmap-btn primary">Middleware (02) →</a>
+              <a href="/chapter/structured_logging" class="roadmap-btn secondary">log/slog W8 →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📡</span>
+              <h3 class="roadmap-card-title">HTTP Client &amp; Connection Pooling</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Avoiding <code>http.DefaultClient</code> zero-timeout traps. Response body draining via <code>io.Copy(io.Discard, resp.Body)</code> and <code>Transport</code> connection pool tuning.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">http.Client</span>
+              <span class="roadmap-tag">Connection Leaks</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/http_client" class="roadmap-btn primary">HTTP Client (03) →</a>
+              <a href="/pitfalls#pitfall-resp-body" class="roadmap-btn secondary">Body Drain Pitfall →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🪵</span>
+              <h3 class="roadmap-card-title">Structured Logging with <code>log/slog</code></h3>
+            </div>
+            <p class="roadmap-card-text">
+              Go 1.21 standard library structured JSON logging replacing Pino &amp; Winston. Custom log handlers, log levels, source locations, and contextual tracing attributes.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">log/slog</span>
+              <span class="roadmap-tag">Zero Allocation</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/structured_logging" class="roadmap-btn primary">log/slog W8 →</a>
+              <a href="/chapter/env_vars" class="roadmap-btn secondary">Env Config (06) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🌊</span>
+              <h3 class="roadmap-card-title">Streaming SSE &amp; Response Controllers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Server-Sent Events for AI token streaming: chunked transfer encoding, <code>http.NewResponseController</code> flushing, write deadlines, and proxy buffering headers.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">SSE Streaming</span>
+              <span class="roadmap-tag">ResponseController</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/ai-agents#heading-sec-2" class="roadmap-btn primary">SSE Gateway Guide →</a>
+              <a href="/ai" class="roadmap-btn secondary">AI Streaming →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 5: STORAGE & BACKGROUND QUEUES -->
+      <!-- =================================================================== -->
+      <section id="stage-5" class="roadmap-stage" data-category="web">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 05</div>
+          <h2 class="roadmap-stage-title">Databases, Connection Pools &amp; Background Queues</h2>
+          <span class="roadmap-stage-status">Data Tier Engineering</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Master SQL connection pooling (<code>database/sql</code>), ACID transactions with deferred rollback, type-safe queries via <code>sqlc</code>, GORM ORM, and Redis worker queues.
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🗄️</span>
+              <h3 class="roadmap-card-title">Connection Pooling: <code>database/sql</code></h3>
+            </div>
+            <p class="roadmap-card-text">
+              Understanding Go's built-in connection pool: <code>SetMaxOpenConns</code>, <code>SetMaxIdleConns</code>, <code>SetConnMaxLifetime</code>, and avoiding socket leaks.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">database/sql</span>
+              <span class="roadmap-tag">Conn Pooling</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/db_pool" class="roadmap-btn primary">DB Pool (15) →</a>
+              <a href="/chapter/db_queries" class="roadmap-btn secondary">SQL Queries (16) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🔒</span>
+              <h3 class="roadmap-card-title">ACID Transactions &amp; Safe Rollback</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Atomic operations with <code>tx.BeginTx()</code>, <code>defer tx.Rollback()</code> idempotency, handling <code>sql.ErrTxDone</code>, and context deadline cancellation.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">tx.Rollback()</span>
+              <span class="roadmap-tag">ACID Safety</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/db_tx" class="roadmap-btn primary">Transactions (17) →</a>
+              <a href="/interviews#q16" class="roadmap-btn secondary">Interview Q16 (Tx) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">⚡</span>
+              <h3 class="roadmap-card-title">Type-Safe SQL: sqlc vs Prisma / TypeORM</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Why Go favors <code>sqlc</code> (compile-time SQL-to-Go code generation with zero reflection) over heavy runtime ORMs like Prisma and TypeORM. GORM patterns.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">sqlc</span>
+              <span class="roadmap-tag">GORM Patterns</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/orm_patterns" class="roadmap-btn primary">ORM Patterns (18) →</a>
+              <a href="/testing#topic-databases" class="roadmap-btn secondary">sqlmock Guide →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📦</span>
+              <h3 class="roadmap-card-title">BullMQ vs Redis Background Workers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Replacing Node's BullMQ with Go Redis worker loops, exponential backoff retries with jitter, Dead-Letter Queues (DLQ), and graceful drain routines.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">BullMQ Migration</span>
+              <span class="roadmap-tag">DLQ &amp; Retries</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/bullmq_basic" class="roadmap-btn primary">Worker Queue (19) →</a>
+              <a href="/chapter/bullmq_retries" class="roadmap-btn secondary">Retries &amp; DLQ (20) →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🍃</span>
+              <h3 class="roadmap-card-title">MongoDB Connection Singletons &amp; Repositories</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Official Go MongoDB driver connection pooling, self-healing double-checked locking with <code>sync.RWMutex</code>, DTO validation, and clean architecture.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">mongo-driver</span>
+              <span class="roadmap-tag">Singleton Pattern</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/chapter/mongo_singleton" class="roadmap-btn primary">Mongo Singleton ⭐ →</a>
+              <a href="/microservice" class="roadmap-btn secondary">Repository Explorer →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 6: TESTING & TOOLCHAIN -->
+      <!-- =================================================================== -->
+      <section id="stage-6" class="roadmap-stage" data-category="core">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 06</div>
+          <h2 class="roadmap-stage-title">Testing, Mocking, Modules &amp; SSA Diagnostics</h2>
+          <span class="roadmap-stage-status">Developer Toolchain</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Unlearn heavy Jest/Babel tooling. Learn Go's zero-dependency native test runner, table-driven tests, Testcontainers integration tests, MVS dependency resolution, and compiler optimization flags.
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🧪</span>
+              <h3 class="roadmap-card-title">Table-Driven Testing &amp; Subtests</h3>
+            </div>
+            <p class="roadmap-card-text">
+              The idiomatic Go standard: anonymous struct tables, <code>t.Run()</code> subtests, <code>t.Helper()</code>, <code>t.Cleanup()</code>, and parallel test execution with <code>t.Parallel()</code>.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Table-Driven</span>
+              <span class="roadmap-tag">go test -race</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/testing#topic-philosophy" class="roadmap-btn primary">Testing Guide →</a>
+              <a href="/testing#topic-rosetta" class="roadmap-btn secondary">Jest ➔ Go Rosetta →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🐳</span>
+              <h3 class="roadmap-card-title">Integration Testing with Testcontainers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Spinning up real ephemeral PostgreSQL and Redis Docker containers in Go tests using <code>testcontainers-go</code> and in-memory <code>miniredis</code>.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Testcontainers</span>
+              <span class="roadmap-tag">miniredis</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/testing#topic-databases" class="roadmap-btn primary">Testcontainers Guide →</a>
+              <a href="/testing#topic-redis" class="roadmap-btn secondary">Redis Testing →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">📦</span>
+              <h3 class="roadmap-card-title">Go Modules &amp; Minimal Version Selection</h3>
+            </div>
+            <p class="roadmap-card-text">
+              How <code>go.mod</code> and <code>go.sum</code> eliminate npm duplicate node_modules bloat. Minimal Version Selection (MVS) algorithm, SumDB Merkle tree, and <code>/v2</code> major version paths.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">go.mod / MVS</span>
+              <span class="roadmap-tag">Merkle Tree go.sum</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/go-mod-vs-npm" class="roadmap-btn primary">go.mod vs npm Guide →</a>
+              <a href="/go-mod-vs-npm#mvs" class="roadmap-btn secondary">MVS Algorithm →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🛠️</span>
+              <h3 class="roadmap-card-title">SSA Pipeline, BCE &amp; Hot Reloading</h3>
+            </div>
+            <p class="roadmap-card-text">
+              The 5-phase SSA compiler pipeline, Bounds Check Elimination (<code>check_bce</code>), escape analysis flags, and sub-500ms Air live-reloading configuration.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">SSA Pipeline</span>
+              <span class="roadmap-tag">Air Hot Reload</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/troubleshooting" class="roadmap-btn primary">Diagnostics Guide →</a>
+              <a href="/troubleshooting#sec-air" class="roadmap-btn secondary">Air Config →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MILESTONE 7: PRODUCTION, DOCKER & AI SYSTEMS -->
+      <!-- =================================================================== -->
+      <section id="stage-7" class="roadmap-stage" data-category="advanced">
+        <div class="roadmap-stage-header">
+          <div class="roadmap-stage-badge">STAGE 07</div>
+          <h2 class="roadmap-stage-title">Production Docker, Systems Engineering &amp; AI Agents</h2>
+          <span class="roadmap-stage-status">Enterprise Production Ready</span>
+        </div>
+        <p class="roadmap-stage-desc">
+          Deploy static, zero-CVE Go containers under 15MB, conduct senior architecture reviews, and build autonomous AI agents using pure Go Model Context Protocol (MCP) servers.
+        </p>
+
+        <div class="roadmap-grid">
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🐳</span>
+              <h3 class="roadmap-card-title">Production Docker &amp; Scratch Containers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Multi-stage Docker builds, <code>CGO_ENABLED=0</code>, Distroless and Scratch base images, unprivileged UID/GID security, BuildKit cache mounts, and sub-15MB container footprints.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Distroless / Scratch</span>
+              <span class="roadmap-tag">Sub-15MB Containers</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/docker" class="roadmap-btn primary">Docker Masterclass →</a>
+              <a href="/docker#sec-distroless" class="roadmap-btn secondary">Distroless Template →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🦀</span>
+              <h3 class="roadmap-card-title">Go vs Rust Architecture Decision Engine</h3>
+            </div>
+            <p class="roadmap-card-text">
+              11-dimension technical breakdown: GC vs Borrow Checker, Tokio vs GMP scheduler, compilation speed, and interactive systems decision engine.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Go vs Rust</span>
+              <span class="roadmap-tag">Decision Engine</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/go-vs-rust" class="roadmap-btn primary">Go vs Rust Guide →</a>
+              <a href="/go-vs-rust#decision-engine" class="roadmap-btn secondary">Decision Tree →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🤖</span>
+              <h3 class="roadmap-card-title">AI &amp; LLM Gateways in Go</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Why Go is dominating AI infrastructure: high-throughput token streaming, Ollama model serving, Weaviate vector databases, and semantic routing gateways.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">AI Gateways</span>
+              <span class="roadmap-tag">Ollama &amp; Vectors</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/ai" class="roadmap-btn primary">Go in AI Era →</a>
+              <a href="/ai#topic-ollama" class="roadmap-btn secondary">Ollama Serving →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🦾</span>
+              <h3 class="roadmap-card-title">Autonomous AI Agents &amp; MCP Servers</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Autonomous ReAct agent loops, parallel tool execution with <code>errgroup</code>, LangChainGo RAG pipelines, and pure Go Model Context Protocol (MCP) STDIO servers.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">LangChainGo</span>
+              <span class="roadmap-tag">MCP JSON-RPC 2.0</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/ai-agents" class="roadmap-btn primary">AI &amp; Agents Guide →</a>
+              <a href="/ai-agents#heading-sec-4" class="roadmap-btn secondary">MCP Pure Go Server →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🎯</span>
+              <h3 class="roadmap-card-title">Senior Go Interview Architecture (20 Q&amp;As)</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Master deep systems interview questions: GMP work-stealing, Tricolor GC &amp; Hybrid Write Barrier, interface 2-word tuple layouts, and microservice resiliency.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Senior Backend</span>
+              <span class="roadmap-tag">Runtime Deep-Dive</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/interviews" class="roadmap-btn primary">Interview Masterclass →</a>
+              <a href="/philosophy" class="roadmap-btn secondary">The Zen of Go →</a>
+            </div>
+          </div>
+
+          <div class="roadmap-card">
+            <div class="roadmap-card-header">
+              <span class="roadmap-icon">🧩</span>
+              <h3 class="roadmap-card-title">Algorithms &amp; LeetCode in Go</h3>
+            </div>
+            <p class="roadmap-card-text">
+              Idiomatic Go implementations of top algorithmic patterns: Kadane's algorithm, two-pointer rune vs byte scans, dummy head linked lists, and stack matching.
+            </p>
+            <div class="roadmap-tags">
+              <span class="roadmap-tag">Algorithms</span>
+              <span class="roadmap-tag">Big-O Complexity</span>
+            </div>
+            <div class="roadmap-actions">
+              <a href="/leetcode" class="roadmap-btn primary">LeetCode Masterclass →</a>
+              <a href="/cheatsheet" class="roadmap-btn secondary">Syntax Cheatsheet →</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Official External Citation Card -->
+    <div style="margin-top: 3.5rem; padding: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a; margin-bottom: 0.25rem;">
+          🗺️ Based on Community Standard: roadmap.sh/golang
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+          This interactive learning path is modeled after the open-source Golang roadmap by <strong>Kamran Ahmed &amp; roadmap.sh</strong>, enhanced with interactive runnable sandboxes, Node.js contrast diffs, and enterprise production patterns.
+        </p>
+      </div>
+      <a href="https://roadmap.sh/golang" target="_blank" rel="noopener noreferrer" class="action-btn" style="white-space: nowrap; padding: 0.6rem 1.1rem; font-size: 0.88rem; font-weight: 700; background: #007d9c; color: #ffffff; border: none; border-radius: 6px;">
+        View Official roadmap.sh ↗
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .roadmap-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .roadmap-stage {
+    scroll-margin-top: 5rem;
+  }
+
+  .roadmap-stage-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roadmap-stage-badge {
+    background: #007d9c;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .roadmap-stage-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .roadmap-stage-status {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #16a34a;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  .roadmap-stage-desc {
+    color: var(--text-body);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 900px;
+  }
+
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .roadmap-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+
+  .roadmap-card:hover {
+    transform: translateY(-2px);
+    border-color: #007d9c;
+    box-shadow: 0 6px 16px rgba(0, 125, 156, 0.08);
+  }
+
+  .roadmap-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .roadmap-icon {
+    font-size: 1.3rem;
+  }
+
+  .roadmap-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .roadmap-card-text {
+    font-size: 0.88rem;
+    color: var(--text-body);
+    line-height: 1.55;
+    margin: 0 0 1rem 0;
+    flex-grow: 1;
+  }
+
+  .roadmap-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .roadmap-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .roadmap-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.85rem;
+  }
+
+  .roadmap-btn {
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.15s ease;
+  }
+
+  .roadmap-btn.primary {
+    background: #007d9c;
+    color: #ffffff;
+  }
+  .roadmap-btn.primary:hover {
+    background: #00627a;
+  }
+
+  .roadmap-btn.secondary {
+    background: #f1f5f9;
+    color: #334155;
+  }
+  .roadmap-btn.secondary:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+
+  .roadmap-filter-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    color: var(--text-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .roadmap-filter-btn:hover {
+    background: #e2e8f0;
+  }
+
+  .roadmap-filter-btn.active {
+    background: #007d9c;
+    color: #ffffff;
+    border-color: #007d9c;
+  }
+</style>
+
+<script>
+  function filterRoadmap(category, btn) {
+    document.querySelectorAll('.roadmap-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const stages = document.querySelectorAll('.roadmap-stage');
+    stages.forEach(stage => {
+      if (category === 'all') {
+        stage.style.display = 'block';
+      } else {
+        const stageCat = stage.getAttribute('data-category');
+        stage.style.display = stageCat === category ? 'block' : 'none';
+      }
+    });
+  }
+  // Expose to window for inline onclick handlers
+  window.filterRoadmap = filterRoadmap;
+</script>

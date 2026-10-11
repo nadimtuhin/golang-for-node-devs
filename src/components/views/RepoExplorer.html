@@ -137,40 +137,57 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var clientInstance *mongo.Client
-
-var mongoOnce sync.Once
-
-var clientInstanceError error
-
 type Collection string
 
 const (
 	ProductsCollection Collection = "products"
+	url                           = "mongodb://localhost:27017"
+	Database                      = "products-api"
 )
 
-const (
-	url      = "mongodb://localhost:27017"
-	Database = "products-api"
+var (
+	clientInstance      *mongo.Client
+	clientMu            sync.RWMutex
+	clientInstanceError error
 )
 
+// GetMongoClient returns the singleton client instance, recovering safely from transient failures
 func GetMongoClient() (*mongo.Client, error) {
-	mongoOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI(url)
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
+	clientMu.RLock()
+	if clientInstance != nil {
+		defer clientMu.RUnlock()
+		return clientInstance, nil
+	}
+	clientMu.RUnlock()
 
-		client, err := mongo.Connect(ctx, clientOptions)
-		if err != nil {
-			clientInstanceError = err
-			return
-		}
-		// Verify initial connectivity so singleton does not lock into a broken client
-		clientInstanceError = client.Ping(ctx, nil)
-		clientInstance = client
-	})
+	clientMu.Lock()
+	defer clientMu.Unlock()
 
-	return clientInstance, clientInstanceError
+	// Double-checked locking to avoid duplicate connection handshakes
+	if clientInstance != nil {
+		return clientInstance, nil
+	}
+
+	clientOptions := options.Client().ApplyURI(url)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		clientInstanceError = err
+		return nil, err
+	}
+
+	// Verify initial connectivity; if ping fails, close client so resources do not leak
+	if err := client.Ping(ctx, nil); err != nil {
+		_ = client.Disconnect(ctx)
+		clientInstanceError = err
+		return nil, err
+	}
+
+	clientInstance = client
+	clientInstanceError = nil
+	return clientInstance, nil
 }
 </pre>
         </div>
@@ -249,9 +266,9 @@ type CreateProductDTO struct {
 }
 
 type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
+	FailedField string `json:"failedField"`
+	Tag         string `json:"tag"`
+	Value       string `json:"value"`
 }
 
 func ValidateProductDTO(dto CreateProductDTO) []*ErrorResponse {
@@ -262,7 +279,7 @@ func ValidateProductDTO(dto CreateProductDTO) []*ErrorResponse {
 		if valErrs, ok := err.(validator.ValidationErrors); ok {
 			for _, err := range valErrs {
 				var element ErrorResponse
-				element.FailedField = err.StructNamespace()
+				element.FailedField = err.Field()
 				element.Tag = err.Tag()
 				element.Value = err.Param()
 				errors = append(errors, &element)
@@ -304,7 +321,7 @@ func CreateProduct(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(product)
+	return c.Status(fiber.StatusCreated).JSON(product)
 
 }
 

@@ -473,13 +473,11 @@ if err := decoder.Decode(&amp;params); err != nil {
     w.Header().Set("X-Accel-Buffering", "no") // Disable Nginx reverse proxy response buffering
     w.Header().Set("X-Content-Type-Options", "nosniff")
 
-    flusher, ok := w.(http.Flusher)
-    if !ok {
+    rc := http.NewResponseController(w) // Go 1.20+ unified response controller (Flush + SetWriteDeadline)
+    if err := rc.Flush(); err != nil {
         http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
         return
     }
-    w.WriteHeader(http.StatusOK)
-    flusher.Flush() // Send headers immediately to open client event stream
 
     // 2. Stream tokens directly from LLM to client
     ctx := r.Context()
@@ -493,7 +491,7 @@ if err := decoder.Decode(&amp;params); err != nil {
                 return // Stream complete
             }
             fmt.Fprintf(w, "data: %s\n\n", token)
-            flusher.Flush() // Push chunk immediately to client
+            _ = rc.Flush() // Push chunk immediately to client (fallback: w.(http.Flusher).Flush())
         }
     }
 }</pre>
@@ -1101,8 +1099,12 @@ func main() {
             continue
         }
         if req.JSONRPC != "2.0" {
-            // JSON-RPC 2.0 §5: If request is invalid and id cannot be determined, return id: null
-            sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
+            // JSON-RPC 2.0 §5: If id is known, echo it back in the Error object; if null/omitted, id is null
+            if req.ID != nil {
+                sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
+            } else {
+                sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
+            }
             continue
         }
 

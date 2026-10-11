@@ -5,6 +5,7 @@ const isStudio = pathname === '/' || pathname.startsWith('/chapter/');
 const isChapters = pathname === '/chapters';
 
 const guideLinks = [
+  { href: '/roadmap', icon: '🗺️', label: 'Go Roadmap' },
   { href: '/testing', icon: '🧪', label: 'Testing' },
   { href: '/ai', icon: '🤖', label: 'AI & LLMs' },
   { href: '/ai-agents', icon: '🦾', label: 'AI & Agents' },
@@ -55,7 +56,7 @@ const currentGuide = guideLinks.find(g => pathname === g.href);
       </button>
 
       <div id="guidesDropdownMenu" class="dropdown-menu" role="menu" aria-labelledby="guidesDropdownBtn">
-        <div class="dropdown-header">13 Appendices & Architecture Guides</div>
+        <div class="dropdown-header">14 Appendices & Architecture Guides</div>
         <div class="dropdown-grid">
           {guideLinks.map(guide => (
             <a 

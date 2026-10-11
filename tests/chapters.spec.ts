@@ -20,7 +20,7 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
     await expect(lessonCount).toHaveText('60');
 
     const guideCount = statsBar.locator('.stat-card', { hasText: 'Architecture Guides' }).locator('.stat-number');
-    await expect(guideCount).toHaveText('13');
+    await expect(guideCount).toHaveText('14');
 
     const runnableStat = statsBar.locator('.stat-card', { hasText: 'Browser Runnable' }).locator('.stat-number');
     await expect(runnableStat).toHaveText('100%');
@@ -46,15 +46,16 @@ test.describe('Curriculum & Chapters Directory (/chapters)', () => {
     expect(currentScrollTop).toBeGreaterThanOrEqual(300);
   });
 
-  test('should render all 13 architecture guide cards with correct links', async ({ page }) => {
+  test('should render all 14 architecture guide cards with correct links', async ({ page }) => {
     const guidesSection = page.locator('section[aria-labelledby="guides-heading"]');
     await expect(guidesSection).toBeVisible();
 
     const guideCards = guidesSection.locator('.guide-nav-card');
-    await expect(guideCards).toHaveCount(13);
+    await expect(guideCards).toHaveCount(14);
 
     // Verify critical guide links
     const expectedGuides = [
+      { href: '/roadmap', title: 'Go Developer Roadmap (roadmap.sh)' },
       { href: '/testing', title: 'Unit & Integration Testing' },
       { href: '/ai', title: 'Go in the AI Era' },
       { href: '/ai-agents', title: 'AI Agents & LangChainGo' },

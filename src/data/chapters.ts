@@ -644,7 +644,7 @@ func main() {
       },
 
       http_routing: {
-        num: "07",
+        num: "W7",
         part: "Part 1: Web APIs",
         title: "Go 1.22+ Routing: Methods & Wildcards",
         desc: "In Node, Express popularized method routing ('app.get') and path parameters ('/users/:id'). Since Go 1.22, standard library http.NewServeMux supports HTTP methods and path wildcards natively without third-party routers!",
@@ -692,7 +692,7 @@ func main() {
       },
 
       structured_logging: {
-        num: "08",
+        num: "W8",
         part: "Part 1: Web APIs",
         title: "log/slog vs Winston & Pino",
         desc: "In Node, high-throughput backends use Pino for structured JSON logging. Go 1.21 introduced standard library log/slog for high-performance, structured, leveled JSON logging with zero external dependencies.",
@@ -1242,7 +1242,7 @@ type PaymentJob struct {
 func processPayment(job *PaymentJob) error {
 	job.Attempts++
 	fmt.Printf("[Attempt %d] Charging card for job %s...\\n", job.Attempts, job.ID)
-	if job.Attempts < 3 {
+	if job.Attempts < 4 {
 		return errors.New("gateway timeout (504)")
 	}
 	return nil
@@ -1808,6 +1808,15 @@ type Number interface {
 	~int | ~int64 | ~float64
 }
 
+// Sum demonstrates approximation constraints (~T) across numeric types
+func Sum[T Number](vals ...T) T {
+	var total T
+	for _, v := range vals {
+		total += v
+	}
+	return total
+}
+
 // Generic Map function works for any slice element T and result type R
 func Map[T any, R any](items []T, fn func(T) R) []R {
 	result := make([]R, len(items))
@@ -1839,6 +1848,7 @@ func main() {
 	nums := []int{1, 2, 3, 4, 5}
 	doubled := Map(nums, func(n int) int { return n * 2 })
 	fmt.Println("Generic mapped ints:", doubled)
+	fmt.Println("Generic Sum with ~T:", Sum(10, 20, 30))
 
 	words := []string{"golang", "typescript"}
 	lengths := Map(words, func(s string) int { return len(s) })

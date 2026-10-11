@@ -65,7 +65,7 @@
             <strong>Node (<code>node_modules</code>):</strong> Massive, recursive 500MB+ folder in every local repo. Millions of small inodes, slow disk I/O, slow Docker builds.
           </p>
           <p style="font-size: 0.88rem; color: #0f172a;">
-            <strong>Go (Global Cache / Vendor):</strong> Modules downloaded once to <code>$GOPATH/pkg/mod</code> (read-only). <code>go mod vendor</code> creates a tiny, flat, single-level copy.
+            <strong>Go (Global Cache / Vendor):</strong> Modules downloaded once to <code>$GOPATH/pkg/mod</code> (read-only). <code>go mod vendor</code> creates a tiny, flat, non-nested package copy.
           </p>
         </div>
 
@@ -587,7 +587,7 @@ func main() {
             <tr>
               <td><strong>Directory Structure</strong></td>
               <td>Deep, recursive tree or complex symlink farm (pnpm)</td>
-              <td><strong>Flat, single-level</strong> directory structure</td>
+              <td><strong>Flat, non-nested</strong> package hierarchy (no recursive vendor folders)</td>
             </tr>
             <tr>
               <td><strong>Files Included</strong></td>
@@ -853,7 +853,7 @@ go env -w GOPRIVATE="github.com/mycompany/*,gitlab.internal.net/*"
               <td><strong>Vendor Offline Copy</strong></td>
               <td><em>n/a (or npm pack)</em></td>
               <td><code>go mod vendor</code></td>
-              <td>Creates a flat, single-level local copy of all compiled dependencies for hermetic builds.</td>
+              <td>Creates a flat, non-nested local copy of all compiled dependencies for hermetic builds.</td>
             </tr>
           </tbody>
         </table>
