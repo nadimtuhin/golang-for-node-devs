@@ -287,7 +287,10 @@ go build -gcflags="-m" ./...
 go build -gcflags="-m -m" ./...
 
 # Inspect Bounds Check Elimination (BCE) decisions
-go build -gcflags="-d=ssa/check_bce/debug=1" ./...</pre>
+go build -gcflags="-d=ssa/check_bce/debug=1" ./...
+
+# Dump interactive ssa.html showing all 40+ SSA compiler passes for a target function
+GOSSAFUNC=calculateSubtotal go build ./...</pre>
         </div>
 
         <p style="color: #475569; font-size: 0.88rem; margin-bottom: 0.5rem;">

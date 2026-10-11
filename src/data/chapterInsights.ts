@@ -226,7 +226,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Go intentionally randomizes map iteration to prevent developers from relying on non-deterministic key ordering.'
   },
   ds_struct_memory: {
-    goParadigm: 'Fields align to their natural size (1, 2, 4, 8 bytes on 64-bit); ordering fields from largest to smallest eliminates padding gaps.',
+    goParadigm: 'Fields align to their natural size (1, 2, 4, 8 bytes on 64-bit); ordering fields from largest to smallest eliminates padding gaps. Note: a zero-size struct (struct{}) at the end of a struct incurs trailing padding to prevent out-of-bounds pointer creation.',
     nodeEquivalent: 'V8 handles object layout and hidden classes invisibly, abstracting CPU memory alignment from developers.',
     coreTakeaway: 'Ordering struct fields by byte size optimizes CPU cache lines and eliminates padding bytes in high-density data structures.'
   },
@@ -291,9 +291,9 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Linear greedy traversal yields optimal O(1) space complexity without requiring auxiliary arrays or dynamic programming matrices.'
   },
   lc_valid_palindrome: {
-    goParadigm: 'Two-pointer approach over a rune slice skipping non-alphanumeric runes without regex or string reversals.',
+    goParadigm: 'Two-pointer approach over string bytes achieves true O(1) auxiliary space, or over a []rune slice for multi-byte Unicode code points.',
     nodeEquivalent: 'Regex string cleaning str.replace(/[^a-z0-9]/gi, \'\') followed by .split(\'\').reverse().join(\'\').',
-    coreTakeaway: 'Using []rune(s) requires O(N) space for rune decoding, but avoids regex engine overhead and multiple intermediate string allocations.'
+    coreTakeaway: 'Byte indexing avoids regex engine overhead and allocates zero auxiliary heap memory for ASCII palindrome validation.'
   },
   lc_reverse_linked_list: {
     goParadigm: 'Iterative 3-pointer manipulation (prev, curr, next) reversing pointers in-place in O(N) time and O(1) space.',

@@ -117,9 +117,9 @@
           <td><code>sqlc</code> compiles SQL queries to zero-reflection, hyper-fast native Go structs.</td>
         </tr>
         <tr>
-          <td><code>BullMQ</code> + Redis (in-process jobs)</td>
-          <td>Buffered Channels + Worker Goroutines</td>
-          <td>Processes 500,000+ jobs/sec in ~15MB memory without external Redis dependency.</td>
+          <td><code>p-queue</code> / <code>fastq</code> (or BullMQ for distributed)</td>
+          <td>Buffered Channels + Workers (or <code>hibiken/asynq</code> for distributed)</td>
+          <td>In-process channels process 500,000+ jobs/sec in ~15MB memory; use Asynq/Redis when durability across crashes is required.</td>
         </tr>
       </tbody>
     </table>

@@ -292,7 +292,7 @@
             <br/>• <strong>G (Goroutine):</strong> Represents the lightweight thread of execution and its stack.
             <br/>• <strong>M (Machine):</strong> An actual OS thread managed by the operating system kernel.
             <br/>• <strong>P (Processor):</strong> A logical context representing a CPU core (default: <code>GOMAXPROCS</code>).
-            <br/>When a goroutine blocks on a network socket or channel, the P immediately detaches from that M and runs other ready goroutines on available threads.
+            <br/>When a goroutine blocks on a network socket or channel, it parks via the netpoller without detaching P; the M stays with its P and runs the next ready G. P only detaches from M during blocking OS syscalls (e.g. file I/O or cgo).
           </li>
           <li><strong>Channels &amp; Select:</strong> Communication between goroutines uses type-safe channels (<code>ch := make(chan int)</code>) and non-blocking multiplexed selection via <code>select</code>.</li>
         </ul>
@@ -766,6 +766,9 @@ func calculateFee(p PaymentMethod) float64 {
     // Type switch allows inspecting underlying struct
     switch val := p.(type) {
     case Crypto:
+        if val.Network == "BTC" {
+            return 0.001
+        }
         return val.Fee()
     default:
         return p.Fee()

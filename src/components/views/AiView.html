@@ -463,13 +463,17 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 	// Simulated token generator (In production, replace with upstream LLM stream reader)
 	tokens := []string{"Go", " is", " the", " premier", " runtime", " for", " high-scale", " AI", " gateways."}
 
+	timer := time.NewTimer(50 * time.Millisecond)
+	defer timer.Stop()
+
 	for i, token := range tokens {
+		timer.Reset(50 * time.Millisecond)
 		select {
 		case &lt;-ctx.Done():
 			// Client closed tab or connection reset; immediately abort upstream call!
 			log.Printf("Client disconnected during stream (step %d); saving upstream tokens", i)
 			return
-		case &lt;-time.After(50 * time.Millisecond): // Non-blocking timer respecting context cancellation
+		case &lt;-timer.C: // Timer reusable without leaky heap allocations
 			chunk := StreamChunk{
 				ID:      "chatcmpl-gateway-101",
 				Created: time.Now().Unix(),

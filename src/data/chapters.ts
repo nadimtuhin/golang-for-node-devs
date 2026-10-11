@@ -637,9 +637,9 @@ func main() {
 	port := getEnv("PORT", "3000")
 	dbHost := getEnv("DATABASE_HOST", "127.0.0.1:5432")
 
-	fmt.Printf("App Name: %s\n", appName)
-	fmt.Printf("Port:     %s\n", port)
-	fmt.Printf("DB Host:  %s\n", dbHost)
+	fmt.Printf("App Name: %s\\n", appName)
+	fmt.Printf("Port:     %s\\n", port)
+	fmt.Printf("DB Host:  %s\\n", dbHost)
 }`
       },
 
@@ -1118,7 +1118,7 @@ func transferMoney(from, to string, amount float64) error {
 	// In production Go, defer rollback is standard; if Commit succeeded, sql.ErrTxDone is ignored
 	defer func() {
 		if err := tx.Rollback(); err != nil && !errors.Is(err, ErrTxDone) {
-			fmt.Printf("Rollback failed: %v\n", err)
+			fmt.Printf("Rollback failed: %v\\n", err)
 		}
 	}()
 
@@ -1457,7 +1457,7 @@ func main() {
 	// and we pass its address (&targetDBErr, which is **DatabaseError) into errors.As.
 	var targetDBErr *DatabaseError
 	if errors.As(err, &targetDBErr) {
-		fmt.Printf("✓ Extracted typed error metadata via errors.As: SQL Code %d (%s)\n", targetDBErr.Code, targetDBErr.Message)
+		fmt.Printf("✓ Extracted typed error metadata via errors.As: SQL Code %d (%s)\\n", targetDBErr.Code, targetDBErr.Message)
 	}
 }`
       },
@@ -2454,10 +2454,11 @@ func main() {
 import "fmt"
 
 func isValid(s string) bool {
-	// Stack implemented via slice of runes with pre-allocated capacity
-	stack := make([]rune, 0, len(s))
+	// Stack implemented via slice of bytes (ASCII brackets take 1 byte each)
+	stack := make([]byte, 0, len(s))
 
-	for _, ch := range s {
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
 		switch ch {
 		case ')', '}', ']':
 			if len(stack) == 0 {
@@ -2473,7 +2474,7 @@ func isValid(s string) bool {
 			// Push opening bracket
 			stack = append(stack, ch)
 		default:
-			// Non-bracket runes (if any) are ignored
+			// Non-bracket characters (if any) are ignored
 		}
 	}
 
@@ -2610,21 +2611,18 @@ import (
 )
 
 func isPalindrome(s string) bool {
-	runes := []rune(s)
-	left, right := 0, len(runes)-1
+	// True O(1) auxiliary space in-place traversal via ASCII byte indexing
+	left, right := 0, len(s)-1
 
 	for left < right {
-		// Skip non-alphanumeric characters from left
-		for left < right && !isAlphaNumeric(runes[left]) {
+		for left < right && !isAlphaNumByte(s[left]) {
 			left++
 		}
-		// Skip non-alphanumeric characters from right
-		for left < right && !isAlphaNumeric(runes[right]) {
+		for left < right && !isAlphaNumByte(s[right]) {
 			right--
 		}
 
-		// Compare case-insensitively
-		if unicode.ToLower(runes[left]) != unicode.ToLower(runes[right]) {
+		if toLowerByte(s[left]) != toLowerByte(s[right]) {
 			return false
 		}
 		left++
@@ -2634,8 +2632,15 @@ func isPalindrome(s string) bool {
 	return true
 }
 
-func isAlphaNumeric(r rune) bool {
-	return unicode.IsLetter(r) || unicode.IsDigit(r)
+func isAlphaNumByte(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9')
+}
+
+func toLowerByte(b byte) byte {
+	if b >= 'A' && b <= 'Z' {
+		return b + ('a' - 'A')
+	}
+	return b
 }
 
 func main() {

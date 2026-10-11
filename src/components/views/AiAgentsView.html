@@ -846,13 +846,16 @@ func (d *AgentDispatcher) ExecuteToolsParallel(ctx context.Context, calls []Tool
     results := make([]ToolResult, len(calls))
     var mu sync.Mutex
 
-    for i, call := range calls {
-        i, call := i, call // Prevent closure capture
-        
-        executor, exists := d.tools[call.Name]
-        if !exists {
+    // 1. Pre-validate tools before launching to prevent orphaned goroutines
+    for _, call := range calls {
+        if _, exists := d.tools[call.Name]; !exists {
             return nil, fmt.Errorf("unknown tool: %s", call.Name)
         }
+    }
+
+    for i, call := range calls {
+        i, call := i, call // Prevent closure capture
+        executor := d.tools[call.Name]
 
         g.Go(func() error {
             start := time.Now()
