@@ -475,8 +475,7 @@ if err := decoder.Decode(&amp;params); err != nil {
 
     rc := http.NewResponseController(w) // Go 1.20+ unified response controller (Flush + SetWriteDeadline)
     if err := rc.Flush(); err != nil {
-        http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
-        return
+        return // Flush error or client disconnected; do not call http.Error after headers sent
     }
 
     // 2. Stream tokens directly from LLM to client
@@ -488,10 +487,14 @@ if err := decoder.Decode(&amp;params); err != nil {
             return
         case token, ok := &lt;-tokenChannel:
             if !ok {
+                _ = rc.SetWriteDeadline(time.Now().Add(5 * time.Second))
+                fmt.Fprintf(w, "data: [DONE]\n\n")
+                _ = rc.Flush()
                 return // Stream complete
             }
             // WHATWG SSE Spec: multi-line tokens must prefix each newline with 'data: '
             escapedToken := strings.ReplaceAll(token, "\n", "\ndata: ")
+            _ = rc.SetWriteDeadline(time.Now().Add(10 * time.Second)) // Slowloris mitigation
             fmt.Fprintf(w, "data: %s\n\n", escapedToken)
             _ = rc.Flush() // Push chunk immediately to client (fallback: w.(http.Flusher).Flush())
         }
@@ -799,9 +802,11 @@ func NewAgentDispatcher() *AgentDispatcher {
         if err := json.Unmarshal(raw, &amp;p); err != nil {
             return "", err
         }
-        // Simulate I/O query
+        // Simulate I/O query with time.NewTimer to prevent heap timer leaks
+        t := time.NewTimer(120 * time.Millisecond)
+        defer t.Stop()
         select {
-        case &lt;-time.After(120 * time.Millisecond):
+        case &lt;-t.C:
             return fmt.Sprintf("Found 3 documents matching query: %s", p.Query), nil
         case &lt;-ctx.Done():
             return "", ctx.Err()
@@ -814,8 +819,10 @@ func NewAgentDispatcher() *AgentDispatcher {
         if err := json.Unmarshal(raw, &amp;p); err != nil {
             return "", err
         }
+        t := time.NewTimer(200 * time.Millisecond)
+        defer t.Stop()
         select {
-        case &lt;-time.After(200 * time.Millisecond):
+        case &lt;-t.C:
             return fmt.Sprintf("Analytics metric [%s] = 42,910 total events", p.Metric), nil
         case &lt;-ctx.Done():
             return "", ctx.Err()
@@ -828,8 +835,10 @@ func NewAgentDispatcher() *AgentDispatcher {
         if err := json.Unmarshal(raw, &amp;p); err != nil {
             return "", err
         }
+        t := time.NewTimer(350 * time.Millisecond)
+        defer t.Stop()
         select {
-        case &lt;-time.After(350 * time.Millisecond):
+        case &lt;-t.C:
             return fmt.Sprintf("Parsed title from %s: 'Go Concurrency in Practice'", p.URL), nil
         case &lt;-ctx.Done():
             return "", ctx.Err()
@@ -979,7 +988,7 @@ func main() {
     if err != nil {
         log.Fatalf("Failed to initialize embedder: %v", err)
     }
-    store := memory.New(vectorstores.WithEmbedder(embedder))
+    store := memory.New(memory.WithEmbedder(embedder))
     _, err = store.AddDocuments(ctx, docs)
     if err != nil {
         log.Fatalf("Vector store indexing failed: %v", err)
@@ -1111,6 +1120,14 @@ func main() {
             }
             continue
         }
+        if req.Method == "" {
+            if req.ID != nil {
+                sendError(req.ID, -32600, "Invalid Request: method is required")
+            } else {
+                sendParseError(-32600, "Invalid Request: method is required")
+            }
+            continue
+        }
 
         handleMCPMethod(req)
     }
@@ -1174,11 +1191,21 @@ func handleMCPMethod(req JSONRPCRequest) {
         }
 
         if params.Name == "get_system_stats" {
+            var args struct {
+                IncludeGC bool `json:"include_gc"`
+            }
+            if len(params.Arguments) > 0 {
+                _ = json.Unmarshal(params.Arguments, &args)
+            }
+
             var mem runtime.MemStats
-            runtime.ReadMemStats(&amp;mem)
+            runtime.ReadMemStats(&mem)
 
             statsText := fmt.Sprintf("OS: %s | Arch: %s | Goroutines: %d | Alloc: %d KB | TotalAlloc: %d KB",
                 runtime.GOOS, runtime.GOARCH, runtime.NumGoroutine(), mem.Alloc/1024, mem.TotalAlloc/1024)
+            if args.IncludeGC {
+                statsText += fmt.Sprintf(" | NumGC: %d | PauseTotalMs: %.2f", mem.NumGC, float64(mem.PauseTotalNs)/1e6)
+            }
 
             sendResult(req.ID, map[string]any{
                 "content": []map[string]any{

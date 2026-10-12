@@ -549,15 +549,14 @@ func GetUserByID(ctx context.Context, db *sql.DB, id int64) (*User, error) {
 }
 
 func TestGetUserByID_sqlmock(t *testing.T) {
-	// Create mock db connection and mock controller
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
 	ctx := context.Background()
 	now := time.Now()
 
 	t.Run("found user", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = db.Close() })
+
 		// Define columns and simulated row data
 		rows := sqlmock.NewRows([]string{"id", "email", "created_at"}).
 			AddRow(42, "alex@example.com", now)
@@ -577,6 +576,10 @@ func TestGetUserByID_sqlmock(t *testing.T) {
 	})
 
 	t.Run("not found returns sql.ErrNoRows", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = db.Close() })
+
 		mock.ExpectQuery(`^SELECT (.+) FROM users WHERE id = \$1`).
 			WithArgs(int64(999)).
 			WillReturnError(sql.ErrNoRows)
@@ -1268,6 +1271,33 @@ go tool cover -func=coverage.out
 
 # 3. Open interactive browser visualizer with highlighted untested branches
 go tool cover -html=coverage.out</code></pre>
+      </div>
+
+      <!-- Native Go Fuzz Testing -->
+      <div class="deepdive-box">
+        <div class="deepdive-title">
+          <span>🧬</span> Native Fuzz Testing (<code>testing.F</code>) for Resilient Microservices
+        </div>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">
+          Go 1.18+ includes native coverage-guided fuzz testing in the toolchain. Automatically discover edge cases, slice panics, and malformed UTF-8 payload crashes without third-party fuzzers:
+        </p>
+        <pre style="background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 6px; font-size: 0.82rem; overflow-x: auto; margin: 0.5rem 0;"><code>func FuzzParseJSONPayload(f *testing.F) {
+    // Seed corpus with representative inputs
+    f.Add([]byte(`{"name":"Alice","email":"alice@example.com"}`))
+    f.Add([]byte(`{}`))
+
+    f.Fuzz(func(t *testing.T, data []byte) {
+        var req struct {
+            Name  string `json:"name"`
+            Email string `json:"email"`
+        }
+        // Must never panic on arbitrary malformed inputs!
+        _ = json.Unmarshal(data, &req)
+    })
+}</code></pre>
+        <div style="font-size: 0.8rem; color: #0284c7; background: #e0f2fe; padding: 0.4rem 0.6rem; border-radius: 4px;">
+          CLI command: <code>go test -fuzz=FuzzParseJSONPayload -fuzztime=30s ./...</code>
+        </div>
       </div>
     </section>
 

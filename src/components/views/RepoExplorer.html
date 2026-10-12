@@ -155,7 +155,7 @@ var (
 func GetMongoClient() (*mongo.Client, error) {
 	clientMu.RLock()
 	if clientInstance != nil {
-		defer clientMu.RUnlock()
+		clientMu.RUnlock()
 		return clientInstance, nil
 	}
 	clientMu.RUnlock()

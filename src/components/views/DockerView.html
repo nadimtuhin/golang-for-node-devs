@@ -54,7 +54,7 @@
     <div id="sec-distroless" class="deepdive-box">
       <div class="deepdive-title">🏆 1. Gold Standard: Google Distroless Multi-Stage Dockerfile</div>
       <p style="color: #475569; font-size: 0.9rem; margin-bottom: 0.75rem;">
-        Recommended for enterprise production. Runs as a non-root user (UID 65532), includes official CA certificates for outbound HTTPS calls, and tzdata for timezones.
+        Recommended for enterprise production. Runs as a non-root user (UID 65532) and includes official CA certificates for outbound HTTPS calls. (Note: For timezones in distroless/static, compile with blank import <code>_ "time/tzdata"</code> or copy <code>/usr/share/zoneinfo</code>).
       </p>
       <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.85rem; line-height:1.5;"># --- Stage 1: Build the Static Binary ---
 FROM --platform=$BUILDPLATFORM golang:1.23-alpine AS builder
@@ -114,10 +114,13 @@ RUN apk --no-cache add ca-certificates tzdata && \
     mkdir -m 0777 /tmp-dir
 WORKDIR /app
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 COPY . .
 # CGO_ENABLED=0 disables Cgo, producing a static ELF binary with zero libc/musl dependencies
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -ldflags="-s -w" -trimpath -o /app/server .
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -ldflags="-s -w" -trimpath -o /app/server .
 
 # Final stage: completely empty scratch container (<15MB)
 FROM scratch
