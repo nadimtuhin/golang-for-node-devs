@@ -1048,6 +1048,7 @@ ANSWER:`, contextBuilder.String(), userQuery)
 
 import (
     "bufio"
+    "bytes"
     "encoding/json"
     "fmt"
     "os"
@@ -1100,40 +1101,61 @@ func main() {
     scanner.Buffer(scanBuf, 16*1024*1024)
 
     for scanner.Scan() {
-        line := scanner.Bytes()
+        line := bytes.TrimSpace(scanner.Bytes())
         if len(line) == 0 {
             continue
         }
 
-        var req JSONRPCRequest
-        if err := json.Unmarshal(line, &amp;req); err != nil {
-            // JSON-RPC 2.0 §5: Parse errors MUST return id: null, not drop the response
-            sendParseError(-32700, "Parse error")
-            continue
-        }
-        if req.JSONRPC != "2.0" {
-            // JSON-RPC 2.0 §5: If id is known, echo it back in the Error object; if null/omitted, id is null
-            if req.ID != nil {
-                sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
-            } else {
-                sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
+        // JSON-RPC 2.0 §6: Batch request support
+        if line[0] == '[' {
+            var batch []JSONRPCRequest
+            if err := json.Unmarshal(line, &batch); err != nil {
+                sendParseError(-32700, "Parse error")
+                continue
             }
-            continue
-        }
-        if req.Method == "" {
-            if req.ID != nil {
-                sendError(req.ID, -32600, "Invalid Request: method is required")
-            } else {
-                sendParseError(-32600, "Invalid Request: method is required")
+            if len(batch) == 0 {
+                sendParseError(-32600, "Invalid Request: empty batch")
+                continue
+            }
+            for _, req := range batch {
+                processRequest(req)
             }
             continue
         }
 
-        handleMCPMethod(req)
+        var req JSONRPCRequest
+        if err := json.Unmarshal(line, &req); err != nil {
+            // JSON-RPC 2.0 §5: Parse errors MUST return id: null, not drop the response
+            sendParseError(-32700, "Parse error")
+            continue
+        }
+        processRequest(req)
     }
     if err := scanner.Err(); err != nil {
         fmt.Fprintf(os.Stderr, "MCP stdin scanner error: %v\n", err)
     }
+}
+
+func processRequest(req JSONRPCRequest) {
+    if req.JSONRPC != "2.0" {
+        // JSON-RPC 2.0 §5: If id is known, echo it back in the Error object; if null/omitted, id is null
+        if req.ID != nil {
+            sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
+        } else {
+            sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
+        }
+        return
+    }
+    if req.Method == "" {
+        if req.ID != nil {
+            sendError(req.ID, -32600, "Invalid Request: method is required")
+        } else {
+            sendParseError(-32600, "Invalid Request: method is required")
+        }
+        return
+    }
+
+    handleMCPMethod(req)
 }
 
 func handleMCPMethod(req JSONRPCRequest) {
