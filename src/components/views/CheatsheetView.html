@@ -28,8 +28,8 @@
         </tr>
         <tr>
           <td><code>arr.sort((a,b) => a - b)</code></td>
-          <td><code>slices.Sort(arr)</code> or <code>slices.SortFunc()</code></td>
-          <td>Standard library pdqsort (Pattern-Defeating Quicksort) with zero boxing allocations.</td>
+          <td><code>slices.Sort(arr)</code> or <code>slices.SortFunc(arr, func(a, b int) int { return cmp.Compare(b, a) })</code></td>
+          <td>Standard library pdqsort (Pattern-Defeating Quicksort) with zero boxing allocations and Go 1.21+ <code>cmp.Compare</code> for custom sorting.</td>
         </tr>
         <tr>
           <td><code>new Set([1, 2, 2])</code></td>

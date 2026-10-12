@@ -1217,7 +1217,10 @@ func handleMCPMethod(req JSONRPCRequest) {
                 IncludeGC bool `json:"include_gc"`
             }
             if len(params.Arguments) > 0 {
-                _ = json.Unmarshal(params.Arguments, &args)
+                if err := json.Unmarshal(params.Arguments, &args); err != nil {
+                    sendError(req.ID, -32602, "Invalid params: invalid arguments JSON: "+err.Error())
+                    return
+                }
             }
 
             var mem runtime.MemStats
