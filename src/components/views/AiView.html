@@ -465,6 +465,7 @@ func SSEStreamHandler(w http.ResponseWriter, r *http.Request) {
 	defer timer.Stop()
 
 	for i, token := range tokens {
+		// In Go 1.23+, timer.Reset() automatically manages channel buffering safely without manual drains
 		timer.Reset(50 * time.Millisecond)
 		select {
 		case &lt;-ctx.Done():
