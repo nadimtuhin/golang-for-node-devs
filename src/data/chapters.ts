@@ -1891,7 +1891,7 @@ func main() {
 	s = append(s, 30)
 	inspectSlice("Append 30", s)
 
-	// 3. Exceeding capacity triggers reallocation: Go allocates new array (doubles if cap < 256, transitions to ~1.25x for larger slices in Go 1.18+)
+	// 3. Exceeding capacity triggers reallocation: Go allocates new array (doubles if cap < 256; for cap >= 256, smoothly scales via newcap = oldcap + (oldcap + 3*256)/4 before size-class rounding)
 	s = append(s, 40, 50)
 	inspectSlice("Exceeded cap", s)
 

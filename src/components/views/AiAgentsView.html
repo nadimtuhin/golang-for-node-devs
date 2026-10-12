@@ -1138,19 +1138,17 @@ func main() {
 
 func processRequest(req JSONRPCRequest) {
     if req.JSONRPC != "2.0" {
-        // JSON-RPC 2.0 §5: If id is known, echo it back in the Error object; if null/omitted, id is null
+        // JSON-RPC 2.0 §5: If id is known, echo it back in the Error object.
+        // Notifications (req.ID == nil) MUST NOT receive any response, even on error (JSON-RPC 2.0 §4.1).
         if req.ID != nil {
             sendError(req.ID, -32600, "Invalid Request: jsonrpc version must be 2.0")
-        } else {
-            sendParseError(-32600, "Invalid Request: jsonrpc version must be 2.0")
         }
         return
     }
     if req.Method == "" {
+        // Notifications (req.ID == nil) MUST NOT receive any response (JSON-RPC 2.0 §4.1).
         if req.ID != nil {
             sendError(req.ID, -32600, "Invalid Request: method is required")
-        } else {
-            sendParseError(-32600, "Invalid Request: method is required")
         }
         return
     }

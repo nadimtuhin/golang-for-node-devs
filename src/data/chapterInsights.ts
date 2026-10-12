@@ -216,17 +216,17 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'Go generics deliver reusable data structures and algorithms while maintaining full compile-time static type verification.'
   },
   ds_slice_internals: {
-    goParadigm: 'Under the hood, a slice is a 24-byte struct (on 64-bit platforms: Data pointer, Len, Cap) with a pointer to backing array, length, and capacity.',
+    goParadigm: 'Under the hood, a slice is a 3-word 24-byte struct (on 64-bit: Data unsafe.Pointer, Len int, Cap int) with a pointer to backing array, length, and capacity.',
     nodeEquivalent: 'V8 JS Arrays implemented as dynamic Fast Elements or Dictionary Elements with complex hidden classes.',
     coreTakeaway: 'Understanding slice capacity prevents silent reallocation copies and avoids unintended mutations when taking sub-slices.'
   },
   ds_map_internals: {
-    goParadigm: 'Hash table built of 8-slot buckets (or Go 1.24 Swiss Tables); runtime randomizes iteration by selecting a pseudo-random start bucket and slot offset via fastrand() to prevent key order dependency.',
+    goParadigm: 'hmap indexes 8-slot bmap buckets holding [8]uint8 tophash, 8 keys grouped, 8 values grouped (avoiding key/value inter-padding), and an overflow pointer. Iteration begins at a randomized fastrand() bucket/slot offset.',
     nodeEquivalent: 'JS Objects and Maps maintain insertion order by specification, adding runtime maintenance overhead.',
     coreTakeaway: 'Go intentionally randomizes map iteration to prevent developers from relying on non-deterministic key ordering.'
   },
   ds_struct_memory: {
-    goParadigm: 'Fields align to their natural size (1, 2, 4, 8 bytes on 64-bit); ordering fields from largest to smallest eliminates padding gaps. Note: a zero-size struct (struct{}) at the end of a struct incurs trailing padding to prevent out-of-bounds pointer creation.',
+    goParadigm: 'Fields align to their natural size (1, 2, 4, 8 bytes on 64-bit); ordering largest to smallest minimizes padding. Zero-size struct{} uses 0 bytes on stack and points to runtime.zerobase when escaping to heap; placed at struct tail, it forces padding to prevent past-allocation pointers.',
     nodeEquivalent: 'V8 handles object layout and hidden classes invisibly, abstracting CPU memory alignment from developers.',
     coreTakeaway: 'Ordering struct fields by byte size optimizes CPU cache lines and eliminates padding bytes in high-density data structures.'
   },
@@ -241,7 +241,7 @@ export const CHAPTER_INSIGHTS: Record<string, ChapterInsight> = {
     coreTakeaway: 'container/heap provides O(log N) scheduling, Dijkstra paths, and top-K streaming with standard library primitives.'
   },
   ds_sync_pool: {
-    goParadigm: 'sync.Pool caches allocated, unused temporary objects across goroutines to eliminate garbage collection pressure.',
+    goParadigm: 'sync.Pool maintains per-P poolLocal caches: a lock-free private slot, and a shared lock-free deque allowing work-stealing across Ps. Go 1.13+ victim caches retain objects across 1 GC cycle before purging.',
     nodeEquivalent: 'No standard object pool; V8 garbage collection must clean up every temporary object created in request pipelines.',
     coreTakeaway: 'sync.Pool is an ephemeral recycler using Go 1.13+ victim caches (surviving 1 GC cycle), not a persistent cache. Never rely on it for state retention.'
   },
