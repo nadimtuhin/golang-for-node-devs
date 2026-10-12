@@ -552,10 +552,12 @@ func main() {
 
 	// Tool 1: Query SQL Database (Orders)
 	g.Go(func() error {
+		t := time.NewTimer(120 * time.Millisecond)
+		defer t.Stop()
 		select {
 		case &lt;-gCtx.Done():
 			return gCtx.Err()
-		case &lt;-time.After(120 * time.Millisecond): // Simulated SQL latency
+		case &lt;-t.C: // Simulated SQL latency
 			agentState.UserOrders = []string{"ORD-9021", "ORD-8411"}
 			log.Println("✓ Tool 1: SQL Orders fetched")
 			return nil
@@ -564,10 +566,12 @@ func main() {
 
 	// Tool 2: Semantic Vector Database Lookup (Weaviate)
 	g.Go(func() error {
+		t := time.NewTimer(180 * time.Millisecond)
+		defer t.Stop()
 		select {
 		case &lt;-gCtx.Done():
 			return gCtx.Err()
-		case &lt;-time.After(180 * time.Millisecond): // Simulated vector retrieval
+		case &lt;-t.C: // Simulated vector retrieval
 			agentState.VectorDocs = []string{
 				"Refund Policy Section 4: Return within 30 days",
 				"VIP Customer SLA: Priority 1-hour resolution",
@@ -579,10 +583,12 @@ func main() {
 
 	// Tool 3: External Fraud Risk API
 	g.Go(func() error {
+		t := time.NewTimer(90 * time.Millisecond)
+		defer t.Stop()
 		select {
 		case &lt;-gCtx.Done():
 			return gCtx.Err()
-		case &lt;-time.After(90 * time.Millisecond):
+		case &lt;-t.C:
 			agentState.FraudScore = 0.02 // Low risk
 			log.Println("✓ Tool 3: Fraud Score verified")
 			return nil
