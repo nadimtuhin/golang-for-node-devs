@@ -1220,6 +1220,9 @@ func main() {
           <div class="qa-pro-tip">
             <strong>Staff Interview Note:</strong> Highlight the use of <code>errors.Is(err, http.ErrServerClosed)</code>. When <code>server.Shutdown()</code> is invoked, <code>ListenAndServe()</code> immediately returns <code>http.ErrServerClosed</code>, which is the expected behavior, not an operational failure!
           </div>
+          <div style="margin-top: 1rem;">
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/graceful_shutdown">🚀 Explore Graceful Shutdown in Studio</a>
+          </div>
         </div>
       </div>
 
@@ -1276,7 +1279,7 @@ db.SetConnMaxIdleTime(2 * time.Minute)</pre>
             <strong>Staff Capacity Formula:</strong> <code>MaxOpenConnsPerPod = (DatabaseMaxConnections * 0.8) / NumberOfPods</code>. If PostgreSQL has <code>max_connections = 200</code> and you run 4 replica pods, configure <code>SetMaxOpenConns(40)</code> per pod!
           </div>
           <div style="margin-top: 1rem;">
-            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/abort_controller">🚀 Explore Context & Graceful Shutdown in Studio</a>
+            <a class="action-btn" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd; font-size:0.8rem; padding:0.35rem 0.75rem; text-decoration:none;" href="/chapter/db_pool">🚀 Explore Database Pool Tuning in Studio</a>
           </div>
         </div>
       </div>
