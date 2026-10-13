@@ -13,7 +13,7 @@
     </div>
 
     <div class="qa-tldr">
-      <strong>TL;DR:</strong> Fiber v2 copies Express's API (<code>app.Get</code>, <code>c.JSON</code>, <code>c.Params</code>) but runs on <code>fasthttp</code>, not <code>net/http</code>. fasthttp gets near-zero allocations by pooling and reusing each request context, so strings from <code>c.Params</code> or <code>c.Body()</code> are only valid inside the handler. Copy them with <code>utils.CopyString</code> or set <code>fiber.Config{Immutable: true}</code> before keeping them past the handler. Create one MongoDB <code>*mongo.Client</code> per process and share it; it is goroutine-safe and holds its own connection pool. Guard lazy init with double-checked locking (as here) or <code>sync.Once</code>, the Go version of a cached <code>require()</code> module.
+      <strong>TL;DR:</strong> Fiber v2 copies Express's API (<code>app.Get</code>, <code>c.JSON</code>, <code>c.Params</code>) but runs on <code>fasthttp</code>, not <code>net/http</code>. fasthttp gets near-zero allocations by pooling and reusing each request context, so values from <code>c.Params</code> or <code>c.Body()</code> are only valid inside the handler. Copy them with <code>utils.CopyString</code> for strings, <code>utils.CopyBytes</code> (or <code>bytes.Clone</code>) for <code>c.Body()</code>, or set <code>fiber.Config{Immutable: true}</code> before keeping them past the handler. Create one MongoDB <code>*mongo.Client</code> per process and share it; it is goroutine-safe and holds its own connection pool. Guard lazy init with double-checked locking (as here) or <code>sync.Once</code>, the Go version of a cached <code>require()</code> module.
     </div>
 
     <!-- File 1: Server Entrypoint -->

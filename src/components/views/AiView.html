@@ -26,7 +26,7 @@
     </div>
 
     <div class="qa-tldr">
-      <strong>TL;DR:</strong> Stream LLM tokens with plain <code>net/http</code>: set <code>Content-Type: text/event-stream</code>, write each chunk as <code>data: ...\n\n</code>, then call <code>rc.Flush()</code> on <code>http.NewResponseController(w)</code> (Go 1.20+), which unwraps middleware writers that would break a raw <code>w.(http.Flusher)</code> assertion. Leave <code>Server.WriteTimeout</code> at 0 and set a rolling per-chunk deadline with <code>rc.SetWriteDeadline</code>. Watch <code>r.Context().Done()</code> so a closed browser tab cancels the upstream LLM call, unlike Node, where you must wire <code>req.on("close")</code> yourself.
+      <strong>TL;DR:</strong> Stream LLM tokens with plain <code>net/http</code>: set <code>Content-Type: text/event-stream</code>, write each chunk as <code>data: ...\n\n</code>, then call <code>rc.Flush()</code> on <code>http.NewResponseController(w)</code> (Go 1.20+), which unwraps middleware writers that implement <code>Unwrap()</code> (which would break a raw <code>w.(http.Flusher)</code> assertion). Leave <code>Server.WriteTimeout</code> at 0 and set a rolling per-chunk deadline with <code>rc.SetWriteDeadline</code>. Watch <code>r.Context().Done()</code> so a closed browser tab cancels the upstream LLM call, unlike Node, where you must wire <code>req.on("close")</code> yourself.
     </div>
 
     <!-- ========================================================================= -->

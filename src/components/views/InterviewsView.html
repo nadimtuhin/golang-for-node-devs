@@ -291,7 +291,7 @@ go func() {
         </button>
         <div id="qa-body-escape-analysis" class="qa-body" role="region" aria-labelledby="qa-header-escape-analysis">
           <div class="qa-tldr">
-            <strong>TL;DR:</strong> The compiler decides at build time: a value stays on the cheap <strong>stack</strong> if it provably never outlives its function, otherwise it <strong>escapes</strong> to the GC-managed heap. Common causes: returning a pointer to a local, storing it in an interface, capturing it in a long-lived closure, or a size unknown at compile time. Inspect with <code>go build -gcflags=-m</code>.
+            <strong>TL;DR:</strong> The compiler decides at build time: a value stays on the cheap <strong>stack</strong> if it provably never outlives its function, otherwise it <strong>escapes</strong> to the GC-managed heap. Common causes: returning a pointer to a local, often storing it in an interface, capturing it in a long-lived closure, or a size unknown at compile time. Inspect with <code>go build -gcflags=-m</code>.
           </div>
           <div class="qa-mental-model">
             <strong>Node.js mental model:</strong> In V8, primitives (numbers, booleans) live in registers or stack frames, but all objects, arrays, and closures are allocated on the V8 garbage-collected heap. Developers have zero manual control over stack vs heap placement.
@@ -364,7 +364,7 @@ go func() {
         </button>
         <div id="qa-body-gc-comparison" class="qa-body" role="region" aria-labelledby="qa-header-gc-comparison">
           <div class="qa-tldr">
-            <strong>TL;DR:</strong> Go's GC is a concurrent, non-generational, non-moving mark-and-sweep. Objects are <strong>white</strong> (unvisited), <strong>grey</strong> (found, children unscanned) or <strong>black</strong> (scanned); a write barrier keeps "no black object points to a white one" true while your code runs. Stop-the-world pauses are usually under a millisecond. Tune with <code>GOGC</code> and <code>GOMEMLIMIT</code>.
+            <strong>TL;DR:</strong> Go's GC is a concurrent, non-generational, non-moving mark-and-sweep. Objects are <strong>white</strong> (unvisited), <strong>grey</strong> (found, children unscanned) or <strong>black</strong> (scanned); a hybrid write barrier (Go 1.8+) shades pointers during mutation so no reachable object is missed, eliminating STW stack rescans. Stop-the-world pauses are usually under a millisecond. Tune with <code>GOGC</code> and <code>GOMEMLIMIT</code>.
           </div>
           <div class="qa-mental-model">
             <strong>V8 (Node.js) Generational GC:</strong> Built on the <em>Generational Hypothesis</em> ("most objects die young"). V8 splits heap memory into Young Generation (Nursery & Intermediate) and Old Generation. It uses a fast Cheney Scavenger copying collector for young objects and a Major Mark-Sweep-Compact collector for old objects. When old generation compacts, it can trigger 20–100ms Stop-The-World (STW) latency spikes.

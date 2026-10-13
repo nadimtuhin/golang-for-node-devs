@@ -511,7 +511,7 @@ client := &http.Client{
       </div>
 
       <div class="qa-tldr">
-        <strong>TL;DR:</strong> Mock with interfaces for business logic; test the repository layer against a real database. <code>sqlmock</code> only checks that your SQL string matches a regex, so it misses syntax errors, constraint violations and migration drift. <strong>Testcontainers for Go</strong> starts a real PostgreSQL in Docker on a random port and cleans it up with <code>t.Cleanup()</code>. Start one container per package and wrap each test in a transaction you roll back, so tests stay isolated and fast.
+        <strong>TL;DR:</strong> Mock with interfaces for business logic; test the repository layer against a real database. <code>sqlmock</code> by default only checks that your SQL string matches a regex, so it misses syntax errors, constraint violations and migration drift. <strong>Testcontainers for Go</strong> starts a real PostgreSQL in Docker on a random port and cleans it up with <code>t.Cleanup()</code>. Start one container per package and wrap each test in a transaction you roll back, so tests stay isolated and fast.
       </div>
 
       <!-- Unit Testing with sqlmock -->
