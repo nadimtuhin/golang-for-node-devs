@@ -1572,6 +1572,16 @@ header {
   color: #004b5c;
 }
 
+.qa-tldr {
+  background: var(--amber-bg);
+  border-left: 4px solid var(--amber-warning);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #78350f;
+}
+
 /* PITFALL CARDS */
 .pitfall-card {
   background: #ffffff;

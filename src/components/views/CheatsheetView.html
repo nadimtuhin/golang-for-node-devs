@@ -3,6 +3,10 @@
     <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #0f172a;">⚡ Node.js ➔ Go Backend Rosetta Stone</h2>
     <p style="color: var(--text-body); margin-bottom: 1.5rem;">Direct code mappings for arrays, types, error handling, databases, queues, and concurrency.</p>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> Three mental shifts cover most of the move from Node to Go. <strong>Values, not references:</strong> assigning a struct or array copies it, while objects in JS are always shared (Go slices and maps still share their backing data); pass a pointer (<code>*T</code>) when you want shared mutation. <strong>Errors are values:</strong> instead of <code>throw</code> and <code>try/catch</code>, functions return <code>val, err</code> and you check <code>if err != nil</code> right where it happens. <strong>CSP, not an event loop:</strong> instead of one JS thread juggling callbacks and promises, <code>go fn()</code> starts a goroutine that runs in parallel across all cores, and channels pass data safely between them.
+    </div>
+
     <table class="diff-table">
       <thead>
         <tr>

@@ -9,6 +9,10 @@
       </p>
     </div>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> The top 3 footguns for Node devs: <strong>(1) Nil interface:</strong> a nil <code>*MyErr</code> returned as <code>error</code> is not <code>== nil</code>, because the interface still holds a type. Return a literal <code>nil</code> instead. <strong>(2) Unclosed <code>resp.Body</code>:</strong> check <code>err</code>, then <code>defer resp.Body.Close()</code>, or every request leaks a connection. To reuse the keep-alive connection, read the body to EOF first. <strong>(3) Goroutine and timer leaks:</strong> a goroutine stuck on a channel nobody reads is never collected. Give every goroutine a <code>ctx.Done()</code> exit, and use <code>time.NewTimer</code> with <code>Stop()</code> rather than <code>time.After</code> in loops (before Go 1.23, those timers stayed alive until they fired).
+    </div>
+
     <!-- Visual Diagram 2: Memory Layout & Padding -->
     <div class="diagram-card">
       <div class="diagram-title">📐 Memory Footprint: JS Object Graph vs Go Contiguous Memory Layout</div>

@@ -9,6 +9,10 @@
       </p>
     </div>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> Use a multi-stage build. Stage 1 compiles with <code>CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath</code> to get one static binary. Stage 2 copies only that binary into <code>gcr.io/distroless/static-debian12:nonroot</code> (CA certs, non-root UID 65532) or <code>FROM scratch</code> (empty, so copy in CA certs yourself). Final images are usually 5–15 MB, versus 180 MB+ for Node. No shell and no package manager means far fewer CVEs to patch.
+    </div>
+
     <!-- Comparison Table: Node vs Go Docker -->
     <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
       <h3 style="font-size: 1.15rem; color: #0f172a; margin-bottom: 1rem;">⚖️ Docker Image Comparison: Node.js vs Go</h3>

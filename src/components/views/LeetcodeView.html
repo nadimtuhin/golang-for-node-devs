@@ -9,6 +9,10 @@
       </p>
     </div>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> Three habits make Go LeetCode solutions fast. <strong>Preallocate:</strong> <code>make([]int, 0, n)</code> or <code>make(map[int]int, n)</code> sizes the backing storage once, so <code>append</code> and inserts don't keep reallocating. <strong>Bytes vs runes:</strong> <code>s[i]</code> returns a single UTF-8 byte, which is fine for ASCII; use <code>for _, r := range s</code> or <code>[]rune(s)</code> when the input can hold multi-byte characters like emoji. <strong>Swap in place:</strong> the tuple assignment <code>a[i], a[j] = a[j], a[i]</code> needs no temp variable, and reversing a linked list is just rewiring <code>Next</code> pointers in O(1) extra space.
+    </div>
+
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.25rem;">
       
       <!-- LC 1 -->

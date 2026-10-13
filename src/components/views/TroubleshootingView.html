@@ -29,6 +29,10 @@
       <a href="#diagnostics-playbooks" class="nav-jump-pill">8. Runtime Diagnostics (-race, pprof, deadlocks)</a>
     </nav>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> Go has no <code>nodemon</code>-style module reload; it rebuilds the whole binary, usually in under a second. Use <code>air</code> (config in <code>.air.toml</code>) to watch files, rebuild, and restart. Run <code>go build -gcflags=-m</code> to see which values escape to the heap. Ship with <code>-ldflags="-s -w"</code> to strip the symbol table and DWARF debug info, cutting binary size by roughly 20–30%. For zero-downtime restarts, the new process inherits the listening socket (<code>tableflip</code>, systemd socket activation) or binds alongside it with <code>SO_REUSEPORT</code>, while the old one drains through <code>http.Server.Shutdown(ctx)</code>.
+    </div>
+
     <!-- ====================================================================
          PART 1: THE GO COMPILATION PIPELINE
          ==================================================================== -->

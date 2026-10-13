@@ -39,6 +39,10 @@
         <span class="qa-badge concept">Toolchain Architecture</span>
       </div>
 
+      <div class="qa-tldr">
+        <strong>TL;DR:</strong> Go ships its test runner in the toolchain: no Jest, no transpiler, no config file. Name a file <code>*_test.go</code>, write <code>func TestXxx(t *testing.T)</code>, run <code>go test ./...</code>. The idiomatic pattern is the <strong>table-driven test</strong>: a slice of structs holding inputs and expected outputs, each case run as a named subtest via <code>t.Run</code>. Coverage (<code>-cover</code>), benchmarks (<code>-bench</code>) and the race detector (<code>-race</code>) are built in.
+      </div>
+
       <!-- Mental Model Diff: Node vs Go Runner -->
       <div class="diff-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
         <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem;">
@@ -504,6 +508,10 @@ client := &http.Client{
           </p>
         </div>
         <span class="qa-badge high">Production Grade</span>
+      </div>
+
+      <div class="qa-tldr">
+        <strong>TL;DR:</strong> Mock with interfaces for business logic; test the repository layer against a real database. <code>sqlmock</code> only checks that your SQL string matches a regex, so it misses syntax errors, constraint violations and migration drift. <strong>Testcontainers for Go</strong> starts a real PostgreSQL in Docker on a random port and cleans it up with <code>t.Cleanup()</code>. Start one container per package and wrap each test in a transaction you roll back, so tests stay isolated and fast.
       </div>
 
       <!-- Unit Testing with sqlmock -->

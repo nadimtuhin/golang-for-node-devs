@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title = "Go for Node.js Devs | Interactive Book",
-  description = "Learn Go with live Go compiler, 56 progressive chapters, Node.js comparisons, and 13 production architecture guides.",
+  description = "Learn Go with live Go compiler, 60 progressive chapters, Node.js comparisons, and 14 production architecture guides.",
   canonicalPath = Astro.url.pathname,
   breadcrumbs = []
 } = Astro.props;
@@ -26,80 +26,121 @@ const defaultBreadcrumbs = [
   ...(cleanPath ? [{ name: title.split('|')[0].trim(), item: canonicalUrl }] : [])
 ];
 const activeBreadcrumbs = breadcrumbs.length > 0 ? breadcrumbs : defaultBreadcrumbs;
+const isHomePage = cleanPath === '';
+const ogImageAlt = "Go for Node.js Developers: 60 interactive chapters and 14 architecture guides";
 
-// Structured Data (JSON-LD) with BreadcrumbList & Entity Disambiguation (sameAs)
+const organizationId = `${siteOrigin}/#organization`;
+const websiteId = `${siteOrigin}/#website`;
+const courseId = `${siteOrigin}/#course`;
+
+// Entities share stable @ids so answer engines can merge them across pages.
+const organizationNode = {
+  "@type": "Organization",
+  "@id": organizationId,
+  "name": "Go for Node Developers",
+  "url": siteOrigin,
+  "logo": {
+    "@type": "ImageObject",
+    "url": `${siteOrigin}/favicon.svg`
+  },
+  "sameAs": ["https://github.com/nadimtuhin/golang-for-node-devs"]
+};
+
+const websiteNode = {
+  "@type": "WebSite",
+  "@id": websiteId,
+  "url": siteOrigin,
+  "name": "Go for Node.js Developers Masterclass Studio",
+  "alternateName": "Go for Node.js Devs",
+  "description": "Interactive Golang learning platform and Rosetta Stone for Node.js and TypeScript developers.",
+  "inLanguage": "en-US",
+  "publisher": { "@id": organizationId }
+};
+
+const courseNode = {
+  "@type": "Course",
+  "@id": courseId,
+  "name": "Go for Node.js Developers",
+  "description": "Free interactive Go course for Node.js and TypeScript developers: 60 progressive chapters with a live Go compiler and 14 production architecture guides.",
+  "url": `${siteOrigin}/chapters`,
+  "inLanguage": "en-US",
+  "provider": { "@id": organizationId },
+  "isAccessibleForFree": true,
+  "educationalLevel": "Intermediate",
+  "coursePrerequisites": "Working knowledge of Node.js, JavaScript, or TypeScript",
+  "teaches": [
+    "Go syntax and type system for JavaScript developers",
+    "Goroutines, channels, and context.Context",
+    "HTTP APIs with net/http and Fiber",
+    "database/sql connection pooling and transactions",
+    "Testing, Docker packaging, and production Go services"
+  ],
+  "about": {
+    "@type": "Thing",
+    "name": "Go (programming language)",
+    "sameAs": ["https://en.wikipedia.org/wiki/Go_(programming_language)", "https://www.wikidata.org/wiki/Q37227"]
+  },
+  "offers": {
+    "@type": "Offer",
+    "category": "Free",
+    "price": 0,
+    "priceCurrency": "USD"
+  },
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "Online"
+  }
+};
+
+// Google ignores single-item breadcrumb trails, so the home page skips it.
+const breadcrumbNode = activeBreadcrumbs.length > 1 ? {
+  "@type": "BreadcrumbList",
+  "@id": `${canonicalUrl}#breadcrumb`,
+  "itemListElement": activeBreadcrumbs.map((b, idx) => ({
+    "@type": "ListItem",
+    "position": idx + 1,
+    "name": b.name,
+    "item": b.item
+  }))
+} : null;
+
+const articleNode = {
+  "@type": "TechArticle",
+  "@id": `${canonicalUrl}#article`,
+  "headline": title,
+  "description": description,
+  "url": canonicalUrl,
+  "mainEntityOfPage": canonicalUrl,
+  "image": ogImageUrl,
+  "inLanguage": "en-US",
+  "datePublished": "2026-10-01T00:00:00Z",
+  "dateModified": "2026-10-14T00:00:00Z",
+  "isPartOf": [{ "@id": websiteId }, { "@id": courseId }],
+  "author": { "@id": organizationId },
+  "publisher": { "@id": organizationId },
+  "isAccessibleForFree": true,
+  "about": [
+    {
+      "@type": "Thing",
+      "name": "Go (programming language)",
+      "sameAs": "https://en.wikipedia.org/wiki/Go_(programming_language)"
+    },
+    {
+      "@type": "Thing",
+      "name": "Node.js",
+      "sameAs": "https://en.wikipedia.org/wiki/Node.js"
+    }
+  ]
+};
+
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": `${siteOrigin}/#website`,
-      "url": siteOrigin,
-      "name": "Go for Node.js Developers Masterclass Studio",
-      "description": "Interactive Golang learning platform and Rosetta Stone for Node.js and TypeScript developers.",
-      "inLanguage": "en-US",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Go for Node Developers",
-        "url": siteOrigin,
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${siteOrigin}/favicon.svg`
-        },
-        "sameAs": [
-          "https://github.com/nadimtuhin/golang-for-node-devs",
-          "https://en.wikipedia.org/wiki/Go_(programming_language)",
-          "https://www.wikidata.org/wiki/Q37227"
-        ]
-      }
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${canonicalUrl}#breadcrumb`,
-      "itemListElement": activeBreadcrumbs.map((b, idx) => ({
-        "@type": "ListItem",
-        "position": idx + 1,
-        "name": b.name,
-        "item": b.item
-      }))
-    },
-    {
-      "@type": "TechArticle",
-      "@id": `${canonicalUrl}#article`,
-      "headline": title,
-      "description": description,
-      "url": canonicalUrl,
-      "mainEntityOfPage": canonicalUrl,
-      "inLanguage": "en-US",
-      "datePublished": "2026-10-01T00:00:00Z",
-      "dateModified": "2026-10-10T00:00:00Z",
-      "author": {
-        "@type": "Organization",
-        "name": "Go for Node Developers",
-        "url": siteOrigin,
-        "sameAs": [
-          "https://github.com/nadimtuhin/golang-for-node-devs",
-          "https://en.wikipedia.org/wiki/Go_(programming_language)"
-        ]
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Go for Node Developers",
-        "url": siteOrigin
-      },
-      "about": [
-        {
-          "@type": "Thing",
-          "name": "Go (programming language)",
-          "sameAs": "https://en.wikipedia.org/wiki/Go_(programming_language)"
-        },
-        {
-          "@type": "Thing",
-          "name": "Node.js",
-          "sameAs": "https://en.wikipedia.org/wiki/Node.js"
-        }
-      ]
-    }
+    organizationNode,
+    websiteNode,
+    courseNode,
+    ...(breadcrumbNode ? [breadcrumbNode] : []),
+    ...(isHomePage ? [] : [articleNode])
   ]
 };
 ---
@@ -119,24 +160,30 @@ const structuredData = {
     <meta name="theme-color" content="#007d9c" />
 
     <!-- OpenGraph / Facebook -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={isHomePage ? "website" : "article"} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:site_name" content="Go for Node.js Devs" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- AI & Generative Search / LLM Optimization (AEO / GEO) -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="author" content="Go for Node Developers" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="help" type="text/plain" href="/llms.txt" title="LLM Context Documentation" />
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Go for Node.js Devs" href="/feed.xml" />
     <link rel="alternate" hreflang="en" href={canonicalUrl} />

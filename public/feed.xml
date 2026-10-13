@@ -3,7 +3,7 @@
 <channel>
   <title>Go for Node.js Developers Masterclass</title>
   <link>https://golang-for-node-devs.vercel.app/</link>
-  <description>Interactive Go learning platform with live Go compiler, 56 chapters, and 13 production architecture guides for JavaScript and TypeScript engineers.</description>
+  <description>Interactive Go learning platform with live Go compiler, 60 chapters, and 14 production architecture guides for JavaScript and TypeScript engineers.</description>
   <language>en-us</language>
   <lastBuildDate>Fri, 10 Oct 2026 00:00:00 +0000</lastBuildDate>
   <atom:link href="https://golang-for-node-devs.vercel.app/feed.xml" rel="self" type="application/rss+xml" />

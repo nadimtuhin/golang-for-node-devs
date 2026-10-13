@@ -27,7 +27,7 @@ Built with **Astro 5** for lightning-fast zero-JS static generation, modular com
 ## 🚀 Key Features
 
 - **💻 Interactive 3-Column Studio:**
-  - **Column 1:** Chapter Navigation across 56 interactive lessons with live instant search (`⌘+K`).
+  - **Column 1:** Chapter Navigation across 60 interactive lessons with live instant search (`⌘+K`).
   - **Column 2:** Lesson Briefing with explicit Node.js vs Go comparisons, "Why Go Does This", and architectural rationale.
   - **Column 3:** Live CodeMirror Go Editor connected to the Go Playground compilation API with a real-time output terminal (`⌘+⏎`).
 - **📂 Real-World Microservice Architecture:** Full side-by-side comparison of an Express/Mongoose microservice re-architected in Go Fiber, including MongoDB client singletons with `sync.Once`, and `package.json` vs `go.mod`.
@@ -68,7 +68,7 @@ Built with **Astro 5** for lightning-fast zero-JS static generation, modular com
 │   │       ├── ModExplainView.astro
 │   │       └── CheatsheetView.astro
 │   ├── data/
-│   │   └── chapters.ts       # 56 strongly-typed lessons and code samples
+│   │   └── chapters.ts       # 60 strongly-typed lessons and code samples
 │   ├── layouts/
 │   │   └── Layout.astro      # Master layout with Google Fonts & CodeMirror
 │   ├── pages/

@@ -107,6 +107,9 @@
           <span class="qa-badge high">Staff / Principal</span>
         </button>
         <div id="qa-body-gmp-breakdown" class="qa-body" role="region" aria-labelledby="qa-header-gmp-breakdown">
+          <div class="qa-tldr">
+            <strong>TL;DR:</strong> Go multiplexes many goroutines (<strong>G</strong>) onto a few OS threads (<strong>M</strong>) through logical processors (<strong>P</strong>, one per <code>GOMAXPROCS</code>). Each P owns a local run queue; idle Ps steal work, and a blocking syscall hands its P to another M. Unlike Node's single JS thread, CPU-bound goroutines run in parallel on every core.
+          </div>
           <div class="qa-mental-model">
             <strong>Node.js mental model:</strong> In Node.js, there is only 1 JavaScript execution thread. All async callbacks queue into the libuv event loop. Parallelism requires spawning OS child processes (<code>cluster</code> module) or creating heavy <code>worker_threads</code> (each with its own isolated V8 isolate).
           </div>
@@ -287,6 +290,9 @@ go func() {
           <span class="qa-badge high">Performance & Memory</span>
         </button>
         <div id="qa-body-escape-analysis" class="qa-body" role="region" aria-labelledby="qa-header-escape-analysis">
+          <div class="qa-tldr">
+            <strong>TL;DR:</strong> The compiler decides at build time: a value stays on the cheap <strong>stack</strong> if it provably never outlives its function, otherwise it <strong>escapes</strong> to the GC-managed heap. Common causes: returning a pointer to a local, storing it in an interface, capturing it in a long-lived closure, or a size unknown at compile time. Inspect with <code>go build -gcflags=-m</code>.
+          </div>
           <div class="qa-mental-model">
             <strong>Node.js mental model:</strong> In V8, primitives (numbers, booleans) live in registers or stack frames, but all objects, arrays, and closures are allocated on the V8 garbage-collected heap. Developers have zero manual control over stack vs heap placement.
           </div>
@@ -357,6 +363,9 @@ go func() {
           <span class="qa-badge concept">Systems Architecture</span>
         </button>
         <div id="qa-body-gc-comparison" class="qa-body" role="region" aria-labelledby="qa-header-gc-comparison">
+          <div class="qa-tldr">
+            <strong>TL;DR:</strong> Go's GC is a concurrent, non-generational, non-moving mark-and-sweep. Objects are <strong>white</strong> (unvisited), <strong>grey</strong> (found, children unscanned) or <strong>black</strong> (scanned); a write barrier keeps "no black object points to a white one" true while your code runs. Stop-the-world pauses are usually under a millisecond. Tune with <code>GOGC</code> and <code>GOMEMLIMIT</code>.
+          </div>
           <div class="qa-mental-model">
             <strong>V8 (Node.js) Generational GC:</strong> Built on the <em>Generational Hypothesis</em> ("most objects die young"). V8 splits heap memory into Young Generation (Nursery & Intermediate) and Old Generation. It uses a fast Cheney Scavenger copying collector for young objects and a Major Mark-Sweep-Compact collector for old objects. When old generation compacts, it can trigger 20–100ms Stop-The-World (STW) latency spikes.
           </div>
@@ -595,6 +604,9 @@ fmt.Println(original) // Output: [1 2 3 4] -- Protected from mutation!</pre>
           <span class="qa-badge high">Classic Gotcha</span>
         </button>
         <div id="qa-body-nil-interface" class="qa-body" role="region" aria-labelledby="qa-header-nil-interface">
+          <div class="qa-tldr">
+            <strong>TL;DR:</strong> An interface value is a <code>(type, value)</code> pair and equals <code>nil</code> only when <em>both</em> are nil. Returning a nil <code>*MyError</code> as <code>error</code> yields <code>(*MyError, nil)</code>, so <code>err != nil</code> is <strong>true</strong>. Fix: return a literal <code>nil</code> from functions whose return type is an interface.
+          </div>
           <div class="qa-mental-model">
             <strong>Node.js mental model:</strong> In JS, if <code>val === null</code>, then <code>Boolean(val)</code> is always <code>false</code>. In Go, an interface variable can contain a nil pointer and yet <code>interface != nil</code> evaluates to <strong>true</strong>!
           </div>
@@ -1233,6 +1245,9 @@ func main() {
           <span class="qa-badge high">Production Reliability</span>
         </button>
         <div id="qa-body-db-tuning" class="qa-body" role="region" aria-labelledby="qa-header-db-tuning">
+          <div class="qa-tldr">
+            <strong>TL;DR:</strong> <code>database/sql</code> defaults to <strong>unlimited</strong> open connections and only 2 idle ones, so a traffic spike can blow past Postgres <code>max_connections</code>. Set <code>SetMaxOpenConns</code> (DB limit ÷ app replicas), <code>SetMaxIdleConns</code> near that value, plus <code>SetConnMaxLifetime</code> and <code>SetConnMaxIdleTime</code>. Pass a context with a timeout to every query so waiters fail fast instead of queuing forever.
+          </div>
           <div class="qa-mental-model">
             <strong>Node.js mental model:</strong> In Node.js, libraries like <code>pg</code> or Prisma maintain a connection pool. Because JS is single-threaded, a small pool (10 connections) is often sufficient. In Go, hundreds or thousands of Goroutines execute queries simultaneously, directly querying the shared pool.
           </div>

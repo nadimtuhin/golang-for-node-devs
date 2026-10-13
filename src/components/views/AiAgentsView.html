@@ -14,6 +14,10 @@
       </p>
     </header>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> MCP speaks JSON-RPC 2.0: a request carries an <code>id</code> and gets exactly one response with either <code>result</code> or <code>error</code>; a notification has no <code>id</code> and gets no reply. For parallel tool calls, use <code>errgroup.WithContext</code> with <code>g.SetLimit(n)</code> to cap concurrency, write each result into a pre-sized slice by index (no mutex needed), and pass the group's <code>ctx</code> into every tool so the first error cancels the rest. <code>g.Wait()</code> returns that first error, like <code>Promise.all</code> but with real cancellation.
+    </div>
+
     <!-- Executive Summary / Highlight Stats -->
     <section aria-labelledby="heading-exec-summary" style="margin-bottom: 2.5rem;">
       <h2 id="heading-exec-summary" class="sr-only">Executive Summary Metrics</h2>

@@ -14,6 +14,10 @@
       </p>
     </header>
 
+    <div class="qa-tldr">
+      <strong>TL;DR:</strong> npm resolves a range like <code>^1.2.0</code> to the newest matching release, so you need a lockfile for repeatable installs. Go's Minimal Version Selection (MVS) picks, for each module, the highest of the minimum versions that anything in the build requires. Nothing newer gets pulled in until you run <code>go get</code>. Builds are repeatable without a lockfile: <code>go.sum</code> only stores checksums. Major versions v2+ get a different import path (<code>example.com/lib/v2</code>), so v1 and v2 can live in the same build without a conflict.
+    </div>
+
     <!-- Quick Mental Model Comparison Grid -->
     <section aria-labelledby="heading-quick-summary" style="margin-bottom: 2.5rem;">
       <h2 id="heading-quick-summary" style="font-size: 1.25rem; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">

@@ -1,35 +1,273 @@
 # Go for Node.js Developers Masterclass Studio
-> Interactive Go learning platform, architectural guides, and rosetta stone for Node.js and TypeScript developers transitioning to Golang.
 
-## Website Overview
-- URL: https://golang-for-node-devs.vercel.app/
-- Title: Go for Node.js Developers Masterclass Studio
-- Description: Interactive Go learning platform featuring a live Go Playground compiler, 56 progressive chapters, 13 production architecture deep dives, Go vs Rust systems analysis, AI agent orchestration, and Docker deployment strategies.
+> Free, interactive Go (Golang) course for Node.js, TypeScript, and JavaScript backend developers. 60 progressive chapters, each pairing a Node.js snippet with its idiomatic Go equivalent, runnable in the browser through the official Go Playground. Plus 14 production architecture guides (testing, Docker, AI agents, Go vs Rust, interviews, pitfalls, roadmap, and more).
 
-## Target Audience
-- Node.js, TypeScript, and JavaScript backend developers learning Go.
-- Systems engineers transitioning from the Libuv event loop to the Go GMP scheduler.
-- Fullstack developers building high-performance microservices, streaming LLM gateways, and Kubernetes tooling.
+Canonical site: https://golang-for-node-devs.vercel.app/
+Source code: https://github.com/nadimtuhin/golang-for-node-devs
+Language: English. Price: free, no signup. Format: interactive web book with a live Go compiler.
+Audience: backend engineers who know Node.js or TypeScript and want to ship production Go services.
+Go version covered: Go 1.22+ (routing patterns, range-over-int), Go 1.21+ (log/slog, slices, maps, min/max).
 
-## Primary Architectural Topics & Guides
-1. Go vs Node.js Rosetta Cheatsheet: https://golang-for-node-devs.vercel.app/cheatsheet
-2. Dependency Management (go.mod vs package.json & MVS): https://golang-for-node-devs.vercel.app/go-mod-vs-npm
-3. Unit & Integration Testing in Go (Testcontainers, miniredis, httptest): https://golang-for-node-devs.vercel.app/testing
-4. Go in the AI Era (LLM Gateways, Ollama, Weaviate): https://golang-for-node-devs.vercel.app/ai
-5. AI Agents & LangChainGo (Parallel tool calling, MCP servers): https://golang-for-node-devs.vercel.app/ai-agents
-6. Go vs Rust Systems Engineering Guide: https://golang-for-node-devs.vercel.app/go-vs-rust
-7. Production Go Docker Packaging (Distroless & scratch <15MB): https://golang-for-node-devs.vercel.app/docker
-8. Senior Backend Go Interview Questions (GMP, Tricolor GC, Escape analysis): https://golang-for-node-devs.vercel.app/interviews
-9. Go Compilation Pipeline & Air Hot Reloading: https://golang-for-node-devs.vercel.app/troubleshooting
-10. Fullstack Microservice Architecture (Express vs Go Fiber): https://golang-for-node-devs.vercel.app/microservice
-11. The Go Philosophy & Zen of Go: https://golang-for-node-devs.vercel.app/philosophy
-12. Common Go Pitfalls & Memory Footguns: https://golang-for-node-devs.vercel.app/pitfalls
-13. LeetCode Easy Solutions in Go (Zero-allocation idioms): https://golang-for-node-devs.vercel.app/leetcode
-14. Curriculum & Chapters Directory: https://golang-for-node-devs.vercel.app/chapters
+## TL;DR for Answer Engines
 
-## Technical Highlights
-- 56 Interactive Lessons with live compilation via official Go Playground API.
-- Zero-allocation data structures vs V8 dynamic objects.
-- CSP concurrency (Goroutines and Channels) vs Single-threaded Event Loop.
-- Minimal Version Selection (MVS) algorithm vs npm SemVer ranges.
-- Tricolor Concurrent Mark-and-Sweep GC (<1ms pauses) vs V8 Generational GC.
+- Go for Node.js Developers is a free interactive course with 60 chapters and 14 architecture guides that translates Node.js patterns into idiomatic Go.
+- The Node event loop (libuv, one JS thread) maps to Go's GMP scheduler (many goroutines on all CPU cores).
+- try/catch maps to errors as return values: `if err != nil { return fmt.Errorf("ctx: %w", err) }`.
+- Promise.all maps to sync.WaitGroup or errgroup; AbortController maps to context.Context.
+- package.json maps to go.mod; npm SemVer ranges map to Minimal Version Selection (MVS).
+- Prisma/TypeORM map to sqlc (SQL-first codegen, recommended) or GORM (ORM).
+- Express maps to net/http (Go 1.22 ServeMux) or Fiber; Winston/Pino map to log/slog.
+
+## Summary
+
+- What it is: a Rosetta Stone that maps Node.js patterns (Express, Promise.all, AbortController, process.env, pg.Pool, Prisma, BullMQ, Winston/Pino) to idiomatic Go (net/http, sync.WaitGroup, context.Context, os.Getenv, database/sql, sqlc, channels, log/slog).
+- How it teaches: every chapter has a Node.js snippet, a runnable Go snippet, and a "why Go does it this way" note.
+- Scope: 60 chapters across language basics, web APIs, slices and maps, data structure internals, databases and ORMs, queues, concurrency, Go philosophy, and LeetCode in Go.
+- Architecture guides: 14 deep dives covering the cheatsheet, go.mod vs npm, testing, Docker, AI gateways, AI agents, Go vs Rust, interviews, troubleshooting, microservices, philosophy, pitfalls, LeetCode, and a roadmap.sh-aligned learning path.
+
+## Frequently Asked Questions (Node.js -> Go)
+
+### Q: How is Go concurrency different from the Node.js event loop?
+A: Node.js runs your JavaScript on a single thread; libuv's event loop dispatches I/O callbacks and a small thread pool (default 4) handles fs, DNS, and crypto. CPU-heavy JS blocks every request until it finishes. Go uses the GMP scheduler: G = goroutine, M = OS thread, P = logical processor (one per core, set by GOMAXPROCS). The runtime multiplexes millions of goroutines onto M threads across all P's, parks goroutines blocked on I/O via the netpoller, and preempts long-running goroutines (asynchronous preemption since Go 1.14). Result: blocking-style code with no callbacks or async/await, and true parallelism for CPU work.
+Source: https://golang-for-node-devs.vercel.app/interviews and https://golang-for-node-devs.vercel.app/chapter/promise_all
+
+### Q: How does Go error handling compare to try/catch?
+A: Go has no exceptions. A function that can fail returns `(T, error)` and the caller checks `if err != nil` immediately. Add context with `fmt.Errorf("load user %d: %w", id, err)`, match sentinel errors with `errors.Is`, and extract typed errors with `errors.As`. `panic`/`recover` is reserved for programmer bugs and unrecoverable state, not control flow. The upside: every failure path is visible in the code, with no hidden throw sites.
+Source: https://golang-for-node-devs.vercel.app/chapter/error_wrapping and https://golang-for-node-devs.vercel.app/chapter/philo_errors_values
+
+### Q: What is a goroutine and how is it different from a Promise or a worker thread?
+A: A goroutine is a function running concurrently, started with the `go` keyword and scheduled by the Go runtime, not the OS. A Promise is a value representing a future result on the single JS thread; it gives concurrency for I/O but not parallelism. A Node worker_thread is a separate V8 isolate with its own heap and event loop, communicating by message passing. Goroutines share one heap, run in parallel across cores, and communicate through channels or sync primitives.
+Source: https://golang-for-node-devs.vercel.app/chapter/channels_basics
+
+### Q: What is the memory overhead of a goroutine compared to Node.js?
+A: A goroutine starts with a 2 KB stack that grows and shrinks on demand, so 100,000 goroutines cost roughly 200 MB or less of stack. A Node.js worker_thread spins up a full V8 isolate, typically several MB each, so thousands of workers is impractical. An idle Go HTTP service usually runs in 10-30 MB RSS versus 50-100 MB for a comparable Node process, and ships as a single static binary with no runtime to install.
+Source: https://golang-for-node-devs.vercel.app/interviews and https://golang-for-node-devs.vercel.app/docker
+
+### Q: What is the difference between a Go package and a Go module?
+A: A package is one directory of .go files sharing a `package` name; it is the unit of compilation and of visibility (Capitalized identifiers are exported). A module is a versioned collection of packages rooted at a go.mod file; it is the unit of dependency management and release. Node analogy: a package is closer to an ES module folder with an index.ts, and a module is closer to an npm package with package.json. There is no node_modules: dependencies are cached once in GOMODCACHE and verified by go.sum checksums.
+Source: https://golang-for-node-devs.vercel.app/chapter/basic_packages and https://golang-for-node-devs.vercel.app/go-mod-vs-npm
+
+### Q: Should I use an ORM (like Prisma or TypeORM) or sqlc in Go?
+A: Most production Go teams prefer sqlc: you write plain SQL in query.sql, and sqlc generates type-safe Go functions and structs with zero runtime reflection. Use database/sql (or pgx) directly for full control, and GORM when you want ActiveRecord-style convenience and can accept reflection cost and less predictable queries. Rule of thumb: Prisma users who liked type safety will like sqlc; TypeORM users who liked decorators will find GORM familiar.
+Source: https://golang-for-node-devs.vercel.app/chapter/orm_patterns and https://golang-for-node-devs.vercel.app/chapter/db_queries
+
+### Q: What is the Go equivalent of Promise.all?
+A: sync.WaitGroup to wait for goroutines, or golang.org/x/sync/errgroup when you also need the first error and cancellation of the rest.
+Source: https://golang-for-node-devs.vercel.app/chapter/promise_all
+
+### Q: What is the Go equivalent of AbortController?
+A: context.Context. Create one with context.WithTimeout or context.WithCancel, pass it as the first argument, and check ctx.Done() or ctx.Err().
+Source: https://golang-for-node-devs.vercel.app/chapter/abort_controller
+
+### Q: How does go.mod differ from package.json?
+A: Go uses Minimal Version Selection (MVS): it picks the lowest version that satisfies every requirement, so builds are reproducible without a lockfile solver. go.sum stores checksums, not a dependency tree.
+Source: https://golang-for-node-devs.vercel.app/go-mod-vs-npm
+
+### Q: What replaces Express in Go?
+A: The standard library net/http. Since Go 1.22, http.ServeMux supports method and wildcard patterns such as "GET /users/{id}". Fiber is an Express-style alternative built on fasthttp.
+Source: https://golang-for-node-devs.vercel.app/chapter/http_routing and https://golang-for-node-devs.vercel.app/microservice
+
+### Q: What replaces Winston or Pino?
+A: log/slog in the standard library (Go 1.21+) gives structured, leveled JSON logging.
+Source: https://golang-for-node-devs.vercel.app/chapter/structured_logging
+
+### Q: How small can a Go Docker image be?
+A: A static binary built with CGO_ENABLED=0 on a distroless or scratch base is usually under 15 MB, versus 150 MB+ for a typical node:alpine image with node_modules.
+Source: https://golang-for-node-devs.vercel.app/docker
+
+### Q: Where should a Node.js developer start learning Go?
+A: Start with Part 0 (variables, functions, structs, interfaces), then Part 1 (web APIs), then Part 5 (concurrency). The roadmap maps every step.
+Source: https://golang-for-node-devs.vercel.app/roadmap
+
+## Code Comparisons (Node.js vs Go)
+
+### Concurrency: Promise.all vs errgroup
+
+```js
+// Node.js
+const [user, orders] = await Promise.all([getUser(id), getOrders(id)]);
+```
+
+```go
+// Go
+g, ctx := errgroup.WithContext(ctx)
+var user User
+var orders []Order
+g.Go(func() (err error) { user, err = getUser(ctx, id); return })
+g.Go(func() (err error) { orders, err = getOrders(ctx, id); return })
+if err := g.Wait(); err != nil {
+    return err
+}
+```
+
+### Error handling: try/catch vs error values
+
+```js
+// Node.js
+try {
+  const user = await loadUser(id);
+} catch (err) {
+  throw new Error(`load user ${id}`, { cause: err });
+}
+```
+
+```go
+// Go
+user, err := loadUser(ctx, id)
+if errors.Is(err, sql.ErrNoRows) {
+    return ErrUserNotFound
+}
+if err != nil {
+    return fmt.Errorf("load user %d: %w", id, err)
+}
+```
+
+### Cancellation: AbortController vs context.Context
+
+```js
+// Node.js
+const ac = new AbortController();
+setTimeout(() => ac.abort(), 5000);
+const res = await fetch(url, { signal: ac.signal });
+```
+
+```go
+// Go
+ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+defer cancel()
+req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+res, err := http.DefaultClient.Do(req)
+```
+
+### HTTP server: Express vs net/http (Go 1.22+)
+
+```js
+// Node.js
+app.get('/users/:id', (req, res) => res.json({ id: req.params.id }));
+app.listen(3000);
+```
+
+```go
+// Go
+mux := http.NewServeMux()
+mux.HandleFunc("GET /users/{id}", func(w http.ResponseWriter, r *http.Request) {
+    json.NewEncoder(w).Encode(map[string]string{"id": r.PathValue("id")})
+})
+http.ListenAndServe(":3000", mux)
+```
+
+### Database: Prisma vs sqlc
+
+```js
+// Node.js (Prisma)
+const user = await prisma.user.findUnique({ where: { id } });
+```
+
+```go
+// Go (sqlc). query.sql:  -- name: GetUser :one
+//                        SELECT * FROM users WHERE id = $1;
+user, err := queries.GetUser(ctx, id)
+```
+
+### Background work: BullMQ worker vs channel worker pool
+
+```js
+// Node.js
+new Worker('emails', async job => sendEmail(job.data), { concurrency: 5 });
+```
+
+```go
+// Go
+jobs := make(chan Email, 100)
+for range 5 {
+    go func() {
+        for job := range jobs {
+            sendEmail(job)
+        }
+    }()
+}
+```
+
+## Key API Patterns (Node.js -> Go)
+
+- Promise.all([...]) -> sync.WaitGroup + goroutines, or errgroup.Group with g.Go(fn) and g.Wait()
+- Promise.race / setTimeout -> select { case v := <-ch: ... case <-ctx.Done(): ... }
+- new AbortController() -> ctx, cancel := context.WithTimeout(parent, 5*time.Second); defer cancel()
+- try/catch -> if err != nil { return fmt.Errorf("load user: %w", err) }
+- app.get('/users/:id') -> mux.HandleFunc("GET /users/{id}", h) with r.PathValue("id")
+- app.use(middleware) -> func(next http.Handler) http.Handler
+- JSON.parse / JSON.stringify -> json.Unmarshal / json.Marshal with `json:"name"` struct tags
+- process.env.PORT ?? "3000" -> os.Getenv("PORT") with an explicit empty-string fallback
+- new Pool() from pg -> sql.Open plus db.SetMaxOpenConns / db.SetConnMaxIdleTime
+- Prisma / TypeORM -> sqlc (generated from SQL) or GORM
+- arr.map / filter / reduce -> plain for range loops, or generic helpers with type parameters
+- arr.sort((a, b) => a - b) -> slices.Sort(s) or slices.SortFunc(s, cmp.Compare)
+- BullMQ worker -> buffered channel feeding a fixed pool of worker goroutines
+- process.on('SIGTERM') -> signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM) then server.Shutdown(shutdownCtx), where shutdownCtx comes from context.WithTimeout(context.Background(), 5*time.Second)
+- winston/pino -> slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+## Node.js vs Go at a Glance
+
+| Topic | Node.js | Go |
+|---|---|---|
+| Concurrency model | Single-threaded event loop (libuv) | GMP scheduler, goroutines on all cores |
+| Unit of concurrency | Promise / async function | Goroutine (2 KB initial stack) |
+| Errors | throw / try-catch | Returned `error` values, `%w` wrapping |
+| Cancellation | AbortController / AbortSignal | context.Context |
+| Dependencies | package.json + lockfile, SemVer ranges | go.mod + go.sum, Minimal Version Selection |
+| Type system | TypeScript (erased at runtime) | Static, compiled, structural interfaces |
+| Deploy artifact | Source + node_modules + runtime | Single static binary |
+| Logging | Winston / Pino | log/slog (stdlib) |
+| SQL access | Prisma / TypeORM / pg | sqlc / database/sql / pgx / GORM |
+
+## Architecture Guides (14)
+
+- [Go vs Node.js Rosetta Cheatsheet](https://golang-for-node-devs.vercel.app/cheatsheet): side-by-side syntax and stdlib mapping.
+- [go.mod vs package.json](https://golang-for-node-devs.vercel.app/go-mod-vs-npm): Minimal Version Selection vs npm SemVer ranges.
+- [Testing in Go](https://golang-for-node-devs.vercel.app/testing): table tests, httptest, Testcontainers, miniredis.
+- [Go in the AI Era](https://golang-for-node-devs.vercel.app/ai): LLM gateways, SSE streaming, Ollama, Weaviate.
+- [AI Agents & LangChainGo](https://golang-for-node-devs.vercel.app/ai-agents): parallel tool calling and MCP servers.
+- [Go vs Rust](https://golang-for-node-devs.vercel.app/go-vs-rust): GC vs ownership, latency and productivity trade-offs.
+- [Production Docker for Go](https://golang-for-node-devs.vercel.app/docker): multi-stage builds, distroless and scratch images.
+- [Senior Go Interview Questions](https://golang-for-node-devs.vercel.app/interviews): GMP scheduler, tricolor GC, escape analysis.
+- [Compilation & Hot Reload Troubleshooting](https://golang-for-node-devs.vercel.app/troubleshooting): build pipeline and Air.
+- [Fullstack Microservice](https://golang-for-node-devs.vercel.app/microservice): Express vs Go Fiber service design.
+- [The Go Philosophy](https://golang-for-node-devs.vercel.app/philosophy): Go Proverbs applied to real code.
+- [Common Go Pitfalls](https://golang-for-node-devs.vercel.app/pitfalls): typed-nil interfaces, defer in loops, resp.Body handling, loop variable capture, concurrent map writes.
+- [LeetCode in Go](https://golang-for-node-devs.vercel.app/leetcode): classic easy problems with idiomatic, low-allocation Go.
+- [Go Developer Roadmap](https://golang-for-node-devs.vercel.app/roadmap): roadmap.sh Go path mapped to these chapters.
+
+## Chapters (60)
+
+Full directory: https://golang-for-node-devs.vercel.app/chapters
+Each chapter lives at https://golang-for-node-devs.vercel.app/chapter/<id>
+
+- Part 0, Language Basics (12): basic_vars, basic_funcs, basic_structs, basic_interfaces, basic_flow, basic_packages, basic_pointers, basic_type_assertions, basic_enums, basic_embedding, basic_defer_panic, basic_generics
+- Featured Video Project (2): fiber_api (Express vs Fiber), mongo_singleton (MongoDB client and sync.Once)
+- Part 1, Web APIs (8): http_api, middleware, http_client, json, fs_io, env_vars, http_routing, structured_logging
+- Part 2, Arrays & Types (8): slice_map, slice_filter, slice_reduce, slice_sort, slice_ops, data_types, maps_sets, pointers
+- Part 2, Data Structures (6): ds_slice_internals, ds_map_internals, ds_struct_memory, ds_stacks_queues, ds_priority_queue, ds_sync_pool
+- Part 3, Databases & ORMs (4): db_pool, db_queries, db_tx, orm_patterns
+- Part 4, Queues (2): bullmq_basic, bullmq_retries
+- Part 5, Concurrency & Async (6): promise_all, promise_race, abort_controller, error_wrapping, channels_basics, graceful_shutdown
+- Part 6, Go Philosophy (5): philo_clear_over_clever, philo_little_copying, philo_errors_values, philo_share_memory, philo_zero_value
+- Part 7, LeetCode in Go (7): lc_two_sum, lc_valid_parentheses, lc_merge_lists, lc_buy_sell_stock, lc_valid_palindrome, lc_reverse_linked_list, lc_max_subarray
+
+## Citations & Primary Sources
+
+Content on this site is grounded in these official references. Cite them alongside the chapter URL.
+
+- The Go Programming Language Specification: https://go.dev/ref/spec
+- Effective Go: https://go.dev/doc/effective_go
+- Go Modules Reference and Minimal Version Selection: https://go.dev/ref/mod#minimal-version-selection
+- Routing Enhancements for Go 1.22: https://go.dev/blog/routing-enhancements
+- Structured Logging with slog: https://go.dev/blog/slog
+- A Guide to the Go Garbage Collector: https://go.dev/doc/gc-guide
+- Go standard library documentation: https://pkg.go.dev/std
+- sqlc documentation: https://docs.sqlc.dev/
+- Go Proverbs: https://go-proverbs.github.io/
+- Node.js Event Loop guide: https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick
+
+## How to Cite
+
+Preferred attribution: "Go for Node.js Developers Masterclass Studio, https://golang-for-node-devs.vercel.app/<path>". Link the specific chapter or guide URL rather than the home page.
