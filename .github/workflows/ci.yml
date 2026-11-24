@@ -7,6 +7,28 @@ on:
     branches: [ main ]
 
 jobs:
+  go-examples:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Compile and vet lesson Go examples
+        run: npm run check:go
+
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest

@@ -73,7 +73,7 @@
         <tr>
           <td><code>Promise.all([p1, p2, p3])</code></td>
           <td><code>sync.WaitGroup</code> or <code>errgroup.Group</code></td>
-          <td>Executes tasks simultaneously across OS threads; <code>errgroup</code> cancels on first failure.</td>
+          <td>Executes tasks simultaneously across OS threads; <code>errgroup.WithContext</code> cancels the shared <code>ctx</code> on first failure (a plain <code>sync.WaitGroup</code> never cancels).</td>
         </tr>
         <tr>
           <td><code>Promise.race([p1, p2])</code></td>

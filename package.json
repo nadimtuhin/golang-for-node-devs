@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test:e2e": "playwright test",
+    "check:go": "node --experimental-strip-types scripts/check-go-examples.mjs",
     "astro": "astro"
   },
   "dependencies": {
