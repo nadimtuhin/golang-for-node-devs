@@ -563,7 +563,7 @@ if err := decoder.Decode(&amp;params); err != nil {
               <span>🗄️</span> Vector Store Drivers
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">
-              Battle-tested adapters for PostgreSQL <code>pgvector</code>, <code>Qdrant</code>, <code>Weaviate</code>, <code>Chroma</code>, and in-memory indexes.
+              Battle-tested adapters for PostgreSQL <code>pgvector</code>, <code>Qdrant</code>, <code>Weaviate</code>, and <code>Chroma</code> (no built-in in-memory store).
             </p>
           </div>
 
@@ -927,7 +927,7 @@ func main() {
           <span>📚</span> Example 2: Complete End-to-End RAG Pipeline with LangChainGo
         </div>
         <p style="color: var(--text-body); line-height: 1.6; margin-bottom: 1rem;">
-          This pipeline ingests documents, chunks text with <code>textsplitter.NewRecursiveCharacter</code>, generates vector embeddings, retrieves the top 3 semantically relevant chunks, and synthesizes a grounded answer with source attribution.
+          This pipeline ingests documents, chunks text with <code>textsplitter.NewRecursiveCharacter</code>, generates vector embeddings, retrieves the top 2 semantically relevant chunks, and synthesizes a grounded answer with source attribution.
         </p>
 
         <pre class="code-block" style="background:#0f172a; color:#f8fafc; padding:1.25rem; border-radius:8px; font-size:0.82rem; line-height:1.6; overflow-x: auto;">package main
@@ -936,6 +936,7 @@ import (
     "context"
     "fmt"
     "log"
+    "os"
     "strings"
 
     "github.com/tmc/langchaingo/embeddings"
@@ -943,8 +944,7 @@ import (
     "github.com/tmc/langchaingo/llms/openai"
     "github.com/tmc/langchaingo/schema"
     "github.com/tmc/langchaingo/textsplitter"
-    "github.com/tmc/langchaingo/vectorstores"
-    "github.com/tmc/langchaingo/vectorstores/memory"
+    "github.com/tmc/langchaingo/vectorstores/pgvector"
 )
 
 func main() {
@@ -987,12 +987,18 @@ func main() {
     }
 
     // 4. Index Chunks into Vector Store with Embedder
-    // (Using in-memory vector store with embeddings; interchangeable with pgvector / Qdrant)
+    // (pgvector shown here; Qdrant / Chroma / Weaviate stores are drop-in alternatives)
     embedder, err := embeddings.NewEmbedder(model)
     if err != nil {
         log.Fatalf("Failed to initialize embedder: %v", err)
     }
-    store := memory.New(memory.WithEmbedder(embedder))
+    store, err := pgvector.New(ctx,
+        pgvector.WithConnectionURL(os.Getenv("PGVECTOR_URL")), // e.g. postgres://user:pass@localhost:5432/db
+        pgvector.WithEmbedder(embedder),
+    )
+    if err != nil {
+        log.Fatalf("Failed to connect to pgvector: %v", err)
+    }
     _, err = store.AddDocuments(ctx, docs)
     if err != nil {
         log.Fatalf("Vector store indexing failed: %v", err)
